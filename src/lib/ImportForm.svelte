@@ -108,7 +108,7 @@
   .importer-form-container .config__tab-container{
     height: unset;
   }
-  .selected{
+  .selected {
     color: red;
   }
 </style>
