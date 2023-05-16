@@ -23,9 +23,28 @@
  * questions.
  */
 
-module.exports = {
-    semi: false,
-    singleQuote: false,
-    printWidth: 120,
-    plugins: ["prettier-plugin-svelte"]
+import KernelApi from "../api/kernel-api"
+
+/**
+ * 文件是否存在
+ *
+ * @param kernelApi - kernelApi
+ * @param p - 路径
+ * @param type - 类型
+ */
+export const isFileExists = async (kernelApi: KernelApi, p: string, type: "text" | "json") => {
+  try {
+    const res = await kernelApi.getFile(p, type)
+    return res !== null
+  } catch {
+    return false
+  }
 }
+
+/**
+ * 删除空行
+ *
+ * @param str - 字符串
+ */
+export const removeEmptyLines = (str: string): string =>
+  str.replace(/^#+\s*\n|!\[.*?\]\(.*?\)\n+|\n(?=[^\n\xA0])|\u00A0+/gm, "")

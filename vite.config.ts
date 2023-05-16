@@ -67,7 +67,10 @@ export default defineConfig({
 
       output: {
         entryFileNames: "[name].js",
-        assetFileNames: "[name].[ext]",
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name == "style.css") return "index.css"
+          return assetInfo.name
+        },
       },
     },
   },

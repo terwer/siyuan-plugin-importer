@@ -1,2 +1,6 @@
 {
+  "importer": "导入插件",
+  "selectFile": "选择文件",
+  "cancel": "取消",
+  "startImport": "开始导入"
 }

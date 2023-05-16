@@ -1,2 +1,6 @@
 {
+  "importer": "Importer",
+  "selectFile": "Select file",
+  "cancel": "Cancel",
+  "startImport": "Start import"
 }

@@ -80,7 +80,7 @@ export class BaseApi {
     }
 
     const response = await fetch(reqUrl, fetchOps)
-    const resJson = await response.json()
+    const resJson = (await response.json()) as SiyuanData
     if (isDev) {
       this.logger.info("思源请求数据返回，resJson=>", resJson)
     }
@@ -88,6 +88,6 @@ export class BaseApi {
     if (resJson.code === -1) {
       throw new Error(resJson.msg)
     }
-    return resJson.code === 0 ? resJson.data : null
+    return resJson
   }
 }

@@ -23,10 +23,12 @@
  * questions.
  */
 
-import { App, IObject, Plugin } from "siyuan"
+import { App, Dialog, IObject, isMobile, Plugin } from "siyuan"
 import { createLogger } from "./utils/simple-logger"
 import KernelApi from "./api/kernel-api"
 import { isDev } from "./Constants"
+import ImportForm from "./lib/ImportForm.svelte"
+import "./index.styl"
 
 export default class ImporterPlugin extends Plugin {
   private logger
@@ -44,7 +46,30 @@ export default class ImporterPlugin extends Plugin {
       this.logger.warn("DEV mode is enabled")
     }
 
-    this.kernelApi.pushMsg("hello")
+    const topBarElement = this.addTopBar({
+      icon: "iconEmoji",
+      title: this.i18n.importer,
+      position: "right",
+      callback: () => {
+        this.logger.info(`this.i18n.importer added toolbar`)
+      },
+    })
+    topBarElement.addEventListener("click", async () => {
+      const importFormId = "siyuan-import-form"
+      const d = new Dialog({
+        title: `${this.i18n.selectFile} - ${this.i18n.importer}`,
+        content: `<div id="${importFormId}"></div>`,
+        width: isMobile() ? "92vw" : "720px",
+      })
+      new ImportForm({
+        target: document.getElementById(importFormId) as HTMLElement,
+        props: {
+          pluginInstance: this,
+          dialog: d,
+        },
+      })
+    })
+
     this.logger.info("Importer loaded")
   }
 

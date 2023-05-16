@@ -9,6 +9,7 @@
       "DOM.Iterable"
     ],
     "skipLibCheck": true,
+
     /* Bundler mode */
     "moduleResolution": "Node",
     // "allowImportingTsExtensions": true,
@@ -17,14 +18,17 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
+
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
+
     "types": [
       "node",
-      "vite/client"
+      "vite/client",
+      "svelte"
     ]
   },
   "include": [
