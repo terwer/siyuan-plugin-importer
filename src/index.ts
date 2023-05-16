@@ -25,17 +25,26 @@
 
 import { App, IObject, Plugin } from "siyuan"
 import { createLogger } from "./utils/simple-logger"
+import KernelApi from "./api/kernel-api"
+import { isDev } from "./Constants"
 
 export default class ImporterPlugin extends Plugin {
   private logger
+  private kernelApi
 
   constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
     super(options)
 
     this.logger = createLogger("index")
+    this.kernelApi = new KernelApi()
   }
 
   onload() {
+    if (isDev) {
+      this.logger.warn("DEV mode is enabled")
+    }
+
+    this.kernelApi.pushMsg("hello")
     this.logger.info("Importer loaded")
   }
 

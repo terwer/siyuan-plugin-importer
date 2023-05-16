@@ -23,9 +23,6 @@
  * questions.
  */
 
-/**
- * 思源笔记服务端API v2.8.2
- */
-class KernelApi {}
-
-export default KernelApi
+export const isDev = process.env.DEV_MODE === "true"
+export const siyuanApiUrl = ""
+export const siyuanApiToken = ""

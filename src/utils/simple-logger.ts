@@ -29,6 +29,7 @@
 interface ILogger {
   debug: (msg: string, obj?: any) => void
   info: (msg: string, obj?: any) => void
+  warn: (msg: string, obj?: any) => void
   error: (msg: string | Error, obj?: any) => void
 }
 
@@ -65,6 +66,14 @@ export const createLogger = (name: string): ILogger => {
   return {
     debug: (msg: string, obj?: any) => log("DEBUG", msg, obj),
     info: (msg: string, obj?: any) => log("INFO", msg, obj),
+    warn: (msg: string, obj?: any) => {
+      const time = formatDate(new Date())
+      if (obj) {
+        console.warn(`[${sign}] [${time}] [WARN] ${msg}`, obj)
+      } else {
+        console.warn(`[${sign}] [${time}] [WARN] ${msg}`)
+      }
+    },
     error: (msg: string | Error, obj?: any) => {
       if (typeof msg == "string") {
         log("ERROR", msg, obj)
