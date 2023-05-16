@@ -1,0 +1,27 @@
+{
+  "name": "siyuan-importer",
+  "author": "terwer",
+  "url": "https://github.com/terwer/siyuan-plugin-importer",
+  "version": "0.0.1",
+  "displayName": {
+    "default": "Importer",
+    "zh_CN": "导入工具"
+  },
+  "description": {
+    "default": "Import from epub, docx, pdf, html etc. to siyuan-note",
+    "zh_CN": "导入 epub, docx, pdf, html 等格式到思源笔记"
+  },
+  "readme": {
+    "default": "README.md",
+    "zh_CN": "README_zh_CN.md"
+  },
+  "i18n": [
+    "en_US",
+    "zh_CN"
+  ],
+  "funding": {
+    "custom": [
+      "https://afdian.net/a/terwer"
+    ]
+  }
+}

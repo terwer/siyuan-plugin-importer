@@ -23,10 +23,9 @@
  * questions.
  */
 
-import { describe, it } from "vitest"
+/**
+ * 思源笔记服务端API v2.8.2
+ */
+class KernelApi {}
 
-describe("index", () => {
-  it("test index", () => {
-    console.log("hello")
-  })
-})
+export default KernelApi

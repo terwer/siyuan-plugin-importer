@@ -15,7 +15,12 @@
     "test": "vitest --watch"
   },
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^2.0.3",
     "@terwer/eslint-config-custom": "^1.2.0",
-    "@terwer/vite-config-custom": "^0.2.0"
+    "@terwer/vite-config-custom": "^0.5.0",
+    "@tsconfig/svelte": "^4.0.1",
+    "siyuan": "^0.7.1",
+    "stylus": "^0.59.0",
+    "svelte": "^3.57.0"
   }
 }
