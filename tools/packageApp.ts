@@ -23,45 +23,47 @@
  * questions.
  */
 
-import { App, IObject, Plugin } from "siyuan"
-import { createLogger } from "./utils/simple-logger"
-import KernelApi from "./api/kernel-api"
-import { isDev } from "./Constants"
-import "./index.styl"
-import { removeImporterConfig } from "./store/config"
-import { initTopbar } from "./topbar"
+import minimist from "minimist"
+import FileUtils from "./utils/fileUtils"
 
 /**
- * 导入插件
+ * 插件打包
  *
  * @author terwer
  * @version 1.0.0
  * @since 1.0.0
  */
-export default class ImporterPlugin extends Plugin {
-  public logger
-  public kernelApi: KernelApi
+class PackageApp {
+  public async packagePlugin(isTest: boolean) {
+    // zip to build/package.zip etc.
+    const zipTo = "./build/package.zip"
+    await FileUtils.makeZip("./dist", zipTo)
+    console.log(`plugin packaged to ${zipTo}`)
 
-  constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
-    super(options)
-
-    this.logger = createLogger("index")
-    this.kernelApi = new KernelApi()
-  }
-
-  async onload() {
-    if (isDev) {
-      this.logger.warn("DEV mode is enabled")
+    // 开发测试阶段，拷贝到插件目录
+    if (isTest) {
+      // copy to local plugin folder
+      await FileUtils.cp(
+        "./dist",
+        "/Users/terwer/Documents/mydocs/SiYuanWorkspace/public/data/plugins/siyuan-importer",
+        true,
+        true
+      )
     }
-
-    // 初始化顶栏按钮
-    await initTopbar(this)
-    this.logger.info(this.i18n.importerLoaded)
-  }
-
-  async onunload() {
-    // 卸载删除配置
-    await removeImporterConfig(this)
-    this.logger.info(this.i18n.importerUnloaded)
   }
 }
+
+// 本地生产测试
+// pnpm package -t
+//
+// 生产环境打包
+// pnpm package
+;(async () => {
+  const args = minimist(process.argv.slice(2))
+  const isTest = args.test || args.t || false
+
+  const packageApp = new PackageApp()
+  // plugin
+  await packageApp.packagePlugin(isTest)
+  console.log("app packaged.")
+})()

@@ -23,45 +23,43 @@
  * questions.
  */
 
-import { App, IObject, Plugin } from "siyuan"
-import { createLogger } from "./utils/simple-logger"
-import KernelApi from "./api/kernel-api"
-import { isDev } from "./Constants"
-import "./index.styl"
-import { removeImporterConfig } from "./store/config"
-import { initTopbar } from "./topbar"
+import KernelApi from "../api/kernel-api"
 
 /**
- * 导入插件
+ * 文件是否存在
  *
- * @author terwer
- * @version 1.0.0
- * @since 1.0.0
+ * @param kernelApi - kernelApi
+ * @param hpath - 路径
+ * @param type - 类型
  */
-export default class ImporterPlugin extends Plugin {
-  public logger
-  public kernelApi: KernelApi
-
-  constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
-    super(options)
-
-    this.logger = createLogger("index")
-    this.kernelApi = new KernelApi()
-  }
-
-  async onload() {
-    if (isDev) {
-      this.logger.warn("DEV mode is enabled")
-    }
-
-    // 初始化顶栏按钮
-    await initTopbar(this)
-    this.logger.info(this.i18n.importerLoaded)
-  }
-
-  async onunload() {
-    // 卸载删除配置
-    await removeImporterConfig(this)
-    this.logger.info(this.i18n.importerUnloaded)
+export const isFileExistsBuHpath = async (kernelApi: KernelApi, hpath: string, type: "text" | "json") => {
+  try {
+    const res = await kernelApi.getFile(hpath, type)
+    return res !== null
+  } catch {
+    return false
   }
 }
+
+/**
+ * 文件是否存在
+ *
+ * @param kernelApi - kernelApi
+ * @param p - 路径
+ * @param type - 类型
+ */
+export const isFileExists = async (kernelApi: KernelApi, p: string, type: "text" | "json") => {
+  try {
+    const res = await kernelApi.getFile(p, type)
+    return res !== null
+  } catch {
+    return false
+  }
+}
+
+/**
+ * 删除空行
+ *
+ * @param str - 字符串
+ */
+export const removeEmptyLines = (str: string): string => str.replace(/^#+\s*\n|!\[.*?\]\(.*?\)\n+|\n\u00A0+/gm, "\n")

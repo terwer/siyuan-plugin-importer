@@ -29,15 +29,16 @@
 interface ILogger {
   debug: (msg: string, obj?: any) => void
   info: (msg: string, obj?: any) => void
+  warn: (msg: string, obj?: any) => void
   error: (msg: string | Error, obj?: any) => void
 }
 
 /**
- * 为了在日志系统加载之前记录一些东西，这里写了一个简单的日志工具，仅在 core 使用
+ * 一个简单轻量级的日志记录器
  *
  * @author terwer
- * @version 0.1.0
- * @since 0.1.0
+ * @version 1.0.0
+ * @since 1.0.0
  */
 export const createLogger = (name: string): ILogger => {
   const sign = "importer"
@@ -65,6 +66,14 @@ export const createLogger = (name: string): ILogger => {
   return {
     debug: (msg: string, obj?: any) => log("DEBUG", msg, obj),
     info: (msg: string, obj?: any) => log("INFO", msg, obj),
+    warn: (msg: string, obj?: any) => {
+      const time = formatDate(new Date())
+      if (obj) {
+        console.warn(`[${sign}] [${time}] [WARN] ${msg}`, obj)
+      } else {
+        console.warn(`[${sign}] [${time}] [WARN] ${msg}`)
+      }
+    },
     error: (msg: string | Error, obj?: any) => {
       if (typeof msg == "string") {
         log("ERROR", msg, obj)

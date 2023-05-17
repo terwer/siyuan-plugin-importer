@@ -8,8 +8,8 @@
     "zh_CN": "导入工具"
   },
   "description": {
-    "default": "Import from epub, docx, pdf, html etc. to siyuan-note",
-    "zh_CN": "导入 epub, docx, pdf, html 等格式到思源笔记"
+    "default": "Import epub, docx, html, etc. into Siyuan notes. Currently supported formats: .epub, .docx, .html, .opml.",
+    "zh_CN": "导入 epub, docx, html 等导入到思源笔记。目前支持的格式：.epub, .docx, .html, .opml。"
   },
   "readme": {
     "default": "README.md",
@@ -21,7 +21,7 @@
   ],
   "funding": {
     "custom": [
-      "https://afdian.net/a/terwer"
+      "https://img1.terwer.space/api/public/202305170050348.jpg"
     ]
   }
 }
