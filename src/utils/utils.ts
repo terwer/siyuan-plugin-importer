@@ -32,7 +32,7 @@ import KernelApi from "../api/kernel-api"
  * @param hpath - 路径
  * @param type - 类型
  */
-export const isFileExistsBuHpath = async (kernelApi: KernelApi, hpath: string, type: "text" | "json") => {
+export const isFileExistsByHpath = async (kernelApi: KernelApi, hpath: string, type: "text" | "json") => {
   try {
     const res = await kernelApi.getFile(hpath, type)
     return res !== null
