@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.2.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.1.0...v1.2.0) (2023-05-17)
+
+
+### Features
+
+* 自动打包暂时不好用，改为手动上传 package.zip ([e1a8ffb](https://github.com/terwer/siyuan-plugin-importer/commit/e1a8ffbb16a7a51de5271c3850ec39a4123ca84f))
+
+
+### Miscellaneous
+
+* 更新文档 ([a6eeafd](https://github.com/terwer/siyuan-plugin-importer/commit/a6eeafd5a3cd14cf3216654074a528a1b73d7c0d))
+* 更新文档 ([cb91863](https://github.com/terwer/siyuan-plugin-importer/commit/cb918631d5b23e6b7514f32bf4ce101477b73705))
+
+
+### Code Refactoring
+
+* 调整打包结构，适应集市规则 ([653b275](https://github.com/terwer/siyuan-plugin-importer/commit/653b275d7ade95a6829d7601bd679423ec575e14))
+* 调整打包结构，适应集市规则 ([3fd8864](https://github.com/terwer/siyuan-plugin-importer/commit/3fd8864854df403e82375144e46eea8549f1800e))
+* 调整打包结构，适应集市规则 ([f2dafa0](https://github.com/terwer/siyuan-plugin-importer/commit/f2dafa0f5bb388b123574da7ba2c4e4021bad1bf))
+* 调整打包结构，适应集市规则 ([a70a921](https://github.com/terwer/siyuan-plugin-importer/commit/a70a921744ba8f6c8c01c175bef232f7e65876f5))
+
 ## [1.1.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.0.0...v1.1.0) (2023-05-17)
 ### Features
 * 初始化插件项目 ([e41c745](https://github.com/terwer/siyuan-plugin-importer/commit/e41c7458cf8f3882b072e214a78fb858d33a29f6))
