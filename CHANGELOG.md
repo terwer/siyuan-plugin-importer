@@ -1,16 +1,9 @@
 # Changelog
 
 ## [1.3.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.2.0...v1.3.0) (2023-05-17)
-
-
 ### Features
-
-* 支持图片导入 ([ea37981](https://github.com/terwer/siyuan-plugin-importer/commit/ea37981fd451fb6c87396ee0bb6a7908d16f014d))
-* 支持图片导入 ([ef8a487](https://github.com/terwer/siyuan-plugin-importer/commit/ef8a4872a1a966cfc030b6cf67bc7f223c444254))
 * 支持图片导入 ([6387db2](https://github.com/terwer/siyuan-plugin-importer/commit/6387db2273ad23ea6161b4a4ed681591494bacf1))
-
 ## [1.2.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.1.0...v1.2.0) (2023-05-17)
-### Features
 * 自动打包暂时不好用，改为手动上传 package.zip ([e1a8ffb](https://github.com/terwer/siyuan-plugin-importer/commit/e1a8ffbb16a7a51de5271c3850ec39a4123ca84f))
 ### Miscellaneous
 * 更新文档 ([cb91863](https://github.com/terwer/siyuan-plugin-importer/commit/cb918631d5b23e6b7514f32bf4ce101477b73705))
