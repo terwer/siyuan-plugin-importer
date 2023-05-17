@@ -2,7 +2,7 @@
   "name": "siyuan-plugin-importer",
   "version": "0.0.1",
   "type": "module",
-  "description": "Import from epub, docx, pdf, html etc. to siyuan-note",
+  "description": "Import from epub, docx, html etc. to siyuan-note",
   "repository": "terwer/siyuan-plugin-importer",
   "homepage": "https://github.com/terwer/siyuan-plugin-importer",
   "author": "terwer",

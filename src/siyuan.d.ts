@@ -31,12 +31,12 @@ declare module "siyuan" {
     }
 
     interface IWebSocketData {
-        cmd: string;
-        callback?: string;
-        data: any;
-        msg: string;
-        code: number;
-        sid: string;
+        cmd: string
+        callback?: string
+        data: any
+        msg: string
+        code: number
+        sid: string
     }
 
     declare interface IPluginDockTab {
@@ -133,6 +133,8 @@ declare module "siyuan" {
         loadData(storageName: string): Promise<any>;
 
         saveData(storageName: string, content: any): Promise<void>;
+
+        removeData(storageName: string): Promise<any>;
 
         addTab(options: {
             type: string,

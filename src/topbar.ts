@@ -23,45 +23,40 @@
  * questions.
  */
 
-import { App, IObject, Plugin } from "siyuan"
-import { createLogger } from "./utils/simple-logger"
-import KernelApi from "./api/kernel-api"
-import { isDev } from "./Constants"
-import "./index.styl"
-import { removeImporterConfig } from "./store/config"
-import { initTopbar } from "./topbar"
+import ImporterPlugin from "./index"
+import { Dialog, isMobile } from "siyuan"
+import ImportForm from "./lib/ImportForm.svelte"
 
 /**
- * 导入插件
+ * 顶栏按钮
  *
+ * @param pluginInstance - 插件实例
  * @author terwer
  * @version 1.0.0
  * @since 1.0.0
  */
-export default class ImporterPlugin extends Plugin {
-  public logger
-  public kernelApi: KernelApi
-
-  constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
-    super(options)
-
-    this.logger = createLogger("index")
-    this.kernelApi = new KernelApi()
-  }
-
-  async onload() {
-    if (isDev) {
-      this.logger.warn("DEV mode is enabled")
-    }
-
-    // 初始化顶栏按钮
-    await initTopbar(this)
-    this.logger.info("Importer loaded")
-  }
-
-  async onunload() {
-    // 卸载删除配置
-    await removeImporterConfig(this)
-    this.logger.info("Importer unloaded")
-  }
+export async function initTopbar(pluginInstance: ImporterPlugin) {
+  const topBarElement = pluginInstance.addTopBar({
+    icon: "iconEmoji",
+    title: pluginInstance.i18n.importer,
+    position: "right",
+    callback: () => {
+      pluginInstance.logger.info(`this.i18n.importer added toolbar`)
+    },
+  })
+  topBarElement.addEventListener("click", async () => {
+    const importFormId = "siyuan-import-form"
+    const d = new Dialog({
+      title: `${pluginInstance.i18n.selectFile} - ${pluginInstance.i18n.importer}`,
+      content: `<div id="${importFormId}"></div>`,
+      width: isMobile() ? "92vw" : "720px",
+    })
+    new ImportForm({
+      target: document.getElementById(importFormId) as HTMLElement,
+      props: {
+        pluginInstance: pluginInstance,
+        dialog: d,
+      },
+    })
+  })
 }

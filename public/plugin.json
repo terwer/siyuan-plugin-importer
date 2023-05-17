@@ -8,8 +8,8 @@
     "zh_CN": "导入工具"
   },
   "description": {
-    "default": "Import from epub, docx, pdf, html etc. to siyuan-note",
-    "zh_CN": "导入 epub, docx, pdf, html 等格式到思源笔记"
+    "default": "Import from epub, docx, html etc. to siyuan-note",
+    "zh_CN": "导入 epub, docx, html 等格式到思源笔记"
   },
   "readme": {
     "default": "README.md",
