@@ -58,12 +58,12 @@
   }
 
   const doImport = async function (file: any) {
-    // 给个提示，免得任务是卡主了
+    // 给个提示，免得用户以为界面是卡主了
     showMessage(`${pluginInstance.i18n.msgConverting}...`, 1000, "info")
 
     const fromFilename = file.name
     let filename = fromFilename.substring(0, fromFilename.lastIndexOf("."))
-    // 去除标题多余的空格和考试结尾中间空格
+    // 去除标题多余的空格，包括开始中间以及结尾的空格
     filename = filename.replace(/\s+/g, "")
 
     const fromFilePath = `/temp/convert/pandoc/${fromFilename}`
