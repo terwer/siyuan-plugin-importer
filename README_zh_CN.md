@@ -2,7 +2,7 @@
 
 # 导入工具
 
-![](https://raw.githubusercontent.com/terwer/siyuan-plugin-importer/main/public/icon.png)
+![](https://raw.githubusercontent.com/terwer/siyuan-plugin-importer/main/icon.png)
 
 导入 epub, docx, html 等导入到思源笔记。目前支持的格式：.epub, .docx, .html, .opml。
 
