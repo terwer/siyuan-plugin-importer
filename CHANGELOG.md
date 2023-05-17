@@ -9,6 +9,6 @@
 * 导入工具第一个版本 ([1fc739b](https://github.com/terwer/siyuan-plugin-importer/commit/1fc739b676ba51460c7f57e4e22c00869517b74f))
 * 插件最小化运行单位 ([155a825](https://github.com/terwer/siyuan-plugin-importer/commit/155a825461bf447d45083329ccce9eb93b3857d6))
 * 新增kernelApi ([80ca482](https://github.com/terwer/siyuan-plugin-importer/commit/80ca4829e5949c871ddaacad2e6fced1771bd336))
-* 晚上国际化以及项目说明 ([07a2099](https://github.com/terwer/siyuan-plugin-importer/commit/07a2099912318ea8f73e666b70f1d0d438f78ee7))
+* 完善国际化以及项目说明 ([07a2099](https://github.com/terwer/siyuan-plugin-importer/commit/07a2099912318ea8f73e666b70f1d0d438f78ee7))
 ### Miscellaneous
 * **main:** release 1.0.0 ([74258ce](https://github.com/terwer/siyuan-plugin-importer/commit/74258ce418a45bd64c7a4c2b947508a842691605))
