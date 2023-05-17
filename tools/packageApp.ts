@@ -23,27 +23,47 @@
  * questions.
  */
 
-import ImporterPlugin from "../index"
+import minimist from "minimist"
+import FileUtils from "./utils/fileUtils"
 
-export const importerStorage = "importer-config.txt"
-export async function loadImporterConfig(pluginInstance: ImporterPlugin) {
-  const importerConfigStr = await pluginInstance.loadData(importerStorage)
-  let importerConfig
-  try {
-    importerConfig = JSON.parse(importerConfigStr)
-  } catch (e) {
-    importerConfig = {}
+/**
+ * 插件打包
+ *
+ * @author terwer
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+class PackageApp {
+  public async packagePlugin(isTest: boolean) {
+    // zip to build/package.zip etc.
+    const zipTo = "./build/package.zip"
+    await FileUtils.makeZip("./dist", zipTo)
+    console.log(`plugin packaged to ${zipTo}`)
+
+    // 开发测试阶段，拷贝到插件目录
+    if (isTest) {
+      // copy to local plugin folder
+      await FileUtils.cp(
+        "./dist",
+        "/Users/terwer/Documents/mydocs/SiYuanWorkspace/public/data/plugins/siyuan-importer",
+        true,
+        true
+      )
+    }
   }
-  pluginInstance.logger.info("加载文档转换配置=>", importerConfig)
-  return importerConfig
 }
 
-export async function saveImporterConfig(pluginInstance: ImporterPlugin, importerConfig: object) {
-  const importerConfigJson = JSON.stringify(importerConfig)
-  // pluginInstance.logger.debug("准备保存importerConfig", importerConfigJson)
-  await pluginInstance.saveData(importerStorage, importerConfigJson)
-}
+// 本地生产测试
+// pnpm package -t
+//
+// 生产环境打包
+// pnpm package
+;(async () => {
+  const args = minimist(process.argv.slice(2))
+  const isTest = args.test || args.t || false
 
-export async function removeImporterConfig(pluginInstance: ImporterPlugin) {
-  await pluginInstance.removeData(importerStorage)
-}
+  const packageApp = new PackageApp()
+  // plugin
+  await packageApp.packagePlugin(isTest)
+  console.log("app packaged.")
+})()
