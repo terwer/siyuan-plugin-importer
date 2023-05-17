@@ -13,7 +13,7 @@ Import epub, docx, html, etc. into Siyuan notes. Currently supported formats: .e
 
 * Q1：How to install the import tool plug-in? Where can I find his entrance after installation?
 
-  A1：Find **`Bazaar->Plugins->Importer`** download and enable.
+  A1：Find **`Marketplace->Plugins->Importer`** download and enable.
 
   After the installation is complete, find the `Importer` icon on the top right toolbar, and click to follow the pop-up window.
 
