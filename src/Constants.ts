@@ -23,6 +23,8 @@
  * questions.
  */
 
+export const dataDir = `${(window as any).siyuan.config.system.dataDir}`
+export const mediaDir = `${dataDir}/assets/import`
 export const isDev = process.env.DEV_MODE === "true"
 export const siyuanApiUrl = ""
 export const siyuanApiToken = ""

@@ -26,7 +26,7 @@
 import { App, IObject, Plugin } from "siyuan"
 import { createLogger } from "./utils/simple-logger"
 import KernelApi from "./api/kernel-api"
-import { isDev } from "./Constants"
+import {isDev, mediaDir} from "./Constants"
 import "./index.styl"
 import { removeImporterConfig } from "./store/config"
 import { initTopbar } from "./topbar"
@@ -56,6 +56,7 @@ export default class ImporterPlugin extends Plugin {
 
     // 初始化顶栏按钮
     await initTopbar(this)
+    this.logger.info("mediaDir=>", mediaDir)
     this.logger.info(this.i18n.importerLoaded)
   }
 

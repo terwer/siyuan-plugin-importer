@@ -24,6 +24,7 @@
  */
 
 import KernelApi from "../api/kernel-api"
+import { dataDir } from "../Constants"
 
 /**
  * 文件是否存在
@@ -62,4 +63,23 @@ export const isFileExists = async (kernelApi: KernelApi, p: string, type: "text"
  *
  * @param str - 字符串
  */
-export const removeEmptyLines = (str: string): string => str.replace(/^#+\s*\n|!\[.*?\]\(.*?\)\n+|\n\u00A0+/gm, "\n")
+// 删除图片
+// export const removeEmptyLines = (str: string): string => str.replace(/^#+\s*\n|!\[.*?\]\(.*?\)\n+|\n\u00A0+/gm, "\n")
+// 保留图片
+export const removeEmptyLines = (str: string): string => str.replace(/^#+\s*\n|\n\u00A0+/gm, "\n")
+
+/**
+ * 修复图片路径
+ *
+ * @param mdText - markdown 文本
+ */
+export const replaceImagePath = (mdText: string): string => {
+  const basePath = dataDir
+  const regex = /!\[(.*?)\]\((\/.*?)\)/g
+  return mdText.replace(regex, (match, p1, p2) => {
+    if (p2.includes(basePath)) {
+      return `![${p1}](${p2.replace(basePath, "")})`
+    }
+    return match
+  })
+}
