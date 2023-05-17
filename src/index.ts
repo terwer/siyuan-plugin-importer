@@ -56,12 +56,12 @@ export default class ImporterPlugin extends Plugin {
 
     // 初始化顶栏按钮
     await initTopbar(this)
-    this.logger.info("Importer loaded")
+    this.logger.info(this.i18n.importerLoaded)
   }
 
   async onunload() {
     // 卸载删除配置
     await removeImporterConfig(this)
-    this.logger.info("Importer unloaded")
+    this.logger.info(this.i18n.importerUnloaded)
   }
 }

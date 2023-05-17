@@ -44,13 +44,13 @@
       target: HTMLInputElement
     }
   ) => {
-    pluginInstance.logger.debug("开始导入...")
+    pluginInstance.logger.debug(`${pluginInstance.i18n.startImport}...`)
     dialog.destroy()
 
     // showMessage(`文件上传中，请稍后...`, 1000, "info")
     const files = event.target.files ?? []
     if (files.length === 0) {
-      showMessage(`文件不能为空`, 7000, "error")
+      showMessage(`${pluginInstance.i18n.msgFileNotEmpty}`, 7000, "error")
       return
     }
 
@@ -59,7 +59,7 @@
 
   const doImport = async function (file: any) {
     // 给个提示，免得任务是卡主了
-    showMessage(`文件转换中，请稍后...`, 1000, "info")
+    showMessage(`${pluginInstance.i18n.msgConverting}...`, 1000, "info")
 
     const fromFilename = file.name
     let filename = fromFilename.substring(0, fromFilename.lastIndexOf("."))
@@ -69,7 +69,7 @@
     const fromFilePath = `/temp/convert/pandoc/${fromFilename}`
     const uploadResult = await pluginInstance.kernelApi.putFile(fromFilePath, file)
     if (uploadResult.code !== 0) {
-      showMessage(`文件上传失败，错误信息如下：${uploadResult.msg}`, 7000, "error")
+      showMessage(`${pluginInstance.i18n.msgFileUploadError}：${uploadResult.msg}`, 7000, "error")
       return
     }
 
@@ -82,14 +82,14 @@
       toFilename
     )
     if (convertResult.code !== 0) {
-      showMessage(`文件转换失败，错误信息如下：${convertResult.msg}`, 7000, "error")
+      showMessage(`${pluginInstance.i18n.msgFileConvertError}：${convertResult.msg}`, 7000, "error")
       return
     }
 
     // 读取文件
     let mdText = (await pluginInstance.kernelApi.getFile(toFilePath, "text")) ?? ""
     if (mdText === "") {
-      showMessage("文件转换失败，内容为空", 7000, "error")
+      showMessage(pluginInstance.i18n.msgFileConvertEmpty, 7000, "error")
       return
     }
 
@@ -99,14 +99,14 @@
     // 创建 MD 文档
     const mdResult = await pluginInstance.kernelApi.createDocWithMd(toNotebookId, `/${filename}`, mdText)
     if (mdResult.code !== 0) {
-      showMessage(`文档创建失败，请检查转换后的markdown文件=>${toFilePath}`, 7000, "error")
+      showMessage(`${pluginInstance.i18n.msgDocCreateFailed}=>${toFilePath}`, 7000, "error")
     }
     const pageId = mdResult.data as string
     let docIds = importerConfig.docIds ?? []
 
     // 检测重复导入
     if (docIds.includes(pageId)) {
-      showMessage(`此文档已导入过，如果文档已删除，可忽略此提示，当前文档 [${filename}]`, 7000, "info")
+      showMessage(`${pluginInstance.i18n.msgDocAlreadyImported} [${filename}]`, 7000, "info")
     } else {
       docIds.push(pageId)
     }
@@ -118,13 +118,13 @@
     if (!isDev) {
       await pluginInstance.kernelApi.removeFile(fromFilePath)
       await pluginInstance.kernelApi.removeFile(toFilePath)
-      await pluginInstance.logger.info("临时文件已清理")
+      await pluginInstance.logger.info(pluginInstance.i18n.msgTempFileCleaned)
     }
 
     // 打开笔记本
     await pluginInstance.kernelApi.openNotebook(toNotebookId)
 
-    showMessage("文件导入成功", 5000, "info")
+    showMessage(pluginInstance.i18n.msgImportSuccess, 5000, "info")
   }
 
   const notebookChange = async function () {
@@ -136,7 +136,7 @@
     importerConfig.notebook = toNotebookId
 
     await saveImporterConfig(pluginInstance, importerConfig)
-    pluginInstance.logger.info("笔记本配置已更新=>", toNotebookId)
+    pluginInstance.logger.info(`${pluginInstance.i18n.notebookConfigUpdated}=>`, toNotebookId)
   }
 
   onMount(async () => {
@@ -151,7 +151,7 @@
     const currentNotebook = notebooks.find((n) => n.id === toNotebookId)
     toNotebookName = currentNotebook.name
 
-    pluginInstance.logger.info(`选中 [${toNotebookName}] toNotebookId=>`, toNotebookId)
+    pluginInstance.logger.info(`${pluginInstance.i18n.selected} [${toNotebookName}] toNotebookId=>`, toNotebookId)
   })
 </script>
 
@@ -159,8 +159,10 @@
   <div class="config__tab-container">
     <label class="fn__flex b3-label config__item">
       <div class="fn__flex-1">
-        目标笔记本
-        <div class="b3-label__text">导入的目标笔记本，已选 <span class="selected">[{toNotebookName}]</span></div>
+        {pluginInstance.i18n.targetNotebook}
+        <div class="b3-label__text">
+          {pluginInstance.i18n.selectNotebookTip} <span class="selected">[{toNotebookName}]</span>
+        </div>
       </div>
       <span class="fn__space" />
       <select
@@ -173,15 +175,15 @@
           <option value={notebook.id}>{notebook.name}</option>
         {:else}
           <!-- this block renders when photos.length === 0 -->
-          <option value="0">loading...</option>
+          <option value="0">{pluginInstance.i18n.loading}...</option>
         {/each}
       </select>
     </label>
 
     <div class="fn__flex b3-label config__item">
       <div class="fn__flex-1 fn__flex-center">
-        导入文件
-        <div class="b3-label__text">将 epub, docx 等格式转换成Markdown临时文件，然后创建文档</div>
+        {pluginInstance.i18n.importFile}
+        <div class="b3-label__text">{pluginInstance.i18n.importTip}</div>
       </div>
       <span class="fn__space" />
       <button class="b3-button b3-button--outline fn__flex-center fn__size200" style="position: relative">
@@ -198,7 +200,7 @@
       </button>
     </div>
 
-    <div class="fn__flex b3-label config__item">目前支持的格式：.epub, .docx, .html, .opml</div>
+    <div class="fn__flex b3-label config__item">{pluginInstance.i18n.supportedTypes}</div>
   </div>
 </div>
 

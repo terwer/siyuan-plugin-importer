@@ -26,6 +26,7 @@
 import ImporterPlugin from "./index"
 import { Dialog, isMobile } from "siyuan"
 import ImportForm from "./lib/ImportForm.svelte"
+import {iconImporter} from "./utils/svg";
 
 /**
  * 顶栏按钮
@@ -37,7 +38,7 @@ import ImportForm from "./lib/ImportForm.svelte"
  */
 export async function initTopbar(pluginInstance: ImporterPlugin) {
   const topBarElement = pluginInstance.addTopBar({
-    icon: "iconEmoji",
+    icon: iconImporter.iconImporter,
     title: pluginInstance.i18n.importer,
     position: "right",
     callback: () => {
