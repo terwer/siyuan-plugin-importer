@@ -24,7 +24,7 @@
  */
 
 import { BaseApi, SiyuanData } from "./base-api"
-import { siyuanApiToken, siyuanApiUrl } from "../Constants"
+import {mediaDir, siyuanApiToken, siyuanApiUrl} from "../Constants"
 import { fetchPost } from "siyuan"
 
 /**
@@ -88,7 +88,7 @@ class KernelApi extends BaseApi {
    */
   public async convertPandoc(type: string, from: string, to: string): Promise<SiyuanData> {
     const args = {
-      args: ["--to", type, from, "-o", to],
+      args: ["--to", type, from, "-o", to, "--extract-media", mediaDir],
     }
     return await this.siyuanRequest("/api/convert/pandoc", args)
   }

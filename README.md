@@ -17,6 +17,19 @@ Import epub, docx, html, etc. into Siyuan notes. Currently supported formats: .e
 
   After the installation is complete, find the `Importer` icon on the top right toolbar, and click to follow the pop-up window.
 
+## 更新历史
+
+**v1.3.0 major update**
+
+- Support image import
+
+**v1.2.0 major update**
+
+- Support text import
+- Remove some redundant blank lines
+
+For more update records, please check [CHANGELOG](https://github.com/terwer/siyuan-plugin-importer/blob/main/CHANGELOG.md)
+
 ## Donate
 
 If you approve of this project, invite me to have a cup of coffee, which will encourage me to keep updating and create

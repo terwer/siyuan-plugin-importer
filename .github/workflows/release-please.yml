@@ -86,7 +86,7 @@ jobs:
         run: pnpm build
 
       # Archive package
-      - name: Build for production
+      - name: Archive package
         if: ${{ steps.release.outputs.release_created }}
         run: pnpm package
 

@@ -9,7 +9,7 @@
   },
   "description": {
     "default": "Import epub, docx, html, etc. into Siyuan notes. Currently supported formats: .epub, .docx, .html, .opml.",
-    "zh_CN": "导入 epub, docx, html 等导入到思源笔记。目前支持的格式：.epub, .docx, .html, .opml。"
+    "zh_CN": "将 epub, docx, html 等格式的文件导入到思源笔记。目前支持的格式：.epub, .docx, .html, .opml。"
   },
   "readme": {
     "default": "README.md",

@@ -34,7 +34,7 @@ export async function loadImporterConfig(pluginInstance: ImporterPlugin) {
   } catch (e) {
     importerConfig = {}
   }
-  pluginInstance.logger.info("加载文档转换配置=>", importerConfig)
+  // pluginInstance.logger.info("加载文档转换配置=>", importerConfig)
   return importerConfig
 }
 

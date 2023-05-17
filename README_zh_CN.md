@@ -2,9 +2,9 @@
 
 # 导入工具
 
-![](https://raw.githubusercontent.com/terwer/siyuan-plugin-importer/main/public/icon.png)
+![](https://raw.githubusercontent.com/terwer/siyuan-plugin-importer/main/icon.png)
 
-导入 epub, docx, html 等导入到思源笔记。目前支持的格式：.epub, .docx, .html, .opml。
+将 epub, docx, html 等格式的文件导入到思源笔记。目前支持的格式：.epub, .docx, .html, .opml。
 
 ## 核心特色
 
@@ -18,6 +18,19 @@
   A1：找到 **`集市->插件->导入工具`** 下载启用即可。
 
   安装完成后，在顶部右侧工具栏找到 `导入工具` 图标，点击按照弹窗操作即可。
+
+## 更新历史
+
+**v1.3.0 主要更新**
+
+- 支持图片导入
+
+**v1.2.0 主要更新**
+
+- 支持文本导入
+- 去除部分多余的空行
+
+更多更新记录请查看 [CHANGELOG](https://github.com/terwer/siyuan-plugin-importer/blob/main/CHANGELOG.md)
 
 ## 捐赠
 
