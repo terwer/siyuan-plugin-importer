@@ -4,7 +4,7 @@
 
 Import epub, docx, html, etc. into Siyuan notes. Currently supported formats: .epub, .docx, .html, .opml.
 
-## 核心特色
+## Core Features
 
 - **Select Notes**: Support for selecting a notebook, the next time you open it, you can automatically remember the notebook you selected last time
 - **One-click import**: Select a file, one-click import, zero configuration

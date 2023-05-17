@@ -97,6 +97,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
+          ls -l ./build
           for f in $(find ./build -name '*.zip'); do
             gh release upload ${{ steps.release.outputs.tag_name }} $f
           done
