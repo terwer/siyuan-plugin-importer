@@ -13,18 +13,16 @@
     "build": "vite build",
     "start": "vite preview",
     "test": "vitest --watch",
-    "syncVersion": "ts-node-esm --experimental-specifier-resolution=node tools/syncVersion.ts",
-    "parseChangelog": "ts-node-esm --experimental-specifier-resolution=node tools/changelogParser.ts",
+    "syncVersion": "python scripts/version.py",
+    "parseChangelog": "python scripts/parse_changelog.py",
     "prepareRelease": "pnpm syncVersion && pnpm parseChangelog",
-    "package": "ts-node-esm --experimental-specifier-resolution=node tools/packageApp.ts"
+    "package": "python scripts/package.py"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.0.3",
-    "@terwer/changelog-parser": "^1.1.0",
     "@terwer/eslint-config-custom": "^1.2.0",
     "@terwer/vite-config-custom": "^0.6.0",
     "@tsconfig/svelte": "^4.0.1",
-    "archiver": "^5.3.1",
     "glob": "^7.2.3",
     "minimist": "^1.2.8",
     "rollup-plugin-livereload": "^2.0.5",
