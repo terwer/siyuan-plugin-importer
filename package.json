@@ -26,6 +26,7 @@
     "@tsconfig/svelte": "^4.0.1",
     "archiver": "^5.3.1",
     "minimist": "^1.2.8",
+    "rollup-plugin-livereload": "^2.0.5",
     "siyuan": "^0.7.1",
     "stylus": "^0.59.0",
     "svelte": "^3.57.0",
