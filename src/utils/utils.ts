@@ -24,7 +24,7 @@
  */
 
 import KernelApi from "../api/kernel-api"
-import {dataDir} from "../Constants"
+import { dataDir } from "../Constants"
 
 /**
  * 文件是否存在
@@ -75,37 +75,37 @@ export const removeEmptyLines = (str: string): string => str.replace(/^#+\s*\n|\
  */
 function convertPathToUnixStyle(path) {
   // 使用 replace() 函数将所有反斜杠替换为斜杠
-  return path.replace(/\\/g, '/');
+  return path.replace(/\\/g, "/")
 }
 
 export function replaceImagePath(mdText) {
-  const regex = /!\[(.*?)\]\(([^\s]*?)\)/g;
+  const regex = /!\[(.*?)\]\(([^\s]*?)\)/g
   return mdText.replace(regex, (match, p1, p2) => {
-    let imagePath = p2;
+    const imagePath = p2
 
     if (!imagePath.startsWith(dataDir)) {
-      return match;
+      return match
     }
 
-    const relativePath = convertPathToUnixStyle(
-        imagePath.substring(dataDir.length)
-    );
+    const relativePath = convertPathToUnixStyle(imagePath.substring(dataDir.length))
 
-    return `![${p1}](${relativePath})`;
-  });
+    return `![${p1}](${relativePath})`
+  })
 }
 
 // 将字符串中形如"xxx^yyy"的部分替换成"xxx"
 export function removeFootnotes(text) {
-  const regex = /\^\(\[.*[0-9].*\]\(\#.*\#.*\)\)/g; // 匹配格式为 ^[[数字]](#链接) 的脚注
-  return text.replace(regex, ''); // 使用空字符串替换匹配到的脚注
+  const regex = /\^\(\[.*[0-9].*]\(#.*#.*\)\)/g // 匹配格式为 ^[[数字]](#链接) 的脚注
+  return text.replace(regex, "") // 使用空字符串替换匹配到的脚注
 }
 
 // 删除目录中的内部链接
 export function removeLinks(text) {
   const regex = /\[([^\]]+)]\(([^)]+)\)/g
-  return  text.replace(regex, (match, p1, p2) => {
-    if (p2.includes('./Text')) {
+  return text.replace(regex, (match, p1, p2) => {
+    console.log(p2)
+    console.log(typeof p2)
+    if (p2.includes("./Text") || p2.includes("#") || p2.includes("kindle:")) {
       return p1
     } else {
       return match

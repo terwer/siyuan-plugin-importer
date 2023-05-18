@@ -88,7 +88,7 @@ class KernelApi extends BaseApi {
    * @param to - 转换后的文件名，不包括路径，路径相对于 /temp/convert/pandoc
    */
   public async convertPandoc(type: string, from: string, to: string): Promise<SiyuanData> {
-    const toMediaDir = [mediaDir, shortHash(to)].join("/")
+    const toMediaDir = [mediaDir, shortHash(to).toLowerCase()].join("/")
     const args = {
       args: ["--to", type, from, "-o", to, "--extract-media", toMediaDir],
     }
