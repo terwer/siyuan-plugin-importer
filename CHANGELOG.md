@@ -1,12 +1,19 @@
 # Changelog
 
-## [1.3.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.2.0...v1.3.0) (2023-05-17)
+## [1.4.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.3.0...v1.4.0) (2023-05-18)
 ### Features
+* [#16](https://github.com/terwer/siyuan-plugin-importer/issues/16) [#18](https://github.com/terwer/siyuan-plugin-importer/issues/18) 修复路径问题，删除无法点击的链接 ([b720f29](https://github.com/terwer/siyuan-plugin-importer/commit/b720f29fe46e196cd45e3ec5e23f9588a90c4d55))
+* 路径新增hash，防止多个文件有相同图片时候，图片被覆盖，例如：/assets/import/1nmels/cover.jpeg
+* pandoc生成的目录链接不可点击，暂时去掉
+* pandoc脚注不能跳转，暂时去掉保持标题清爽
+### Bug Fixes
+* [#17](https://github.com/terwer/siyuan-plugin-importer/issues/17) 修复部分场景下，顶部 svg 显示异常问题
+### Miscellaneous
+* 监控i18n等文件状态 ([1086d8b](https://github.com/terwer/siyuan-plugin-importer/commit/1086d8b2afc82182a9123722c59169d2c1314594))
+## [1.3.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.2.0...v1.3.0) (2023-05-17)
 * 支持图片导入 ([6387db2](https://github.com/terwer/siyuan-plugin-importer/commit/6387db2273ad23ea6161b4a4ed681591494bacf1))
 ## [1.2.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.1.0...v1.2.0) (2023-05-17)
 * 自动打包暂时不好用，改为手动上传 package.zip ([e1a8ffb](https://github.com/terwer/siyuan-plugin-importer/commit/e1a8ffbb16a7a51de5271c3850ec39a4123ca84f))
-### Miscellaneous
-* 更新文档 ([cb91863](https://github.com/terwer/siyuan-plugin-importer/commit/cb918631d5b23e6b7514f32bf4ce101477b73705))
 ### Code Refactoring
 * 调整打包结构，适应集市规则 ([a70a921](https://github.com/terwer/siyuan-plugin-importer/commit/a70a921744ba8f6c8c01c175bef232f7e65876f5))
 ## [1.1.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.0.0...v1.1.0) (2023-05-17)
