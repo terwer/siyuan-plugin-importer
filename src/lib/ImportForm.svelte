@@ -26,7 +26,7 @@
 <script lang="ts">
   import { showMessage } from "siyuan"
   import ImporterPlugin from "../index"
-  import { removeEmptyLines, replaceImagePath } from "../utils/utils"
+  import {removeEmptyLines, removeFootnotes, removeLinks, replaceImagePath} from "../utils/utils"
   import { onMount } from "svelte"
   import { loadImporterConfig, saveImporterConfig } from "../store/config"
   import { isDev } from "../Constants"
@@ -94,10 +94,14 @@
     }
 
     // 文本处理
+    // 删除目录中链接
+    mdText = removeLinks(mdText)
     // 去除空行
     mdText = removeEmptyLines(mdText)
     // 资源路径
     mdText = replaceImagePath(mdText)
+    // 去除脚注
+    mdText = removeFootnotes(mdText)
 
     // 创建 MD 文档
     const mdResult = await pluginInstance.kernelApi.createDocWithMd(toNotebookId, `/${filename}`, mdText)
