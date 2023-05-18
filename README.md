@@ -33,6 +33,8 @@ In short, this version is strongly recommended for all users to upgrade, to prev
 
 - The pandoc footnote cannot be jumped, temporarily remove it to keep the title clean
 
+- Fix the abnormal display problem of the top svg in some scenes
+
 **v1.3.0 major update**
 
 - Support image import
