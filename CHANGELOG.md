@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.4.0...v1.4.1) (2023-05-18)
+
+
+### Bug Fixes
+
+* [#22](https://github.com/terwer/siyuan-plugin-importer/issues/22) 优化去除链接规则 ([eec21f5](https://github.com/terwer/siyuan-plugin-importer/commit/eec21f55ced3d3bc51aed535306abe9b5d0d6780))
+
+
+### Miscellaneous
+
+* hash 路径使用小写字母 ([075902e](https://github.com/terwer/siyuan-plugin-importer/commit/075902e00ebfad409ede86e5e610a848877db2cb))
+
 ## [1.4.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.3.0...v1.4.0) (2023-05-18)
 ### Features
 * [#16](https://github.com/terwer/siyuan-plugin-importer/issues/16) [#18](https://github.com/terwer/siyuan-plugin-importer/issues/18) 修复路径问题，删除无法点击的链接 ([b720f29](https://github.com/terwer/siyuan-plugin-importer/commit/b720f29fe46e196cd45e3ec5e23f9588a90c4d55))
