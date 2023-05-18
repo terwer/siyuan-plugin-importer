@@ -24,6 +24,7 @@
     "@terwer/vite-config-custom": "^0.6.0",
     "@tsconfig/svelte": "^4.0.1",
     "@types/node": "16",
+    "fast-glob": "^3.2.12",
     "glob": "^7.2.3",
     "minimist": "^1.2.8",
     "rollup-plugin-livereload": "^2.0.5",
