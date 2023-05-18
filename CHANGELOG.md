@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.4.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.3.0...v1.4.0) (2023-05-18)
+
+
+### Features
+
+* [#16](https://github.com/terwer/siyuan-plugin-importer/issues/16) [#18](https://github.com/terwer/siyuan-plugin-importer/issues/18) 修复路径问题，删除无法点击的链接 ([b720f29](https://github.com/terwer/siyuan-plugin-importer/commit/b720f29fe46e196cd45e3ec5e23f9588a90c4d55))
+* 更新文档 ([3085a7f](https://github.com/terwer/siyuan-plugin-importer/commit/3085a7ff7a5478308e96ac848a9bc27860449962))
+
+
+### Bug Fixes
+
+* [#17](https://github.com/terwer/siyuan-plugin-importer/issues/17) 部分场景下，顶部 svg 显示异常 ([8089591](https://github.com/terwer/siyuan-plugin-importer/commit/8089591d9c7c9702ea5a9af44e72e4bfb11abce6))
+
+
+### Miscellaneous
+
+* [#17](https://github.com/terwer/siyuan-plugin-importer/issues/17) 监控i18n等文件状态 ([1086d8b](https://github.com/terwer/siyuan-plugin-importer/commit/1086d8b2afc82182a9123722c59169d2c1314594))
+
 ## [1.3.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.2.0...v1.3.0) (2023-05-17)
 ### Features
 * 支持图片导入 ([6387db2](https://github.com/terwer/siyuan-plugin-importer/commit/6387db2273ad23ea6161b4a4ed681591494bacf1))
