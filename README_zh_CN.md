@@ -21,6 +21,20 @@
 
 ## 更新历史
 
+**v1.4.0 主要更新**
+
+总之，这个版本强烈建议所有用户升级，防止之前的路径问题导致资源文件无法跨平台，同时在其他方面也有更好的用户体验。
+
+- 修复 Windows 路径替换未生效问题
+  例如，转换后的路径：C:\Users\terwer\Documents\mydocs\SiyuanWorkspace\public\data/assets/import/cover.jpeg
+  现在，在Windows平台，可正常显示为：/assets/import/cover.jpeg
+
+- 路径新增hash，防止多个文件有相同图片时候，图片被覆盖，例如：/assets/import/1nMELS/cover.jpeg
+
+- pandoc生成的目录链接不可点击，暂时去掉
+
+- pandoc脚注不能跳转，暂时去掉保持标题清爽
+
 **v1.3.0 主要更新**
 
 - 支持图片导入

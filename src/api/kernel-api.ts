@@ -26,6 +26,7 @@
 import { BaseApi, SiyuanData } from "./base-api"
 import {mediaDir, siyuanApiToken, siyuanApiUrl} from "../Constants"
 import { fetchPost } from "siyuan"
+import shortHash from "shorthash2";
 
 /**
  * 思源笔记服务端API v2.8.8
@@ -87,8 +88,9 @@ class KernelApi extends BaseApi {
    * @param to - 转换后的文件名，不包括路径，路径相对于 /temp/convert/pandoc
    */
   public async convertPandoc(type: string, from: string, to: string): Promise<SiyuanData> {
+    const toMediaDir = [mediaDir, shortHash(to)].join("/")
     const args = {
-      args: ["--to", type, from, "-o", to, "--extract-media", mediaDir],
+      args: ["--to", type, from, "-o", to, "--extract-media", toMediaDir],
     }
     return await this.siyuanRequest("/api/convert/pandoc", args)
   }

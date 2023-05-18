@@ -9,7 +9,11 @@ import { svelte } from "@sveltejs/vite-plugin-svelte"
 
 const args = minimist(process.argv.slice(2))
 const isWatch = args.watch || args.w || false
-const devDistDir = "/Users/terwer/Documents/mydocs/SiYuanWorkspace/public/data/plugins/siyuan-importer"
+const isWindows = process.platform === "win32"
+let devDistDir = "/Users/terwer/Documents/mydocs/SiYuanWorkspace/public/data/plugins/siyuan-importer"
+if(isWindows){
+  devDistDir = "C:\\Users\\terwer\\Documents\\mydocs\\SiyuanWorkspace\\public\\data\\plugins\\siyuan-importer"
+}
 const distDir = isWatch ? devDistDir : "./dist"
 
 console.log("isWatch=>", isWatch)
