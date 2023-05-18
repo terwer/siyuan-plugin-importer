@@ -26,7 +26,7 @@
 <script lang="ts">
   import { showMessage } from "siyuan"
   import ImporterPlugin from "../index"
-  import {removeEmptyLines, removeFootnotes, removeLinks, replaceImagePath} from "../utils/utils"
+  import { removeEmptyLines, removeFootnotes, removeLinks, replaceImagePath } from "../utils/utils"
   import { onMount } from "svelte"
   import { loadImporterConfig, saveImporterConfig } from "../store/config"
   import { isDev } from "../Constants"
@@ -39,7 +39,7 @@
   let toNotebookId
   let toNotebookName
   //用户指南不应该作为可以写入的笔记本
-  const hiddenNotebook: Set<string> = new Set(["思源笔记用户指南", "SiYuan User Guide"]);
+  const hiddenNotebook: Set<string> = new Set(["思源笔记用户指南", "SiYuan User Guide"])
 
   const startImport = async (
     event: InputEvent & {
@@ -155,10 +155,8 @@
     const res = await pluginInstance.kernelApi.lsNotebooks()
     const data = res.data as any
     notebooks = data.notebooks ?? []
-    //没有必要把所有笔记本都列出来
-    notebooks = notebooks.filter(
-        notebook => !notebook.closed && !hiddenNotebook.has(notebook.name)
-    );
+    // 没有必要把所有笔记本都列出来
+    notebooks = notebooks.filter((notebook) => !notebook.closed && !hiddenNotebook.has(notebook.name))
     // 选中，若是没保存，获取第一个
     toNotebookId = importerConfig?.notebook ?? notebooks[0].id
     const currentNotebook = notebooks.find((n) => n.id === toNotebookId)
