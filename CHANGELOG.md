@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.4.1...v1.5.0) (2023-05-19)
+
+
+### Features
+
+* [#20](https://github.com/terwer/siyuan-plugin-importer/issues/20) 导入epub后，里面的图片会出现在未引用资源里面，容易被误清除 ([824cf2a](https://github.com/terwer/siyuan-plugin-importer/commit/824cf2a96f277be058a896c045793f21a44c7b08))
+
 ## [1.4.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.4.0...v1.4.1) (2023-05-18)
 ### Bug Fixes
 * [#22](https://github.com/terwer/siyuan-plugin-importer/issues/22) 优化去除链接规则 ([eec21f5](https://github.com/terwer/siyuan-plugin-importer/commit/eec21f55ced3d3bc51aed535306abe9b5d0d6780))
