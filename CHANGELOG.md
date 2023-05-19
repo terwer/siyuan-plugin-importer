@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.5.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.4.1...v1.5.0) (2023-05-19)
+### Features
+* [#20](https://github.com/terwer/siyuan-plugin-importer/issues/20) 导入epub后，里面的图片会出现在未引用资源里面，容易被误清除 ([824cf2a](https://github.com/terwer/siyuan-plugin-importer/commit/824cf2a96f277be058a896c045793f21a44c7b08))
+* 重复导入现在会创建新的文章了
+* 资源文件不在自定义hash命名，直接让导入API自己去处理
 ## [1.4.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.4.0...v1.4.1) (2023-05-18)
 ### Bug Fixes
 * [#22](https://github.com/terwer/siyuan-plugin-importer/issues/22) 优化去除链接规则 ([eec21f5](https://github.com/terwer/siyuan-plugin-importer/commit/eec21f55ced3d3bc51aed535306abe9b5d0d6780))
@@ -7,7 +12,6 @@
 ### Miscellaneous
 * hash 路径使用小写字母 ([075902e](https://github.com/terwer/siyuan-plugin-importer/commit/075902e00ebfad409ede86e5e610a848877db2cb))
 ## [1.4.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.3.0...v1.4.0) (2023-05-18)
-### Features
 * [#16](https://github.com/terwer/siyuan-plugin-importer/issues/16) [#18](https://github.com/terwer/siyuan-plugin-importer/issues/18) 修复路径问题，删除无法点击的链接 ([b720f29](https://github.com/terwer/siyuan-plugin-importer/commit/b720f29fe46e196cd45e3ec5e23f9588a90c4d55))
 * 路径新增hash，防止多个文件有相同图片时候，图片被覆盖，例如：/assets/import/1nmels/cover.jpeg
 * pandoc生成的目录链接不可点击，暂时去掉
