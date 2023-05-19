@@ -23,7 +23,7 @@
     "@terwer/eslint-config-custom": "^1.2.0",
     "@terwer/vite-config-custom": "^0.6.0",
     "@tsconfig/svelte": "^4.0.1",
-    "@types/node": "16",
+    "@types/node": "20",
     "fast-glob": "^3.2.12",
     "glob": "^7.2.3",
     "minimist": "^1.2.8",
