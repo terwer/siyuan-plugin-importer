@@ -29,7 +29,7 @@
   import { removeEmptyLines, removeFootnotes, removeLinks, replaceImagePath } from "../utils/utils"
   import { onMount } from "svelte"
   import { loadImporterConfig, saveImporterConfig } from "../store/config"
-  import { isDev } from "../Constants"
+  import { isDev, workspaceDir } from "../Constants"
 
   export let pluginInstance: ImporterPlugin
   export let dialog
@@ -104,9 +104,13 @@
     mdText = replaceImagePath(mdText)
     // 去除脚注
     mdText = removeFootnotes(mdText)
+    await pluginInstance.kernelApi.saveTextData(`${toFilename}`, mdText)
 
     // 创建 MD 文档
-    const mdResult = await pluginInstance.kernelApi.createDocWithMd(toNotebookId, `/${filename}`, mdText)
+    // const mdResult = await pluginInstance.kernelApi.createDocWithMd(toNotebookId, `/${filename}`, mdText)
+    // 导入 MD 文档
+    const localPath = `${workspaceDir}/temp/convert/pandoc/${toFilename}`
+    const mdResult = await pluginInstance.kernelApi.importStdMd(localPath, toNotebookId, `/`)
     if (mdResult.code !== 0) {
       showMessage(`${pluginInstance.i18n.msgDocCreateFailed}=>${toFilePath}`, 7000, "error")
     }

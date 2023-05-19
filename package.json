@@ -35,8 +35,5 @@
     "vite": "^4.3.7",
     "vite-plugin-static-copy": "^0.15.0",
     "vitest": "^0.31.1"
-  },
-  "dependencies": {
-    "shorthash2": "^1.0.3"
   }
 }
