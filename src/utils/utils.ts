@@ -68,16 +68,15 @@ export const isFileExists = async (kernelApi: KernelApi, p: string, type: "text"
 // 保留图片
 export const removeEmptyLines = (str: string): string => str.replace(/^#+\s*\n|\n\u00A0+/gm, "\n")
 
+function convertPathToUnixStyle(path) {
+  // 使用 replace() 函数将所有反斜杠替换为斜杠
+  return path.replace(/\\/g, "/")
+}
 /**
  * 修复图片路径
  *
  * @param mdText - markdown 文本
  */
-function convertPathToUnixStyle(path) {
-  // 使用 replace() 函数将所有反斜杠替换为斜杠
-  return path.replace(/\\/g, "/")
-}
-
 export function replaceImagePath(mdText) {
   const regex = /!\[(.*?)\]\(([^\s]*?)\)/g
   return mdText.replace(regex, (match, p1, p2) => {
@@ -103,8 +102,6 @@ export function removeFootnotes(text) {
 export function removeLinks(text) {
   const regex = /\[([^\]]+)]\(([^)]+)\)/g
   return text.replace(regex, (match, p1, p2) => {
-    console.log(p2)
-    console.log(typeof p2)
     if (p2.includes("./Text") || p2.includes("#") || p2.includes("kindle:")) {
       return p1
     } else {

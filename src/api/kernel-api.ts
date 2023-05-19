@@ -24,9 +24,8 @@
  */
 
 import { BaseApi, SiyuanData } from "./base-api"
-import {mediaDir, siyuanApiToken, siyuanApiUrl} from "../Constants"
+import { mediaDir, siyuanApiToken, siyuanApiUrl } from "../Constants"
 import { fetchPost } from "siyuan"
-import shortHash from "shorthash2";
 
 /**
  * 思源笔记服务端API v2.8.8
@@ -80,6 +79,20 @@ class KernelApi extends BaseApi {
     })
   }
 
+  public async saveTextData(fileName: string, data: any) {
+    return new Promise((resolve) => {
+      const pathString = `/temp/convert/pandoc/${fileName}`
+      const file = new File([new Blob([data])], pathString.split("/").pop())
+      const formData = new FormData()
+      formData.append("path", pathString)
+      formData.append("file", file)
+      formData.append("isDir", "false")
+      fetchPost("/api/file/putFile", formData, (response) => {
+        resolve(response)
+      })
+    })
+  }
+
   /**
    * 转换服务
    *
@@ -88,9 +101,8 @@ class KernelApi extends BaseApi {
    * @param to - 转换后的文件名，不包括路径，路径相对于 /temp/convert/pandoc
    */
   public async convertPandoc(type: string, from: string, to: string): Promise<SiyuanData> {
-    const toMediaDir = [mediaDir, shortHash(to).toLowerCase()].join("/")
     const args = {
-      args: ["--to", type, from, "-o", to, "--extract-media", toMediaDir],
+      args: ["--to", type, from, "-o", to, "--extract-media", mediaDir],
     }
     return await this.siyuanRequest("/api/convert/pandoc", args)
   }
@@ -123,7 +135,7 @@ class KernelApi extends BaseApi {
   }
 
   /**
-   * 通过Markdown创建文档
+   * 删除文件
    *
    * @param path - 路径
    */
@@ -135,7 +147,7 @@ class KernelApi extends BaseApi {
   }
 
   /**
-   * 通过Markdown创建文档
+   * 通过 Markdown 创建文档
    *
    * @param notebook - 笔记本
    * @param path - 路径
@@ -148,6 +160,23 @@ class KernelApi extends BaseApi {
       markdown: md,
     }
     return await this.siyuanRequest("/api/filetree/createDocWithMd", params)
+  }
+
+  /**
+   * 导入 Markdown 文件
+   *
+   * @param localPath - 本地 MD 文档绝对路径
+   * @param notebook - 笔记本
+   * @param path - 路径
+   */
+  public async importStdMd(localPath, notebook: string, path: string): Promise<SiyuanData> {
+    const params = {
+      // Users/terwer/Documents/mydocs/SiYuanWorkspace/public/temp/convert/pandoc/西蒙学习法：如何在短时间内快速学会新知识-友荣方略.md
+      localPath: localPath,
+      notebook: notebook,
+      toPath: path,
+    }
+    return await this.siyuanRequest("/api/import/importStdMd", params)
   }
 }
 

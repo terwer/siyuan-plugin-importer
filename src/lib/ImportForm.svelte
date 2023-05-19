@@ -26,10 +26,10 @@
 <script lang="ts">
   import { showMessage } from "siyuan"
   import ImporterPlugin from "../index"
-  import {removeEmptyLines, removeFootnotes, removeLinks, replaceImagePath} from "../utils/utils"
+  import { removeEmptyLines, removeFootnotes, removeLinks, replaceImagePath } from "../utils/utils"
   import { onMount } from "svelte"
   import { loadImporterConfig, saveImporterConfig } from "../store/config"
-  import { isDev } from "../Constants"
+  import { isDev, workspaceDir } from "../Constants"
 
   export let pluginInstance: ImporterPlugin
   export let dialog
@@ -39,7 +39,7 @@
   let toNotebookId
   let toNotebookName
   //用户指南不应该作为可以写入的笔记本
-  const hiddenNotebook: Set<string> = new Set(["思源笔记用户指南", "SiYuan User Guide"]);
+  const hiddenNotebook: Set<string> = new Set(["思源笔记用户指南", "SiYuan User Guide"])
 
   const startImport = async (
     event: InputEvent & {
@@ -104,9 +104,13 @@
     mdText = replaceImagePath(mdText)
     // 去除脚注
     mdText = removeFootnotes(mdText)
+    await pluginInstance.kernelApi.saveTextData(`${toFilename}`, mdText)
 
     // 创建 MD 文档
-    const mdResult = await pluginInstance.kernelApi.createDocWithMd(toNotebookId, `/${filename}`, mdText)
+    // const mdResult = await pluginInstance.kernelApi.createDocWithMd(toNotebookId, `/${filename}`, mdText)
+    // 导入 MD 文档
+    const localPath = `${workspaceDir}/temp/convert/pandoc/${toFilename}`
+    const mdResult = await pluginInstance.kernelApi.importStdMd(localPath, toNotebookId, `/`)
     if (mdResult.code !== 0) {
       showMessage(`${pluginInstance.i18n.msgDocCreateFailed}=>${toFilePath}`, 7000, "error")
     }
@@ -155,10 +159,8 @@
     const res = await pluginInstance.kernelApi.lsNotebooks()
     const data = res.data as any
     notebooks = data.notebooks ?? []
-    //没有必要把所有笔记本都列出来
-    notebooks = notebooks.filter(
-        notebook => !notebook.closed && !hiddenNotebook.has(notebook.name)
-    );
+    // 没有必要把所有笔记本都列出来
+    notebooks = notebooks.filter((notebook) => !notebook.closed && !hiddenNotebook.has(notebook.name))
     // 选中，若是没保存，获取第一个
     toNotebookId = importerConfig?.notebook ?? notebooks[0].id
     const currentNotebook = notebooks.find((n) => n.id === toNotebookId)

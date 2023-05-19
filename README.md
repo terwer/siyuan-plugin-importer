@@ -19,6 +19,11 @@ Import epub, docx, html, etc. into Siyuan notes. Currently supported formats: .e
 
 ## Changelog
 
+**v1.4.1 major update**
+
+- Optimize link removal rules
+- Block some notebooks
+
 **v1.4.0 major update**
 
 In short, this version is strongly recommended for all users to upgrade, to prevent resource files from being unable to cross-platform due to previous path problems, and to have a better user experience in other aspects.
