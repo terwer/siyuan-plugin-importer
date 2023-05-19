@@ -19,6 +19,12 @@ Import epub, docx, html, etc. into Siyuan notes. Currently supported formats: .e
 
 ## Changelog
 
+**v1.5.0 major update**
+
+- Solve the problem that after importing epub, the pictures in it will appear in the unreferenced resources, which are easy to be cleared by mistake. Now after the document is imported, the resource files will not appear in the unreferenced ones. Unreferenced resources are visible after the document is deleted.
+- Repeated imports now create new articles
+- The resource file is not named in the custom hash, directly let the import API handle it by itself
+
 **v1.4.1 major update**
 
 - Optimize link removal rules
