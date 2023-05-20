@@ -92,7 +92,7 @@ export default defineConfig({
               },
             ]
           : []),
-      ] as Plugin[],
+      ],
 
       // make sure to externalize deps that shouldn't be bundled
       // into your library
