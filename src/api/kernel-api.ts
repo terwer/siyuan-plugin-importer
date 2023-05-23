@@ -26,7 +26,7 @@
 import { BaseApi, SiyuanData } from "./base-api"
 import { mediaDir, siyuanApiToken, siyuanApiUrl } from "../Constants"
 import { fetchPost } from "siyuan"
-
+import shortHash from "shorthash2"
 /**
  * 思源笔记服务端API v2.8.8
  *
@@ -52,6 +52,17 @@ class KernelApi extends BaseApi {
   public async openNotebook(notebookId: string): Promise<SiyuanData> {
     return await this.siyuanRequest("/api/notebook/openNotebook", {
       notebook: notebookId,
+    })
+  }
+
+  /**
+   * 列出文件
+   *
+   * @param path - 路径
+   */
+  public async readDir(path: string): Promise<SiyuanData> {
+    return await this.siyuanRequest("/api/file/readDir", {
+      path: path,
     })
   }
 
@@ -102,7 +113,7 @@ class KernelApi extends BaseApi {
    */
   public async convertPandoc(type: string, from: string, to: string): Promise<SiyuanData> {
     const args = {
-      args: ["--to", type, from, "-o", to, "--extract-media", mediaDir],
+      args: ["--to", type, from, "-o", to, "--extract-media", `${mediaDir}/${shortHash(from)}`, "--wrap=none"],
     }
     return await this.siyuanRequest("/api/convert/pandoc", args)
   }

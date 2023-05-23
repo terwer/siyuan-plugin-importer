@@ -2,7 +2,7 @@
   "importer": "导入插件",
   "selectFile": "选择文件",
   "cancel": "取消",
-  "startImport": "开始导入",
+  "startImport": "单个导入",
   "importerLoaded": "导入工具已加载",
   "importerUnloaded": "导入工具已卸载",
   "msgFileNotEmpty": "文件不能为空",
@@ -21,5 +21,13 @@
   "loading": "加载中",
   "importFile": "导入文件",
   "importTip": "将 epub, docx 等格式转换成Markdown临时文件，然后创建文档",
-  "supportedTypes": "目前支持的格式：.epub, .docx, .html, .opml"
+  "importFolder": "批量导入",
+  "importFolderTip": "将当前选择的文件夹下支持的文件批量导入",
+  "importNotRecursive": "不递归",
+  "importTipNotAllowed": "不允许的文件类型:",
+  "importError": "导入出错:",
+  "cleanTemp": "清理临时文件，共",
+  "clean": "删除",
+  "tempCount": "个临时文件",
+  "supportedTypes": "目前支持的格式：.md, .epub, .docx, .html, .opml"
 }

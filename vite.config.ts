@@ -27,6 +27,10 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
+          src: "./src/i18n",
+          dest: "./",
+        },
+        {
           src: "./README*.md",
           dest: "./",
         },
@@ -92,7 +96,7 @@ export default defineConfig({
               },
             ]
           : []),
-      ] as Plugin[],
+      ],
 
       // make sure to externalize deps that shouldn't be bundled
       // into your library

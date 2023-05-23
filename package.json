@@ -21,7 +21,6 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.0.3",
     "@terwer/eslint-config-custom": "^1.2.0",
-    "@terwer/vite-config-custom": "^0.6.0",
     "@tsconfig/svelte": "^4.0.1",
     "@types/node": "16",
     "fast-glob": "^3.2.12",
@@ -35,5 +34,8 @@
     "vite": "^4.3.7",
     "vite-plugin-static-copy": "^0.15.0",
     "vitest": "^0.31.1"
+  },
+  "dependencies": {
+    "shorthash2": "^1.0.3"
   }
 }

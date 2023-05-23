@@ -61,8 +61,8 @@ export default class ImporterPlugin extends Plugin {
   }
 
   async onunload() {
-    // 卸载删除配置
-    await removeImporterConfig(this)
+    // 卸载不删除配置
+    // await removeImporterConfig(this)
     this.logger.info(this.i18n.importerUnloaded)
   }
 }
