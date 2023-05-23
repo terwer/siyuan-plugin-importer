@@ -21,5 +21,10 @@
   "loading": "Loading",
   "importFile": "Importing files",
   "importTip": "Convert epub, docx and other formats into Markdown temporary files, and then create documents",
+  "importFolder": "Batch Import",
+  "importFolderTip": "Batch import the supported files under the selected folder, and support mixed formats",
+  "importNotRecursive": "Not recursive",
+  "importTipNotAllowed": "File type is not allowed:",
+  "importError": "Import error:",
   "supportedTypes": "Currently supported formats: .epub, .docx, .html, .opml"
 }
