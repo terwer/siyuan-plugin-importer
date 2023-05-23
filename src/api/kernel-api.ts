@@ -56,6 +56,17 @@ class KernelApi extends BaseApi {
   }
 
   /**
+   * 列出文件
+   *
+   * @param path - 路径
+   */
+  public async readDir(path: string): Promise<SiyuanData> {
+    return await this.siyuanRequest("/api/file/readDir", {
+      path: path,
+    })
+  }
+
+  /**
    * 写入文件
    *
    * @param path - 文件路径，例如：/data/20210808180117-6v0mkxr/20200923234011-ieuun1p.sy

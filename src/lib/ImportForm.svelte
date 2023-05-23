@@ -44,7 +44,7 @@
   // =================
   // 单文件转换开始
   // =================
-  const startImport = async (
+  const selectFile = async (
     event: InputEvent & {
       target: HTMLInputElement
     }
@@ -228,7 +228,8 @@
 
     // 文件清理
     if (!isDev) {
-      await pluginInstance.kernelApi.removeFile(localPath)
+      const tempPath = `/temp/convert/pandoc`
+      await pluginInstance.kernelApi.removeFile(`${tempPath}`)
       await pluginInstance.logger.info(pluginInstance.i18n.msgTempFileCleaned)
     }
 
@@ -327,7 +328,7 @@
           class="b3-form__upload"
           type="file"
           accept=".md,.docx,.epub,.html,.opml"
-          on:change={startImport}
+          on:change={selectFile}
         />
         <svg>
           <use xlink:href="#iconDownload" />
