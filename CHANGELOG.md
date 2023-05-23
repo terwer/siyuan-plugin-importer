@@ -1,15 +1,22 @@
 # Changelog
 
+## [1.5.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.5.0...v1.5.1) (2023-05-23)
+### Bug Fixes
+* [#33](https://github.com/terwer/siyuan-plugin-importer/issues/33) 支持选择目录批量导入 ([2e58a37](https://github.com/terwer/siyuan-plugin-importer/commit/2e58a37cc833061b8d12f1c9be96ad72a2df98f2))
+* [#38](https://github.com/terwer/siyuan-plugin-importer/issues/38) 换行符问题 ([74c00c0](https://github.com/terwer/siyuan-plugin-importer/commit/74c00c095aae20077b7a79709c2d2721859f947e))
+* 卸载不删除配置 ([a913034](https://github.com/terwer/siyuan-plugin-importer/commit/a9130349120f03e2705d886de9d3a470fa019513))
+* 支持手动清理临时文件 ([5687248](https://github.com/terwer/siyuan-plugin-importer/commit/5687248f1aae2629ced3171f4b15f2def9babca0))
+* 支持md文件导入，md无需转换，其他格式，先转换，后导入
+### Miscellaneous
+* i18n文件夹移动到src目录 ([0234c50](https://github.com/terwer/siyuan-plugin-importer/commit/0234c509a2dbadf851bce73ddc961c305cded145))
 ## [1.5.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.4.1...v1.5.0) (2023-05-19)
 ### Features
 * [#20](https://github.com/terwer/siyuan-plugin-importer/issues/20) 导入epub后，里面的图片会出现在未引用资源里面，容易被误清除 ([824cf2a](https://github.com/terwer/siyuan-plugin-importer/commit/824cf2a96f277be058a896c045793f21a44c7b08))
 * 重复导入现在会创建新的文章了
-* 资源文件不在自定义hash命名，直接让导入API自己去处理
+* 资源文件不在自定义hash命名，直接让导入api自己去处理
 ## [1.4.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.4.0...v1.4.1) (2023-05-18)
-### Bug Fixes
 * [#22](https://github.com/terwer/siyuan-plugin-importer/issues/22) 优化去除链接规则 ([eec21f5](https://github.com/terwer/siyuan-plugin-importer/commit/eec21f55ced3d3bc51aed535306abe9b5d0d6780))
 * 屏蔽掉一部分 notebook 感谢 @frostime 的贡献
-### Miscellaneous
 * hash 路径使用小写字母 ([075902e](https://github.com/terwer/siyuan-plugin-importer/commit/075902e00ebfad409ede86e5e610a848877db2cb))
 ## [1.4.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.3.0...v1.4.0) (2023-05-18)
 * [#16](https://github.com/terwer/siyuan-plugin-importer/issues/16) [#18](https://github.com/terwer/siyuan-plugin-importer/issues/18) 修复路径问题，删除无法点击的链接 ([b720f29](https://github.com/terwer/siyuan-plugin-importer/commit/b720f29fe46e196cd45e3ec5e23f9588a90c4d55))
