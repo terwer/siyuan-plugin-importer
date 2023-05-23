@@ -40,6 +40,7 @@
   let toNotebookName
   //用户指南不应该作为可以写入的笔记本
   const hiddenNotebook: Set<string> = new Set(["思源笔记用户指南", "SiYuan User Guide"])
+  let tempCount = 0
 
   // =================
   // 单文件转换开始
@@ -250,6 +251,8 @@
   const cleanTemp = async () => {
     const tempPath = `/temp/convert/pandoc`
     await pluginInstance.kernelApi.removeFile(`${tempPath}`)
+    await reloadTempFiles()
+
     showMessage(pluginInstance.i18n.msgTempFileCleaned, 5000, "info")
   }
 
@@ -265,7 +268,21 @@
     pluginInstance.logger.info(`${pluginInstance.i18n.notebookConfigUpdated}=>`, toNotebookId)
   }
 
+  const reloadTempFiles = async () => {
+    const tempPath = `/temp/convert/pandoc`
+    // 临时文件
+    const tempFiles = await pluginInstance.kernelApi.readDir(tempPath)
+    if (tempFiles.code === 0 && tempFiles.data.length > 0) {
+      tempCount = tempFiles.data.length
+    }
+    if (tempFiles.code === 404) {
+      tempCount = 0
+    }
+  }
+
   onMount(async () => {
+    await reloadTempFiles()
+
     // 加载配置
     importerConfig = await loadImporterConfig(pluginInstance)
 
@@ -289,7 +306,7 @@
       <div class="fn__flex-1">
         {pluginInstance.i18n.targetNotebook}
         <div class="b3-label__text">
-          {pluginInstance.i18n.selectNotebookTip} <span class="selected">[{toNotebookName}]</span>
+          {pluginInstance.i18n.selectNotebookTip}<span class="selected">[{toNotebookName}]</span>
         </div>
       </div>
       <span class="fn__space" />
@@ -332,7 +349,7 @@
       <div class="fn__flex-1 fn__flex-center">
         {pluginInstance.i18n.importFolder}
         <div class="b3-label__text">
-          {pluginInstance.i18n.importFolderTip} <span class="selected">{pluginInstance.i18n.importNotRecursive}</span>
+          {pluginInstance.i18n.importFolderTip}<span class="selected">{pluginInstance.i18n.importNotRecursive}</span>
         </div>
       </div>
       <span class="fn__space" />
@@ -340,17 +357,18 @@
         <input id="batchImportData" class="b3-form__upload" on:click={selectFolder} />
         <svg>
           <use xlink:href="#iconDownload" />
-        </svg>{pluginInstance.i18n.startImport}
+        </svg>{pluginInstance.i18n.importFolder}
       </button>
     </div>
 
     <div class="b3-label config-assets">
       <label class="fn__flex">
-        清理临时文件
+        {pluginInstance.i18n.cleanTemp} <span class="selected"> [ {tempCount} ] </span>
+        {pluginInstance.i18n.tempCount}
         <div class="fn__flex-1" />
         <button id="removeAll" class="b3-button b3-button--outline fn__flex-center fn__size200" on:click={cleanTemp}>
           <svg class="svg"><use xlink:href="#iconTrashcan" /></svg>
-          删除
+          {pluginInstance.i18n.clean}
         </button>
       </label>
     </div>
@@ -366,5 +384,6 @@
 
   .selected {
     color: red;
+    padding: 0 4px;
   }
 </style>

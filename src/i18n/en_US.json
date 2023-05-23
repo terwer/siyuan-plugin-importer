@@ -2,7 +2,7 @@
   "importer": "Importer",
   "selectFile": "Select file",
   "cancel": "Cancel",
-  "startImport": "Start import",
+  "startImport": "Single import",
   "importerLoaded": "Importer loaded",
   "importerUnloaded": "Importer unloaded",
   "msgFileNotEmpty": "File cannot be empty",
@@ -26,5 +26,8 @@
   "importNotRecursive": "Not recursive",
   "importTipNotAllowed": "File type is not allowed:",
   "importError": "Import error:",
+  "cleanTemp": "clean up temporary files",
+  "clean": "Delete",
+  "tempCount": "temporary files",
   "supportedTypes": "Currently supported formats: .epub, .docx, .html, .opml"
 }
