@@ -120,13 +120,6 @@
       showMessage(`${pluginInstance.i18n.msgDocCreateFailed}=>${toFilePath}`, 7000, "error")
     }
 
-    // 文件清理
-    if (!isDev) {
-      await pluginInstance.kernelApi.removeFile(fromFilePath)
-      await pluginInstance.kernelApi.removeFile(toFilePath)
-      await pluginInstance.logger.info(pluginInstance.i18n.msgTempFileCleaned)
-    }
-
     // 打开笔记本
     await pluginInstance.kernelApi.openNotebook(toNotebookId)
 
@@ -226,13 +219,6 @@
       showMessage(`${pluginInstance.i18n.msgDocCreateFailed}=>${toFilePath}`, 7000, "error")
     }
 
-    // 文件清理
-    if (!isDev) {
-      const tempPath = `/temp/convert/pandoc`
-      await pluginInstance.kernelApi.removeFile(`${tempPath}`)
-      await pluginInstance.logger.info(pluginInstance.i18n.msgTempFileCleaned)
-    }
-
     // 打开笔记本
     await pluginInstance.kernelApi.openNotebook(toNotebookId)
 
@@ -260,6 +246,12 @@
   // =================
   // 批量转换结束
   // =================
+
+  const cleanTemp = async () => {
+    const tempPath = `/temp/convert/pandoc`
+    await pluginInstance.kernelApi.removeFile(`${tempPath}`)
+    showMessage(pluginInstance.i18n.msgTempFileCleaned, 5000, "info")
+  }
 
   const notebookChange = async function () {
     // 显示当前选择的名称
@@ -350,6 +342,17 @@
           <use xlink:href="#iconDownload" />
         </svg>{pluginInstance.i18n.startImport}
       </button>
+    </div>
+
+    <div class="b3-label config-assets">
+      <label class="fn__flex">
+        清理临时文件
+        <div class="fn__flex-1" />
+        <button id="removeAll" class="b3-button b3-button--outline fn__flex-center fn__size200" on:click={cleanTemp}>
+          <svg class="svg"><use xlink:href="#iconTrashcan" /></svg>
+          删除
+        </button>
+      </label>
     </div>
 
     <div class="fn__flex b3-label config__item">{pluginInstance.i18n.supportedTypes}</div>
