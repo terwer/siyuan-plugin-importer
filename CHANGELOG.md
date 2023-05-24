@@ -1,14 +1,9 @@
 # Changelog
 
 ## [1.5.3](https://github.com/terwer/siyuan-plugin-importer/compare/v1.5.2...v1.5.3) (2023-05-24)
-
-
 ### Bug Fixes
-
 * 优化移动端图标展示 ([116fe33](https://github.com/terwer/siyuan-plugin-importer/commit/116fe33ffe18f6f1b534a8e005a79eb3b133026a))
-
 ## [1.5.2](https://github.com/terwer/siyuan-plugin-importer/compare/v1.5.1...v1.5.2) (2023-05-24)
-### Bug Fixes
 * hash路径小写 ([38a2972](https://github.com/terwer/siyuan-plugin-importer/commit/38a29729b76c477d217e01d2770ccc4da793944d))
 * 新增校验，批量导入之前必须清除临时文件 ([508999d](https://github.com/terwer/siyuan-plugin-importer/commit/508999d5cb01246a69c2c979f08f370933cc4630))
 ## [1.5.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.5.0...v1.5.1) (2023-05-23)
