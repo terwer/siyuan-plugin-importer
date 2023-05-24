@@ -20,6 +20,10 @@
   安装完成后，在顶部右侧工具栏找到 `导入工具` 图标，点击按照弹窗操作即可。
 
 ## 更新历史
+**v1.5.2 主要更新**
+* hash临时路径小写 ([38a2972](https://github.com/terwer/siyuan-plugin-importer/commit/38a29729b76c477d217e01d2770ccc4da793944d))
+* 新增校验，批量导入之前必须清除临时文件 ([508999d](https://github.com/terwer/siyuan-plugin-importer/commit/508999d5cb01246a69c2c979f08f370933cc4630))
+
 **v1.5.1 主要更新**
 
 ### 特性和问题修复

@@ -1,7 +1,10 @@
 # Changelog
 
-## [1.5.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.5.0...v1.5.1) (2023-05-23)
+## [1.5.2](https://github.com/terwer/siyuan-plugin-importer/compare/v1.5.1...v1.5.2) (2023-05-24)
 ### Bug Fixes
+* hash路径小写 ([38a2972](https://github.com/terwer/siyuan-plugin-importer/commit/38a29729b76c477d217e01d2770ccc4da793944d))
+* 新增校验，批量导入之前必须清除临时文件 ([508999d](https://github.com/terwer/siyuan-plugin-importer/commit/508999d5cb01246a69c2c979f08f370933cc4630))
+## [1.5.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.5.0...v1.5.1) (2023-05-23)
 * [#33](https://github.com/terwer/siyuan-plugin-importer/issues/33) 支持选择目录批量导入 ([2e58a37](https://github.com/terwer/siyuan-plugin-importer/commit/2e58a37cc833061b8d12f1c9be96ad72a2df98f2))
 * [#38](https://github.com/terwer/siyuan-plugin-importer/issues/38) 换行符问题 ([74c00c0](https://github.com/terwer/siyuan-plugin-importer/commit/74c00c095aae20077b7a79709c2d2721859f947e))
 * 卸载不删除配置 ([a913034](https://github.com/terwer/siyuan-plugin-importer/commit/a9130349120f03e2705d886de9d3a470fa019513))

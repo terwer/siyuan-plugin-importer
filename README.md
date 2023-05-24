@@ -18,6 +18,10 @@ Import epub, docx, html, etc. into Siyuan notes. Currently supported formats: .e
   After the installation is complete, find the `Importer` icon on the top right toolbar, and click to follow the pop-up window.
 
 ## Changelog
+**v1.5.2 major update**
+* hash temporary path lowercase ([38a2972](https://github.com/terwer/siyuan-plugin-importer/commit/38a29729b76c477d217e01d2770ccc4da793944d))
+* New verification, temporary files must be cleared before batch import ([508999d](https://github.com/terwer/siyuan-plugin-importer/commit/508999d5cb01246a69c2c979f08f370933cc4630))
+
 **v1.5.1 major update**
 
 ### Features and bug fixes
@@ -28,7 +32,6 @@ Import epub, docx, html, etc. into Siyuan notes. Currently supported formats: .e
 * Support md file import, md does not need to be converted, other formats, convert first, then import
 ### Development refactoring
 * Move the i18n folder to the src directory ([0234c50](https://github.com/terwer/siyuan-plugin-importer/commit/0234c509a2dbadf851bce73ddc961c305cded145))
-* 
 **v1.5.0 major update**
 
 - Solve the problem that after importing epub, the pictures in it will appear in the unreferenced resources, which are easy to be cleared by mistake. Now after the document is imported, the resource files will not appear in the unreferenced ones. Unreferenced resources are visible after the document is deleted.
