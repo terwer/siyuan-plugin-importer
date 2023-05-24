@@ -4,7 +4,7 @@
 
 ![](https://raw.githubusercontent.com/terwer/siyuan-plugin-importer/main/icon.png)
 
-将 epub, docx, html 等格式的文件导入到思源笔记。目前支持的格式：.epub, .docx, .html, .opml。
+将 md, epub, docx, html 等格式的文件导入到思源笔记。目前支持的格式：.md, .epub, .docx, .html, .opml。
 
 ## 核心特色
 

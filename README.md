@@ -2,7 +2,7 @@
 
 # siyuan-plugin-importer
 
-Import epub, docx, html, etc. into Siyuan notes. Currently supported formats: .epub, .docx, .html, .opml.
+Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats: .md, .epub, .docx, .html, .opml.
 
 ## Core Features
 
