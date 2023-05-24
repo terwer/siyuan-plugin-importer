@@ -18,19 +18,25 @@ Import epub, docx, html, etc. into Siyuan notes. Currently supported formats: .e
   After the installation is complete, find the `Importer` icon on the top right toolbar, and click to follow the pop-up window.
 
 ## Changelog
+**v1.5.3 major update**
+* Optimize the icon display on the mobile terminal, note: there is no pandoc on the mobile terminal, and the import function is temporarily unavailable
+
 **v1.5.2 major update**
 * hash temporary path lowercase ([38a2972](https://github.com/terwer/siyuan-plugin-importer/commit/38a29729b76c477d217e01d2770ccc4da793944d))
 * New verification, temporary files must be cleared before batch import ([508999d](https://github.com/terwer/siyuan-plugin-importer/commit/508999d5cb01246a69c2c979f08f370933cc4630))
 
 **v1.5.1 major update**
 
-### Features and bug fixes
+Features and bug fixes
+
 * [#33](https://github.com/terwer/siyuan-plugin-importer/issues/33) Support batch import of selected directories ([2e58a37](https://github.com/terwer/siyuan-plugin-importer/commit/2e58a37cc833061b8d12f1c9be96ad72a2df98f2))
 * [#38](https://github.com/terwer/siyuan-plugin-importer/issues/38) line break problem([74c00c0](https://github.com/terwer/siyuan-plugin-importer/commit/74c00c095aae20077b7a79709c2d2721859f947e))
 * Uninstall does not delete configuration ([a913034](https://github.com/terwer/siyuan-plugin-importer/commit/a9130349120f03e2705d886de9d3a470fa019513))
 * Support manual cleaning of temporary files ([5687248](https://github.com/terwer/siyuan-plugin-importer/commit/5687248f1aae2629ced3171f4b15f2def9babca0))
 * Support md file import, md does not need to be converted, other formats, convert first, then import
-### Development refactoring
+
+Development refactoring
+
 * Move the i18n folder to the src directory ([0234c50](https://github.com/terwer/siyuan-plugin-importer/commit/0234c509a2dbadf851bce73ddc961c305cded145))
 **v1.5.0 major update**
 

@@ -367,16 +367,24 @@
       </button>
     </div>
 
-    <div class="b3-label config-assets">
-      <label class="fn__flex">
-        {pluginInstance.i18n.cleanTemp} <span class="selected"> [ {tempCount} ] </span>
-        {pluginInstance.i18n.tempCount}
-        <div class="fn__flex-1" />
-        <button id="removeAll" class="b3-button b3-button--outline fn__flex-center fn__size200" on:click={cleanTemp}>
-          <svg class="svg"><use xlink:href="#iconTrashcan" /></svg>
-          {pluginInstance.i18n.clean}
-        </button>
-      </label>
+    <div class="fn__flex b3-label config__item">
+      <div class="fn__flex-1 fn__flex-center">
+        {pluginInstance.i18n.cleanTemp}
+        <div class="b3-label__text">
+          {pluginInstance.i18n.tempTotal} <span class="selected"> [ {tempCount} ] </span>
+          {pluginInstance.i18n.tempCount}
+        </div>
+      </div>
+      <span class="fn__space" />
+      <button
+        id="removeAll"
+        class="b3-button b3-button--outline fn__flex-center fn__size200"
+        style="position: relative"
+      >
+        <input id="batchRemoveData" class="b3-form__upload" on:click={cleanTemp} />
+        <svg class="svg"><use xlink:href="#iconTrashcan" /></svg>
+        {pluginInstance.i18n.clean}
+      </button>
     </div>
 
     <div class="fn__flex b3-label config__item">{pluginInstance.i18n.supportedTypes}</div>
