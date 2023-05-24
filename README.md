@@ -18,6 +18,9 @@ Import epub, docx, html, etc. into Siyuan notes. Currently supported formats: .e
   After the installation is complete, find the `Importer` icon on the top right toolbar, and click to follow the pop-up window.
 
 ## Changelog
+**v1.5.3 major update**
+* Optimize the icon display on the mobile terminal, note: there is no pandoc on the mobile terminal, and the import function is temporarily unavailable
+
 **v1.5.2 major update**
 * hash temporary path lowercase ([38a2972](https://github.com/terwer/siyuan-plugin-importer/commit/38a29729b76c477d217e01d2770ccc4da793944d))
 * New verification, temporary files must be cleared before batch import ([508999d](https://github.com/terwer/siyuan-plugin-importer/commit/508999d5cb01246a69c2c979f08f370933cc4630))
