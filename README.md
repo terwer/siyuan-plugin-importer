@@ -18,7 +18,17 @@ Import epub, docx, html, etc. into Siyuan notes. Currently supported formats: .e
   After the installation is complete, find the `Importer` icon on the top right toolbar, and click to follow the pop-up window.
 
 ## Changelog
+**v1.5.1 major update**
 
+### Features and bug fixes
+* [#33](https://github.com/terwer/siyuan-plugin-importer/issues/33) Support batch import of selected directories ([2e58a37](https://github.com/terwer/siyuan-plugin-importer/commit/2e58a37cc833061b8d12f1c9be96ad72a2df98f2))
+* [#38](https://github.com/terwer/siyuan-plugin-importer/issues/38) line break problem([74c00c0](https://github.com/terwer/siyuan-plugin-importer/commit/74c00c095aae20077b7a79709c2d2721859f947e))
+* Uninstall does not delete configuration ([a913034](https://github.com/terwer/siyuan-plugin-importer/commit/a9130349120f03e2705d886de9d3a470fa019513))
+* Support manual cleaning of temporary files ([5687248](https://github.com/terwer/siyuan-plugin-importer/commit/5687248f1aae2629ced3171f4b15f2def9babca0))
+* Support md file import, md does not need to be converted, other formats, convert first, then import
+### Development refactoring
+* Move the i18n folder to the src directory ([0234c50](https://github.com/terwer/siyuan-plugin-importer/commit/0234c509a2dbadf851bce73ddc961c305cded145))
+* 
 **v1.5.0 major update**
 
 - Solve the problem that after importing epub, the pictures in it will appear in the unreferenced resources, which are easy to be cleared by mistake. Now after the document is imported, the resource files will not appear in the unreferenced ones. Unreferenced resources are visible after the document is deleted.

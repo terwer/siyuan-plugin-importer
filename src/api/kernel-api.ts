@@ -113,7 +113,16 @@ class KernelApi extends BaseApi {
    */
   public async convertPandoc(type: string, from: string, to: string): Promise<SiyuanData> {
     const args = {
-      args: ["--to", type, from, "-o", to, "--extract-media", `${mediaDir}/${shortHash(from)}`, "--wrap=none"],
+      args: [
+        "--to",
+        type,
+        from,
+        "-o",
+        to,
+        "--extract-media",
+        `${mediaDir}/${shortHash(from).toLowerCase()}`,
+        "--wrap=none",
+      ],
     }
     return await this.siyuanRequest("/api/convert/pandoc", args)
   }
