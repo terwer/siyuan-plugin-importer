@@ -29,5 +29,6 @@
   "cleanTemp": "清理临时文件，共",
   "clean": "删除",
   "tempCount": "个临时文件",
+  "tempCountExists": "请先清理临时文件在进行批量导入",
   "supportedTypes": "目前支持的格式：.md, .epub, .docx, .html, .opml"
 }

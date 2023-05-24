@@ -29,5 +29,6 @@
   "cleanTemp": "clean up temporary files",
   "clean": "Delete",
   "tempCount": "temporary files",
+  "tempCountExists": "Please clean up the temporary files before batch import",
   "supportedTypes": "Currently supported formats: .epub, .docx, .html, .opml"
 }

@@ -134,6 +134,12 @@
   // 批量转换开始
   // =================
   const selectFolder = async () => {
+    // 批量导入之前先清空临时文件
+    if (tempCount > 0) {
+      showMessage(`${pluginInstance.i18n.tempCountExists}`, 1000, "error")
+      return
+    }
+
     const result = await window.showDirectoryPicker()
     dialog.destroy()
 
