@@ -325,7 +325,6 @@
         {#each notebooks as notebook}
           <option value={notebook.id}>{notebook.name}</option>
         {:else}
-          <!-- this block renders when photos.length === 0 -->
           <option value="0">{pluginInstance.i18n.loading}...</option>
         {/each}
       </select>

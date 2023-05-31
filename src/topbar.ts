@@ -26,7 +26,7 @@
 import ImporterPlugin from "./index"
 import { Dialog, isMobile } from "siyuan"
 import ImportForm from "./lib/ImportForm.svelte"
-import {iconImporter} from "./utils/svg";
+import { iconImporter } from "./utils/svg"
 
 /**
  * 顶栏按钮

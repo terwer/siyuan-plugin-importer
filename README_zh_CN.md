@@ -2,7 +2,7 @@
 
 # 导入工具
 
-![](https://raw.githubusercontent.com/terwer/siyuan-plugin-importer/main/icon.png)
+<img src="./icon.png" width="160" height="160" alt="icon">
 
 将 md, epub, docx, html 等格式的文件导入到思源笔记。目前支持的格式：.md, .epub, .docx, .html, .opml。
 

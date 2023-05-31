@@ -26,9 +26,8 @@
 import { App, IObject, Plugin } from "siyuan"
 import { createLogger } from "./utils/simple-logger"
 import KernelApi from "./api/kernel-api"
-import {isDev, mediaDir} from "./Constants"
+import { isDev, mediaDir } from "./Constants"
 import "./index.styl"
-import { removeImporterConfig } from "./store/config"
 import { initTopbar } from "./topbar"
 
 /**
