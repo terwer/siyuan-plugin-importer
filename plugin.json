@@ -10,7 +10,8 @@
     "darwin"
   ],
   "frontends": [
-    "desktop"
+    "desktop",
+    "browser-desktop"
   ],
   "displayName": {
     "default": "Importer",

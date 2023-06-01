@@ -26,9 +26,10 @@
 <script lang="ts">
   import ImporterPlugin from "../index"
   import { loadImporterConfig, saveImporterConfig } from "../store/config"
-  import { showMessage } from "siyuan"
+  import { showMessage, confirm } from "siyuan"
   import { onMount } from "svelte"
   import { ImportService } from "../service/importService"
+  import { workspaceDir } from "../Constants"
 
   export let pluginInstance: ImporterPlugin
   export let dialog
@@ -112,6 +113,17 @@
       }
       reader.onerror = reject
     })
+  }
+
+  const openTempFolder = () => {
+    confirm("⚠️临时文件路径", `${workspaceDir}/temp/convert/pandoc`, () => {})
+  }
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      // 处理按键事件
+      event.preventDefault()
+    }
   }
 
   // =================
@@ -213,7 +225,10 @@
     <div class="fn__flex b3-label config__item">
       <div class="fn__flex-1 fn__flex-center">
         {pluginInstance.i18n.importFile}
-        <div class="b3-label__text">{pluginInstance.i18n.importTip}</div>
+        <div class="b3-label__text">
+          <div>{pluginInstance.i18n.importTip}</div>
+          <div class="highlight">{pluginInstance.i18n.importSingleNotice}</div>
+        </div>
       </div>
       <span class="fn__space" />
       <button class="b3-button b3-button--outline fn__flex-center fn__size200" style="position: relative">
@@ -234,7 +249,8 @@
       <div class="fn__flex-1 fn__flex-center">
         {pluginInstance.i18n.importFolder}
         <div class="b3-label__text">
-          {pluginInstance.i18n.importFolderTip}<span class="selected">{pluginInstance.i18n.importNotRecursive}</span>
+          <div>{pluginInstance.i18n.importFolderTip}</div>
+          <div class="highlight">{pluginInstance.i18n.importNotRecursive}</div>
         </div>
       </div>
       <span class="fn__space" />
@@ -252,6 +268,8 @@
         <div class="b3-label__text">
           {pluginInstance.i18n.tempTotal} <span class="selected"> [ {tempCount} ] </span>
           {pluginInstance.i18n.tempCount}
+
+          <span class="link" on:click={openTempFolder} on:keydown={handleKeyDown}>显示临时文件夹路径</span>
         </div>
       </div>
       <span class="fn__space" />
@@ -278,5 +296,14 @@
   .selected {
     color: red;
     padding: 0 4px;
+  }
+
+  .highlight {
+    color: red;
+  }
+
+  .link {
+    color: var(--b3-theme-primary);
+    cursor: pointer;
   }
 </style>

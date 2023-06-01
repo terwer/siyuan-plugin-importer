@@ -101,15 +101,6 @@ export class ImportService {
     return toFilePath
   }
 
-
-  public static async uploadMd(pluginInstance: ImporterPlugin, file: any) {
-
-  }
-
-  public static async uploadHtml(pluginInstance: ImporterPlugin, file: any) {
-
-  }
-
   public static async singleImport(pluginInstance: ImporterPlugin, toFilePath: string, toNotebookId: string) {
     const ext = toFilePath.split(".").pop().toLowerCase()
     const isMd = ext === "md"
