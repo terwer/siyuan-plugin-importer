@@ -1,7 +1,6 @@
 {
   "importer": "Importer",
   "selectFile": "Select file",
-  "cancel": "Cancel",
   "startImport": "Single import",
   "importerLoaded": "Importer loaded",
   "importerUnloaded": "Importer unloaded",
@@ -35,5 +34,16 @@
   "tempCountExists": "Please clean up the temporary files before batch import",
   "reportBug1": "Encounter problems? , to the developer terwer ",
   "reportBug2": "feedback",
-  "reportBug3": " bar~"
+  "reportBug3": " bar~",
+  "setting": "setting",
+  "cancel": "Cancel",
+  "save": "Save",
+  "customFnHandler": "Custom handler",
+  "customFnSwitch": "Custom handler switch",
+  "customFnSwitchTips": "Enable or disable custom handlers",
+  "customFnHandlerTips": "You can customize the processing function here, and it will be called automatically during the import process. Please note: modifying this may cause the import to not work. If there is a problem, you can disable the custom processing function",
+  "customFnHandlerPlaceholder": "Custom handler",
+  "enableCustomFn": "Enable custom functions",
+  "enableCustomFnTips": "Are you sure you want to enable custom functions? This action may cause imports to be unavailable. Please confirm that you have understood how custom functions work?",
+  "importConfigSaveSuccess": "Configuration saved successfully"
 }

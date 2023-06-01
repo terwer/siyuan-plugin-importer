@@ -23,7 +23,7 @@
  * questions.
  */
 
-import { App, IObject, Plugin } from "siyuan"
+import { App, getFrontend, IObject, Plugin } from "siyuan"
 import { createLogger } from "./utils/simple-logger"
 import KernelApi from "./api/kernel-api"
 import { isDev, mediaDir } from "./Constants"
@@ -41,10 +41,13 @@ import { simpleLogger } from "zhi-lib-base"
 export default class ImporterPlugin extends Plugin {
   public logger
   public kernelApi: KernelApi
+  public isMobile: boolean
 
   constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
     super(options)
 
+    const frontEnd = getFrontend()
+    this.isMobile = frontEnd === "mobile" || frontEnd === "browser-mobile"
     this.logger = simpleLogger("index", "importer", isDev)
     this.kernelApi = new KernelApi()
   }
