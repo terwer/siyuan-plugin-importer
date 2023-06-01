@@ -29,6 +29,12 @@ import ImporterPlugin from "../index"
 import { removeEmptyLines, removeFootnotes, removeLinks, replaceImagePath } from "../utils/utils"
 
 export class ImportService {
+  /**
+   * 上传并转换，md、html 不上传
+   *
+   * @param pluginInstance
+   * @param file
+   */
   public static async uploadAndConvert(pluginInstance: ImporterPlugin, file: any) {
     const fromFilename = file.name
 
@@ -40,58 +46,68 @@ export class ImportService {
 
     // 扩展名
     const ext = fromFilename.split(".").pop().toLowerCase()
-    if (ext === "md") {
+
+    // md 直接返回
+    if (ext === "md" || ext === "html") {
       pluginInstance.logger.info(`import md from ${file.path}`)
       return file.path
     }
+
+    // =================================================
+    // 下面是非 html、 md文件的处理、先上传源文件，然后转换
+    // =================================================
 
     const fromFilePath = `/temp/convert/pandoc/${fromFilename}`
     const toFilePath = `/temp/convert/pandoc/${toFilename}`
 
     // 文件上传
-    if (ext !== "md") {
-      const uploadFilePath = fromFilePath
-      pluginInstance.logger.info(`upload file from ${uploadFilePath} to /temp/convert/pandoc`)
-      const uploadResult = await pluginInstance.kernelApi.putFile(uploadFilePath, file)
-      if (uploadResult.code !== 0) {
-        showMessage(`${pluginInstance.i18n.msgFileUploadError}：${uploadResult.msg}`, 7000, "error")
-        return
-      }
+    const uploadFilePath = fromFilePath
+    pluginInstance.logger.info(`upload file from ${uploadFilePath} to /temp/convert/pandoc`)
+    const uploadResult = await pluginInstance.kernelApi.putFile(uploadFilePath, file)
+    if (uploadResult.code !== 0) {
+      showMessage(`${pluginInstance.i18n.msgFileUploadError}：${uploadResult.msg}`, 7000, "error")
+      return
     }
 
     // 文件转换
-    // 不是 md 才需要转换
-    if (ext !== "md") {
-      const convertResult = await pluginInstance.kernelApi.convertPandoc(
-        "markdown_strict-raw_html",
-        fromFilename,
-        toFilename
-      )
-      if (convertResult.code !== 0) {
-        showMessage(`${pluginInstance.i18n.msgFileConvertError}：${convertResult.msg}`, 7000, "error")
-        return
-      }
-
-      // 读取文件
-      let mdText = (await pluginInstance.kernelApi.getFile(toFilePath, "text")) ?? ""
-      if (mdText === "") {
-        showMessage(pluginInstance.i18n.msgFileConvertEmpty, 7000, "error")
-        return
-      }
-
-      // 文本处理
-      // 删除目录中链接
-      mdText = removeLinks(mdText)
-      // 去除空行
-      mdText = removeEmptyLines(mdText)
-      // 资源路径
-      mdText = replaceImagePath(mdText)
-      // 去除脚注
-      mdText = removeFootnotes(mdText)
-      await pluginInstance.kernelApi.saveTextData(`${toFilename}`, mdText)
+    const convertResult = await pluginInstance.kernelApi.convertPandoc(
+      "markdown_strict-raw_html",
+      fromFilename,
+      toFilename
+    )
+    if (convertResult.code !== 0) {
+      showMessage(`${pluginInstance.i18n.msgFileConvertError}：${convertResult.msg}`, 7000, "error")
+      return
     }
 
+    // 读取文件
+    let mdText = (await pluginInstance.kernelApi.getFile(toFilePath, "text")) ?? ""
+    if (mdText === "") {
+      showMessage(pluginInstance.i18n.msgFileConvertEmpty, 7000, "error")
+      return
+    }
+
+    // 文本处理
+    // 删除目录中链接
+    mdText = removeLinks(mdText)
+    // 去除空行
+    mdText = removeEmptyLines(mdText)
+    // 资源路径
+    mdText = replaceImagePath(mdText)
+    // 去除脚注
+    mdText = removeFootnotes(mdText)
+    await pluginInstance.kernelApi.saveTextData(`${toFilename}`, mdText)
+
     return toFilePath
+  }
+
+
+  public static async uploadMd(pluginInstance: ImporterPlugin, file: any) {
+
+  }
+
+  public static async uploadHtml(pluginInstance: ImporterPlugin, file: any) {
+
   }
 
   public static async singleImport(pluginInstance: ImporterPlugin, toFilePath: string, toNotebookId: string) {

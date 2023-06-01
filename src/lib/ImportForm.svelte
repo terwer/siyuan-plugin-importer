@@ -95,6 +95,24 @@
       tempCount = 0
     }
   }
+  /**
+   * 读取文件
+   * @param entry
+   */
+  const readFile = async (entry) => {
+    const file = await entry.getFile()
+    const reader = new FileReader()
+    reader.readAsArrayBuffer(file)
+    return new Promise((resolve, reject) => {
+      reader.onload = () => {
+        const arrayBuffer = reader.result
+        const fileContent = new Blob([arrayBuffer], { type: file.type })
+        const fileName = file.name
+        resolve(new File([fileContent], fileName))
+      }
+      reader.onerror = reject
+    })
+  }
 
   // =================
   // 单文件转换开始
