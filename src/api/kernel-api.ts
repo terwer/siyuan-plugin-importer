@@ -112,7 +112,7 @@ class KernelApi extends BaseApi {
    * @param to - 转换后的文件名，不包括路径，路径相对于 /temp/convert/pandoc
    */
   public async convertPandoc(type: string, from: string, to: string): Promise<SiyuanData> {
-    const args = {
+    const params = {
       args: [
         "--to",
         type,
@@ -124,7 +124,14 @@ class KernelApi extends BaseApi {
         "--wrap=none",
       ],
     }
-    return await this.siyuanRequest("/api/convert/pandoc", args)
+    return await this.siyuanRequest("/api/convert/pandoc", params)
+  }
+
+  public async convertPandocCustom(args: string[]): Promise<SiyuanData> {
+    const params = {
+      args: args,
+    }
+    return await this.siyuanRequest("/api/convert/pandoc", params)
   }
 
   /**

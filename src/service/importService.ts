@@ -23,10 +23,11 @@
  * questions.
  */
 
-import { workspaceDir } from "../Constants"
-import { showMessage } from "siyuan"
+import { mediaDir, workspaceDir } from "../Constants"
+import { getBackend, getFrontend, showMessage } from "siyuan"
 import ImporterPlugin from "../index"
-import { removeEmptyLines, removeFootnotes, removeLinks, replaceImagePath } from "../utils/utils"
+import { copyDir, isPC, removeEmptyLines, removeFootnotes, removeLinks, replaceImagePath } from "../utils/utils"
+import shortHash from "shorthash2"
 
 export class ImportService {
   /**
@@ -51,15 +52,25 @@ export class ImportService {
     if (ext === "md") {
       const filePath = file.path
       pluginInstance.logger.info(`import md from ${filePath}`)
-      return filePath
+      return {
+        toFilePath: filePath,
+        isMd: true,
+      }
     }
 
     if (ext === "html") {
-      // 仅在客户端复制资源文件
-      const filePath = file.path
-      const lastSlashIndex = filePath.lastIndexOf("/")
-      const dirPath = filePath.substring(0, lastSlashIndex)
-      pluginInstance.logger.info(`${dirPath}${originalFilename}_files`)
+      if (isPC()) {
+        pluginInstance.logger.info(`copying html assets...`)
+        // 仅在客户端复制资源文件
+        const filePath = file.path
+        const lastSlashIndex = filePath.lastIndexOf("/")
+        const dirPath = filePath.substring(0, lastSlashIndex)
+        const path = window.require("path")
+        const fullDirPath = path.join(dirPath, `${originalFilename}_files`)
+        pluginInstance.logger.info("fullDirPath=>", fullDirPath)
+
+        await copyDir(fullDirPath, `${workspaceDir}/temp/convert/pandoc/${filename}_files`)
+      }
     }
 
     // =================================================
@@ -79,11 +90,32 @@ export class ImportService {
     }
 
     // 文件转换
-    const convertResult = await pluginInstance.kernelApi.convertPandoc(
+    const args: string[] = [
+      "--to",
       "markdown_strict-raw_html",
       fromFilename,
-      toFilename
-    )
+      "-o",
+      toFilename,
+      "--extract-media",
+      `${mediaDir}/${shortHash(fromFilename).toLowerCase()}`,
+      "--wrap=none",
+    ]
+    // const args = [
+    //   "--to",
+    //   "markdown_strict-raw_html",
+    //   fromFilename,
+    //   "-o",
+    //   toFilename,
+    //   "--extract-media",
+    //   `${mediaDir}/${shortHash(fromFilename).toLowerCase()}`,
+    //   "--wrap=none",
+    // ]
+    const convertResult = await pluginInstance.kernelApi.convertPandocCustom(args)
+    // const convertResult = await pluginInstance.kernelApi.convertPandoc(
+    //   "markdown_strict-raw_html",
+    //   fromFilename,
+    //   toFilename
+    // )
     if (convertResult.code !== 0) {
       showMessage(`${pluginInstance.i18n.msgFileConvertError}：${convertResult.msg}`, 7000, "error")
       return
@@ -107,12 +139,18 @@ export class ImportService {
     mdText = removeFootnotes(mdText)
     await pluginInstance.kernelApi.saveTextData(`${toFilename}`, mdText)
 
-    return toFilePath
+    return {
+      toFilePath: toFilePath,
+      isMd: false,
+    }
   }
 
-  public static async singleImport(pluginInstance: ImporterPlugin, toFilePath: string, toNotebookId: string) {
-    const ext = toFilePath.split(".").pop().toLowerCase()
-    const isMd = ext === "md"
+  public static async singleImport(
+    pluginInstance: ImporterPlugin,
+    toFilePath: string,
+    toNotebookId: string,
+    isMd: boolean
+  ) {
     // 导入 MD 文档
     const localPath = isMd ? toFilePath : `${workspaceDir}${toFilePath}`
     const mdResult = await pluginInstance.kernelApi.importStdMd(localPath, toNotebookId, `/`)

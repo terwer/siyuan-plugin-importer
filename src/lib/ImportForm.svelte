@@ -149,9 +149,9 @@
     showMessage(`${pluginInstance.i18n.msgConverting} ${file.name}...`, 1000, "info")
 
     // 转换
-    const toFilePath = await ImportService.uploadAndConvert(pluginInstance, file)
+    const uploadResult = await ImportService.uploadAndConvert(pluginInstance, file)
     // 导入
-    await ImportService.singleImport(pluginInstance, toFilePath, toNotebookId)
+    await ImportService.singleImport(pluginInstance, uploadResult.toFilePath, toNotebookId,uploadResult.isMd)
   }
   // =================
   // 单文件转换结束
@@ -324,7 +324,7 @@
     color: var(--b3-theme-primary);
   }
 
-  .config__item:hover .highlight {
+  .b3-label__text:hover .highlight {
     display: block;
   }
 </style>

@@ -25,6 +25,7 @@
 
 import KernelApi from "../api/kernel-api"
 import { dataDir } from "../Constants"
+import { getBackend, getFrontend } from "siyuan"
 
 /**
  * 文件是否存在
@@ -108,4 +109,60 @@ export function removeLinks(text) {
       return match
     }
   })
+}
+
+export const isPC = () => {
+  const backEnd = getBackend()
+  const frontEnd = getFrontend()
+  const isPcBack = backEnd === "windows" || "linux" || "darvin"
+  const isPcFront = frontEnd === "desktop"
+  return isPcBack && isPcFront
+}
+
+async function mkdirp(dir) {
+  const fs = window.require("fs/promises")
+  const path = window.require("path")
+  const absPath = path.isAbsolute(dir) ? dir : path.join(process.cwd(), dir)
+  try {
+    await fs.access(absPath)
+    // 如果路径已经存在，则直接返回
+    return absPath
+  } catch (e) {
+    if (e.code === "ENOENT") {
+      // 如果路径不存在，则递归创建上级目录
+      await mkdirp(path.dirname(absPath))
+      return fs.mkdir(absPath)
+    } else {
+      throw e
+    }
+  }
+}
+
+export const copyDir = async (src, dest) => {
+  if (!isPC()) {
+    console.warn("Not PC, it will not work")
+    return
+  }
+  const fs = window.require("fs")
+  const path = window.require("path")
+
+  // 创建文件夹
+  if (!fs.existsSync(dest)) {
+    await mkdirp(dest)
+  }
+  // 读取源文件夹
+  const files = fs.readdirSync(src)
+  // 遍历源文件夹中的文件/文件夹
+  for (let file of files) {
+    const srcPath = path.join(src, file)
+    const destPath = path.join(dest, file)
+    // 判断是否为文件夹
+    if (fs.statSync(srcPath).isDirectory()) {
+      // 递归拷贝文件夹
+      copyDir(srcPath, destPath)
+    } else {
+      // 拷贝文件
+      fs.copyFileSync(srcPath, destPath)
+    }
+  }
 }
