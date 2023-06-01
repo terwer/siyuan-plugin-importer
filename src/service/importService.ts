@@ -42,8 +42,8 @@ export class ImportService {
     // 修正文件名
     const originalFilename = fromFilename.substring(0, fromFilename.lastIndexOf("."))
     // 去除标题多余的空格，包括开始中间以及结尾的空格
-    const filename = originalFilename.replace(/\s+/g, "")
-    const toFilename = `${filename}.md`
+    // const filename = originalFilename.replace(/\s+/g, "")
+    const toFilename = `${originalFilename}.md`
 
     // 扩展名
     const ext = fromFilename.split(".").pop().toLowerCase()
@@ -69,7 +69,7 @@ export class ImportService {
         const fullDirPath = path.join(dirPath, `${originalFilename}_files`)
         pluginInstance.logger.info("fullDirPath=>", fullDirPath)
 
-        await copyDir(fullDirPath, `${workspaceDir}/temp/convert/pandoc/${filename}_files`)
+        await copyDir(fullDirPath, `${workspaceDir}/temp/convert/pandoc/${originalFilename}_files`)
       }
     }
 
@@ -90,32 +90,7 @@ export class ImportService {
     }
 
     // 文件转换
-    const args: string[] = [
-      "--to",
-      "markdown_strict-raw_html",
-      fromFilename,
-      "-o",
-      toFilename,
-      "--extract-media",
-      `${mediaDir}/${shortHash(fromFilename).toLowerCase()}`,
-      "--wrap=none",
-    ]
-    // const args = [
-    //   "--to",
-    //   "markdown_strict-raw_html",
-    //   fromFilename,
-    //   "-o",
-    //   toFilename,
-    //   "--extract-media",
-    //   `${mediaDir}/${shortHash(fromFilename).toLowerCase()}`,
-    //   "--wrap=none",
-    // ]
-    const convertResult = await pluginInstance.kernelApi.convertPandocCustom(args)
-    // const convertResult = await pluginInstance.kernelApi.convertPandoc(
-    //   "markdown_strict-raw_html",
-    //   fromFilename,
-    //   toFilename
-    // )
+    const convertResult = await pluginInstance.kernelApi.convertPandoc(fromFilename, toFilename)
     if (convertResult.code !== 0) {
       showMessage(`${pluginInstance.i18n.msgFileConvertError}：${convertResult.msg}`, 7000, "error")
       return

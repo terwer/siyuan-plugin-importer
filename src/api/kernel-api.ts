@@ -107,15 +107,14 @@ class KernelApi extends BaseApi {
   /**
    * 转换服务
    *
-   * @param type - 类型
    * @param from - 原始文件名，不包括路径，路径必须放在 /temp/convert/pandoc
    * @param to - 转换后的文件名，不包括路径，路径相对于 /temp/convert/pandoc
    */
-  public async convertPandoc(type: string, from: string, to: string): Promise<SiyuanData> {
+  public async convertPandoc(from: string, to: string): Promise<SiyuanData> {
     const params = {
       args: [
         "--to",
-        type,
+        "markdown_strict-raw_html",
         from,
         "-o",
         to,
