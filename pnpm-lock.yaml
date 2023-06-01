@@ -4,6 +4,9 @@ dependencies:
   shorthash2:
     specifier: ^1.0.3
     version: 1.0.3
+  zhi-lib-base:
+    specifier: ^0.0.2
+    version: 0.0.2
 
 devDependencies:
   '@sveltejs/vite-plugin-svelte':
@@ -2643,3 +2646,7 @@ packages:
     resolution: {integrity: sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==}
     engines: {node: '>=12.20'}
     dev: true
+
+  /zhi-lib-base@0.0.2:
+    resolution: {integrity: sha512-0iO8/F3qHtkO2cF5LppV1MzaR5E2E6iZfGyR409CIaPAFKKkQMyQ6ZA1cFlxjSLs07ZONMqiEGCjDmVATnG3ag==}
+    dev: false

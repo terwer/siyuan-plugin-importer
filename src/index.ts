@@ -29,6 +29,7 @@ import KernelApi from "./api/kernel-api"
 import { isDev, mediaDir } from "./Constants"
 import "./index.styl"
 import { initTopbar } from "./topbar"
+import { simpleLogger } from "zhi-lib-base"
 
 /**
  * 导入插件
@@ -44,7 +45,7 @@ export default class ImporterPlugin extends Plugin {
   constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
     super(options)
 
-    this.logger = createLogger("index")
+    this.logger = simpleLogger("index", "importer", isDev)
     this.kernelApi = new KernelApi()
   }
 
