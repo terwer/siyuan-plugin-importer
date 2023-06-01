@@ -95,11 +95,16 @@
 
 当编者要我就罗素写点东西时，出于对这位作者的钦佩和尊敬，我立刻答应了下来。`
   let testOutput = ""
+  let showTest = false
   const testFn = () => {
     const exportsFn = getExports(customFn)
-    const result = exportsFn(testInput)
-    testOutput = result
-    console.log("test exportsFn=>", result)
+    testOutput = exportsFn(testInput)
+    showTest = true
+    // console.log("test exportsFn=>", result)
+  }
+
+  const hideTest = () => {
+    showTest = false
   }
 
   onMount(async () => {
@@ -172,18 +177,28 @@ module.exports = customFn`
 
   <label class="fn__flex b3-label">
     <div class="fn__flex-1">
-      <button class="b3-button b3-button--outline fn__flex-right fn__size200" on:click={testFn}> 测试 </button>
+      <button class="b3-button b3-button--outline fn__flex-right fn__size200" on:click={testFn}> 开始测试 </button>
+      <button
+        class={showTest
+          ? "b3-button b3-button--outline fn__flex-right fn__size200 pull-right"
+          : "b3-button b3-button--outline fn__flex-right fn__size200 pull-right hidden"}
+        on:click={hideTest}
+      >
+        隐藏结果
+      </button>
       <div class="fn__hr" />
       {pluginInstance.i18n.testInput}
       <textarea class="b3-text-field fn__block test-data-item" rows="6" spellcheck="false" bind:value={testInput} />
-      {pluginInstance.i18n.testOutput}
-      <textarea
-        class="b3-text-field fn__block test-data-item"
-        placeholder={pluginInstance.i18n.testOutputPlaceholder}
-        rows="6"
-        spellcheck="false"
-        bind:value={testOutput}
-      />
+      <div class={showTest ? "" : "hidden"}>
+        {pluginInstance.i18n.testOutput}
+        <textarea
+          class="b3-text-field fn__block test-data-item"
+          placeholder={pluginInstance.i18n.testOutputPlaceholder}
+          rows="6"
+          spellcheck="false"
+          bind:value={testOutput}
+        />
+      </div>
     </div>
   </label>
 
@@ -197,4 +212,8 @@ module.exports = customFn`
 <style lang="stylus">
 .test-data-item
   margin 4px 0
+.pull-right
+  float right
+.hidden
+  display none
 </style>
