@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.6.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.5.3...v1.6.0) (2023-06-01)
+### Features
+* [#47](https://github.com/terwer/siyuan-plugin-importer/issues/47) 导入html支持图片 ([870b5fb](https://github.com/terwer/siyuan-plugin-importer/commit/870b5fb24c9806a5844615dfd4c743bec1a75a86))
+* 优化 pandoc 参数 ([6e0ca9f](https://github.com/terwer/siyuan-plugin-importer/commit/6e0ca9f6698f8671c90cf36e02175b3cd772dbc2))
+* 优化图标 ([d188b74](https://github.com/terwer/siyuan-plugin-importer/commit/d188b745e2e1a9caa60d409829fbc3d9f0ad1c6e))
+* 优化帮助文档 ([b626917](https://github.com/terwer/siyuan-plugin-importer/commit/b62691718a46051974637e3d9f020dde639e1e69))
+* 优化界面交互 ([ef435aa](https://github.com/terwer/siyuan-plugin-importer/commit/ef435aa6a51477874a740ed3a35a90be589334ca))
+* 优化转换参数 ([843446a](https://github.com/terwer/siyuan-plugin-importer/commit/843446abe3279282b482443d89430010857f7927))
+* 升级 siyuan 到 0.7.2，兼容最新 api ，解决 ismobile报错问题 ([531628f](https://github.com/terwer/siyuan-plugin-importer/commit/531628f41b197e2791efa35bf53263b7e0e5af12))
+* 导入 md 支持资源文件 ([33a20c7](https://github.com/terwer/siyuan-plugin-importer/commit/33a20c7cdd19991235b507194c23a4017e3c872a))
+* 支持自定义处理函数、支持禁用自带处理函数 ([f5452e2](https://github.com/terwer/siyuan-plugin-importer/commit/f5452e22a3e75f728676d5ca51766e199bccb61e))
+* 新增自定义处理函数配置 ([f4a28a7](https://github.com/terwer/siyuan-plugin-importer/commit/f4a28a7b87e47124ab5bbb562686d6e91425701e))
+* 显示临时文件夹路径，支持桌面端、桌面端浏览器 ([bc8c878](https://github.com/terwer/siyuan-plugin-importer/commit/bc8c878351a0642afd6a27a6045674649e57b242))
+* 调整兼容性，最低版本为289，仅支持桌面端 ([93761c9](https://github.com/terwer/siyuan-plugin-importer/commit/93761c908c947c22bde1a35e9fc19292ffcbf29c))
+### Miscellaneous
+* update docs ([27d47e6](https://github.com/terwer/siyuan-plugin-importer/commit/27d47e6c1517303daeb52ca2a6f5de9b9206eb71))
 ## [1.5.3](https://github.com/terwer/siyuan-plugin-importer/compare/v1.5.2...v1.5.3) (2023-05-24)
 ### Bug Fixes
 * 优化移动端图标展示 ([116fe33](https://github.com/terwer/siyuan-plugin-importer/commit/116fe33ffe18f6f1b534a8e005a79eb3b133026a))
@@ -12,10 +28,8 @@
 * 卸载不删除配置 ([a913034](https://github.com/terwer/siyuan-plugin-importer/commit/a9130349120f03e2705d886de9d3a470fa019513))
 * 支持手动清理临时文件 ([5687248](https://github.com/terwer/siyuan-plugin-importer/commit/5687248f1aae2629ced3171f4b15f2def9babca0))
 * 支持md文件导入，md无需转换，其他格式，先转换，后导入
-### Miscellaneous
 * i18n文件夹移动到src目录 ([0234c50](https://github.com/terwer/siyuan-plugin-importer/commit/0234c509a2dbadf851bce73ddc961c305cded145))
 ## [1.5.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.4.1...v1.5.0) (2023-05-19)
-### Features
 * [#20](https://github.com/terwer/siyuan-plugin-importer/issues/20) 导入epub后，里面的图片会出现在未引用资源里面，容易被误清除 ([824cf2a](https://github.com/terwer/siyuan-plugin-importer/commit/824cf2a96f277be058a896c045793f21a44c7b08))
 * 重复导入现在会创建新的文章了
 * 资源文件不在自定义hash命名，直接让导入api自己去处理

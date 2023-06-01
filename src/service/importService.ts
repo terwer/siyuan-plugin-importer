@@ -135,6 +135,7 @@ export class ImportService {
         mdText = exportsFn(mdText)
       } catch (e) {
         showMessage(`${pluginInstance.i18n.customFnHandlerError} ${e.toString()}`, 5000, "error")
+        throw e
       }
     }
 
