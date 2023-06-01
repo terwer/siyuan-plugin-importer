@@ -39,18 +39,27 @@ export class ImportService {
     const fromFilename = file.name
 
     // 修正文件名
-    let filename = fromFilename.substring(0, fromFilename.lastIndexOf("."))
+    const originalFilename = fromFilename.substring(0, fromFilename.lastIndexOf("."))
     // 去除标题多余的空格，包括开始中间以及结尾的空格
-    filename = filename.replace(/\s+/g, "")
+    const filename = originalFilename.replace(/\s+/g, "")
     const toFilename = `${filename}.md`
 
     // 扩展名
     const ext = fromFilename.split(".").pop().toLowerCase()
 
     // md 直接返回
-    if (ext === "md" || ext === "html") {
-      pluginInstance.logger.info(`import md from ${file.path}`)
-      return file.path
+    if (ext === "md") {
+      const filePath = file.path
+      pluginInstance.logger.info(`import md from ${filePath}`)
+      return filePath
+    }
+
+    if (ext === "html") {
+      // 仅在客户端复制资源文件
+      const filePath = file.path
+      const lastSlashIndex = filePath.lastIndexOf("/")
+      const dirPath = filePath.substring(0, lastSlashIndex)
+      pluginInstance.logger.info(`${dirPath}${originalFilename}_files`)
     }
 
     // =================================================

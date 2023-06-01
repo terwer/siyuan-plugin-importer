@@ -225,9 +225,10 @@
     <div class="fn__flex b3-label config__item">
       <div class="fn__flex-1 fn__flex-center">
         {pluginInstance.i18n.importFile}
-        <div class="b3-label__text">
-          <div>{pluginInstance.i18n.importTip}</div>
-          <div class="highlight">{pluginInstance.i18n.importSingleNotice}</div>
+        <div class="b3-label__text tips">
+          <div>{pluginInstance.i18n.importTip} <span class="sign">({pluginInstance.i18n.importTipHelp})</span></div>
+          <div class="highlight">{pluginInstance.i18n.importSingleNotice1}</div>
+          <div class="highlight">{pluginInstance.i18n.importSingleNotice2}</div>
         </div>
       </div>
       <span class="fn__space" />
@@ -249,8 +250,10 @@
       <div class="fn__flex-1 fn__flex-center">
         {pluginInstance.i18n.importFolder}
         <div class="b3-label__text">
-          <div>{pluginInstance.i18n.importFolderTip}</div>
-          <div class="highlight">{pluginInstance.i18n.importNotRecursive}</div>
+          <div>{pluginInstance.i18n.importFolderTip} <span class="sign">({pluginInstance.i18n.importTipHelp})</span></div>
+          <div class="highlight">{pluginInstance.i18n.importNotRecursive1}</div>
+          <div class="highlight">{pluginInstance.i18n.importNotRecursive2}</div>
+          <div class="highlight">{pluginInstance.i18n.importNotRecursive3}</div>
         </div>
       </div>
       <span class="fn__space" />
@@ -284,7 +287,11 @@
       </button>
     </div>
 
-    <div class="fn__flex b3-label config__item">{pluginInstance.i18n.supportedTypes}</div>
+    <div class="fn__flex b3-label config__item">
+      {pluginInstance.i18n.reportBug1}
+      &nbsp;<a href="https://github.com/terwer/siyuan-plugin-importer/issues/new" target="_blank">{pluginInstance.i18n.reportBug2}</a>&nbsp;
+      {pluginInstance.i18n.reportBug3}
+    </div>
   </div>
 </div>
 
@@ -300,10 +307,24 @@
 
   .highlight {
     color: red;
+    display: none; /* 初始状态下隐藏 */
   }
 
   .link {
     color: var(--b3-theme-primary);
     cursor: pointer;
+  }
+
+  .tips{
+    cursor: pointer;
+  }
+
+  .b3-label__text .sign{
+    cursor: pointer;
+    color: var(--b3-theme-primary);
+  }
+
+  .config__item:hover .highlight {
+    display: block;
   }
 </style>
