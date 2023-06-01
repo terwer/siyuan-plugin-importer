@@ -24,7 +24,7 @@ Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats
 **v1.6.0 major update**
 
 ### Features
-* [#47](https://github.com/terwer/siyuan-plugin-importer/issues/47) Import html support images ([870b5fb](https://github.com/terwer/siyuan-plugin-importer /commit/870b5fb24c9806a5844615dfd4c743bec1a75a86))
+* [#47](https://github.com/terwer/siyuan-plugin-importer/issues/47) Import html support images ([870b5fb](https://github.com/terwer/siyuan-plugin-importer/commit/870b5fb24c9806a5844615dfd4c743bec1a75a86))
 * Optimize pandoc parameters ([6e0ca9f](https://github.com/terwer/siyuan-plugin-importer/commit/6e0ca9f6698f8671c90cf36e02175b3cd772dbc2))
 * Optimize icon, new icon, new weather ([d188b74](https://github.com/terwer/siyuan-plugin-importer/commit/d188b745e2e1a9caa60d409829fbc3d9f0ad1c6e))
 * Optimize help documentation ([b626917](https://github.com/terwer/siyuan-plugin-importer/commit/b62691718a46051974637e3d9f020dde639e1e69))
