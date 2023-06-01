@@ -24,9 +24,10 @@
  */
 
 import ImporterPlugin from "./index"
-import { Dialog, isMobile } from "siyuan"
+import { Dialog, getFrontend, Menu } from "siyuan"
 import ImportForm from "./lib/ImportForm.svelte"
-import {iconImporter} from "./utils/svg";
+import { iconImporter } from "./utils/svg"
+import ImportSetting from "./lib/ImportSetting.svelte"
 
 /**
  * 顶栏按钮
@@ -45,12 +46,15 @@ export async function initTopbar(pluginInstance: ImporterPlugin) {
       pluginInstance.logger.info(`this.i18n.importer added toolbar`)
     },
   })
+
   topBarElement.addEventListener("click", async () => {
+    const frontEnd = getFrontend()
+    const isMobile = frontEnd === "mobile" || frontEnd === "browser-mobile"
     const importFormId = "siyuan-import-form"
     const d = new Dialog({
       title: `${pluginInstance.i18n.selectFile} - ${pluginInstance.i18n.importer}`,
       content: `<div id="${importFormId}"></div>`,
-      width: isMobile() ? "92vw" : "720px",
+      width: isMobile ? "92vw" : "720px",
     })
     new ImportForm({
       target: document.getElementById(importFormId) as HTMLElement,
@@ -60,4 +64,49 @@ export async function initTopbar(pluginInstance: ImporterPlugin) {
       },
     })
   })
+
+  // 添加右键菜单
+  topBarElement.addEventListener("contextmenu", () => {
+    let rect = topBarElement.getBoundingClientRect()
+    // 如果获取不到宽度，则使用更多按钮的宽度
+    if (rect.width === 0) {
+      rect = document.querySelector("#barMore").getBoundingClientRect()
+    }
+    initContextMenu(pluginInstance, rect)
+  })
+
+  const initContextMenu = async (pluginInstance: ImporterPlugin, rect: DOMRect) => {
+    const menu = new Menu("importerContextMenu")
+
+    // 设置
+    menu.addItem({
+      iconHTML: iconImporter.iconSetting,
+      label: pluginInstance.i18n.setting,
+      click: () => {
+        const settingId = "siyuan-importing-setting"
+        const d = new Dialog({
+          title: `${pluginInstance.i18n.setting} - ${pluginInstance.i18n.importer}`,
+          content: `<div id="${settingId}"></div>`,
+          width: pluginInstance.isMobile ? "92vw" : "720px",
+        })
+        new ImportSetting({
+          target: document.getElementById(settingId) as HTMLElement,
+          props: {
+            pluginInstance: pluginInstance,
+            dialog: d,
+          },
+        })
+      },
+    })
+
+    if (pluginInstance.isMobile) {
+      menu.fullscreen()
+    } else {
+      menu.open({
+        x: rect.right,
+        y: rect.bottom,
+        isLeft: true,
+      })
+    }
+  }
 }

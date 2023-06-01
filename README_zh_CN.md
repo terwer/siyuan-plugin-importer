@@ -2,9 +2,9 @@
 
 # 导入工具
 
-![](https://raw.githubusercontent.com/terwer/siyuan-plugin-importer/main/icon.png)
+<img src="./icon.png" width="160" height="160" alt="icon">
 
-将 epub, docx, html 等格式的文件导入到思源笔记。目前支持的格式：.epub, .docx, .html, .opml。
+将 md, epub, docx, html 等格式的文件导入到思源笔记。目前支持的格式：.md, .epub, .docx, .html, .opml。
 
 ## 核心特色
 
@@ -18,6 +18,10 @@
   A1：找到 **`集市->插件->导入工具`** 下载启用即可。
 
   安装完成后，在顶部右侧工具栏找到 `导入工具` 图标，点击按照弹窗操作即可。
+
+* Q2: 能到支持 mobi 文件？能否支持 Markdown 文件夹？
+
+  A2：参考 https://github.com/terwer/siyuan-plugin-importer/issues/31 ，可先用 https://products.aspose.app/words/conversion/mobi-to-md 转换，然后用笔记本自带的导入文件夹实现。功能重叠，插件暂不做了。
 
 ## 更新历史
 **v1.5.3 主要更新**

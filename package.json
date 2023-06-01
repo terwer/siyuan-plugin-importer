@@ -19,23 +19,24 @@
     "package": "python scripts/package.py"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^2.0.3",
+    "@sveltejs/vite-plugin-svelte": "^2.4.1",
     "@terwer/eslint-config-custom": "^1.2.0",
     "@tsconfig/svelte": "^4.0.1",
-    "@types/node": "16",
+    "@types/node": "^16.18.34",
     "fast-glob": "^3.2.12",
     "glob": "^7.2.3",
     "minimist": "^1.2.8",
     "rollup-plugin-livereload": "^2.0.5",
-    "siyuan": "^0.7.1",
+    "siyuan": "^0.7.2",
     "stylus": "^0.59.0",
-    "svelte": "^3.57.0",
+    "svelte": "^3.59.1",
     "ts-node": "^10.9.1",
-    "vite": "^4.3.7",
+    "vite": "^4.3.9",
     "vite-plugin-static-copy": "^0.15.0",
-    "vitest": "^0.31.1"
+    "vitest": "^0.31.3"
   },
   "dependencies": {
-    "shorthash2": "^1.0.3"
+    "shorthash2": "^1.0.3",
+    "zhi-lib-base": "^0.0.2"
   }
 }

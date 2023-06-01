@@ -24,12 +24,12 @@
   -->
 
 <script lang="ts">
-  import { showMessage } from "siyuan"
   import ImporterPlugin from "../index"
-  import { removeEmptyLines, removeFootnotes, removeLinks, replaceImagePath } from "../utils/utils"
-  import { onMount } from "svelte"
   import { loadImporterConfig, saveImporterConfig } from "../store/config"
-  import { isDev, workspaceDir } from "../Constants"
+  import { showMessage, confirm } from "siyuan"
+  import { onMount } from "svelte"
+  import { ImportService } from "../service/importService"
+  import { workspaceDir } from "../Constants"
 
   export let pluginInstance: ImporterPlugin
   export let dialog
@@ -38,9 +38,93 @@
   let notebooks = []
   let toNotebookId
   let toNotebookName
-  //用户指南不应该作为可以写入的笔记本
+  // 用户指南不应该作为可以写入的笔记本
   const hiddenNotebook: Set<string> = new Set(["思源笔记用户指南", "SiYuan User Guide"])
   let tempCount = 0
+  const allowedMultiExtensions = ["docx", "epub", "opml"]
+
+  // events
+  const notebookChange = async function () {
+    // 显示当前选择的名称
+    const currentNotebook = notebooks.find((n) => n.id === toNotebookId)
+    toNotebookName = currentNotebook.name
+
+    importerConfig = await loadImporterConfig(pluginInstance)
+    importerConfig.notebook = toNotebookId
+
+    await saveImporterConfig(pluginInstance, importerConfig)
+    pluginInstance.logger.info(`${pluginInstance.i18n.notebookConfigUpdated}=>`, toNotebookId)
+  }
+
+  const cleanTemp = async () => {
+    const tempPath = `/temp/convert/pandoc`
+    await pluginInstance.kernelApi.removeFile(`${tempPath}`)
+    await reloadTempFiles()
+
+    showMessage(pluginInstance.i18n.msgTempFileCleaned, 5000, "info")
+  }
+
+  // lifecycle
+  onMount(async () => {
+    await reloadTempFiles()
+
+    // 加载配置
+    importerConfig = await loadImporterConfig(pluginInstance)
+
+    const res = await pluginInstance.kernelApi.lsNotebooks()
+    const data = res.data as any
+    notebooks = data.notebooks ?? []
+    // 没有必要把所有笔记本都列出来
+    notebooks = notebooks.filter((notebook) => !notebook.closed && !hiddenNotebook.has(notebook.name))
+    // 选中，若是没保存，获取第一个
+    toNotebookId = importerConfig?.notebook ?? notebooks[0].id
+    const currentNotebook = notebooks.find((n) => n.id === toNotebookId)
+    toNotebookName = currentNotebook.name
+
+    pluginInstance.logger.info(`${pluginInstance.i18n.selected} [${toNotebookName}] toNotebookId=>`, toNotebookId)
+  })
+
+  // utils
+  const reloadTempFiles = async () => {
+    const tempPath = `/temp/convert/pandoc`
+    // 临时文件
+    const tempFiles = await pluginInstance.kernelApi.readDir(tempPath)
+    if (tempFiles.code === 0 && tempFiles.data.length > 0) {
+      tempCount = tempFiles.data.length
+    }
+    if (tempFiles.code === 404) {
+      tempCount = 0
+    }
+  }
+  /**
+   * 读取文件
+   * @param entry
+   */
+  const readFile = async (entry) => {
+    const file = await entry.getFile()
+    const reader = new FileReader()
+    reader.readAsArrayBuffer(file)
+    return new Promise((resolve, reject) => {
+      reader.onload = () => {
+        const arrayBuffer = reader.result
+        const fileContent = new Blob([arrayBuffer], { type: file.type })
+        const fileName = file.name
+        resolve(new File([fileContent], fileName))
+      }
+      reader.onerror = reject
+    })
+  }
+
+  const openTempFolder = () => {
+    confirm("⚠️临时文件路径", `${workspaceDir}/temp/convert/pandoc`, () => {})
+  }
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      // 处理按键事件
+      event.preventDefault()
+    }
+  }
 
   // =================
   // 单文件转换开始
@@ -63,68 +147,11 @@
 
     // 给个提示，免得用户以为界面是卡主了
     showMessage(`${pluginInstance.i18n.msgConverting} ${file.name}...`, 1000, "info")
-    await doImport(file)
-  }
 
-  const doImport = async function (file: any) {
-    const fromFilename = file.name
-    let filename = fromFilename.substring(0, fromFilename.lastIndexOf("."))
-    // 去除标题多余的空格，包括开始中间以及结尾的空格
-    filename = filename.replace(/\s+/g, "")
-
-    const fromFilePath = `/temp/convert/pandoc/${fromFilename}`
-    const uploadResult = await pluginInstance.kernelApi.putFile(fromFilePath, file)
-    if (uploadResult.code !== 0) {
-      showMessage(`${pluginInstance.i18n.msgFileUploadError}：${uploadResult.msg}`, 7000, "error")
-      return
-    }
-
-    // 文件转换
-    let toFilename = `${filename}.md`
-    let toFilePath = `/temp/convert/pandoc/${toFilename}`
-    const ext = fromFilename.split(".").pop().toLowerCase()
-    // 不是 md 才需要转换
-    if (ext !== "md") {
-      const convertResult = await pluginInstance.kernelApi.convertPandoc(
-        "markdown_strict-raw_html",
-        fromFilename,
-        toFilename
-      )
-      if (convertResult.code !== 0) {
-        showMessage(`${pluginInstance.i18n.msgFileConvertError}：${convertResult.msg}`, 7000, "error")
-        return
-      }
-
-      // 读取文件
-      let mdText = (await pluginInstance.kernelApi.getFile(toFilePath, "text")) ?? ""
-      if (mdText === "") {
-        showMessage(pluginInstance.i18n.msgFileConvertEmpty, 7000, "error")
-        return
-      }
-
-      // 文本处理
-      // 删除目录中链接
-      mdText = removeLinks(mdText)
-      // 去除空行
-      mdText = removeEmptyLines(mdText)
-      // 资源路径
-      mdText = replaceImagePath(mdText)
-      // 去除脚注
-      mdText = removeFootnotes(mdText)
-      await pluginInstance.kernelApi.saveTextData(`${toFilename}`, mdText)
-    }
-
-    // 导入 MD 文档
-    const localPath = `${workspaceDir}/temp/convert/pandoc/${toFilename}`
-    const mdResult = await pluginInstance.kernelApi.importStdMd(localPath, toNotebookId, `/`)
-    if (mdResult.code !== 0) {
-      showMessage(`${pluginInstance.i18n.msgDocCreateFailed}=>${toFilePath}`, 7000, "error")
-    }
-
-    // 打开笔记本
-    await pluginInstance.kernelApi.openNotebook(toNotebookId)
-
-    showMessage(pluginInstance.i18n.msgImportSuccess, 5000, "info")
+    // 转换
+    const uploadResult = await ImportService.uploadAndConvert(pluginInstance, file)
+    // 导入
+    await ImportService.singleImport(pluginInstance, uploadResult.toFilePath, toNotebookId, uploadResult.isMd)
   }
   // =================
   // 单文件转换结束
@@ -143,8 +170,6 @@
     const result = await window.showDirectoryPicker()
     dialog.destroy()
 
-    const allowedExtensions = ["docx", "epub", "md", "html", "opml"]
-
     const entries = await result.values()
     for await (const entry of entries) {
       if (entry.kind === "directory") {
@@ -154,7 +179,7 @@
       const fileName = entry.name
       const ext = fileName.split(".").pop().toLowerCase()
 
-      if (!allowedExtensions.includes(ext)) {
+      if (!allowedMultiExtensions.includes(ext)) {
         console.warn(`${pluginInstance.i18n.importTipNotAllowed} ${fileName}`)
         continue
       }
@@ -162,148 +187,25 @@
       // 循环上传并转换
       showMessage(`${fileName} ${pluginInstance.i18n.msgConverting}...`, 5000, "info")
       const file = await readFile(entry)
-      await doUploadAndConvert(file)
+      await ImportService.uploadAndConvert(pluginInstance, file)
     }
 
-    // 文件夹批量导入
-    await doBatchImport()
-  }
-
-  const doUploadAndConvert = async (file: any) => {
-    const fromFilename = file.name
-    let filename = fromFilename.substring(0, fromFilename.lastIndexOf("."))
-    // 去除标题多余的空格，包括开始中间以及结尾的空格
-    filename = filename.replace(/\s+/g, "")
-
-    const fromFilePath = `/temp/convert/pandoc/${fromFilename}`
-    const uploadResult = await pluginInstance.kernelApi.putFile(fromFilePath, file)
-    if (uploadResult.code !== 0) {
-      showMessage(`${pluginInstance.i18n.msgFileUploadError}：${uploadResult.msg}`, 7000, "error")
-      return
-    }
-
-    // 文件转换
-    let toFilename = `${filename}.md`
-    let toFilePath = `/temp/convert/pandoc/${toFilename}`
-    const ext = fromFilename.split(".").pop().toLowerCase()
-    // 不是 md 才需要转换
-    if (ext !== "md") {
-      const convertResult = await pluginInstance.kernelApi.convertPandoc(
-        "markdown_strict-raw_html",
-        fromFilename,
-        toFilename
-      )
-      if (convertResult.code !== 0) {
-        showMessage(`${pluginInstance.i18n.msgFileConvertError}：${convertResult.msg}`, 7000, "error")
-        return
-      }
-
-      // 读取文件
-      let mdText = (await pluginInstance.kernelApi.getFile(toFilePath, "text")) ?? ""
-      if (mdText === "") {
-        showMessage(pluginInstance.i18n.msgFileConvertEmpty, 7000, "error")
-        return
-      }
-
-      // 文本处理
-      // 删除目录中链接
-      mdText = removeLinks(mdText)
-      // 去除空行
-      mdText = removeEmptyLines(mdText)
-      // 资源路径
-      mdText = replaceImagePath(mdText)
-      // 去除脚注
-      mdText = removeFootnotes(mdText)
-      await pluginInstance.kernelApi.saveTextData(`${toFilename}`, mdText)
-    }
-  }
-
-  const doBatchImport = async () => {
-    // 导入 MD 文档
-    const localPath = `${workspaceDir}/temp/convert/pandoc`
-    const mdResult = await pluginInstance.kernelApi.importStdMd(localPath, toNotebookId, `/`)
-    if (mdResult.code !== 0) {
-      showMessage(`${pluginInstance.i18n.msgDocCreateFailed}=>${toFilePath}`, 7000, "error")
-    }
-
-    // 打开笔记本
-    await pluginInstance.kernelApi.openNotebook(toNotebookId)
-
-    showMessage(pluginInstance.i18n.msgImportSuccess, 5000, "info")
-  }
-
-  /**
-   * 读取文件
-   * @param entry
-   */
-  const readFile = async (entry) => {
-    const file = await entry.getFile()
-    const reader = new FileReader()
-    reader.readAsArrayBuffer(file)
-    return new Promise((resolve, reject) => {
-      reader.onload = () => {
-        const arrayBuffer = reader.result
-        const fileContent = new Blob([arrayBuffer], { type: file.type })
-        const fileName = file.name
-        resolve(new File([fileContent], fileName))
-      }
-      reader.onerror = reject
-    })
+    // 批量导入
+    await ImportService.multiImport(pluginInstance, toNotebookId)
   }
   // =================
   // 批量转换结束
   // =================
 
-  const cleanTemp = async () => {
-    const tempPath = `/temp/convert/pandoc`
-    await pluginInstance.kernelApi.removeFile(`${tempPath}`)
-    await reloadTempFiles()
-
-    showMessage(pluginInstance.i18n.msgTempFileCleaned, 5000, "info")
+  let showSingleImportTip = false
+  let showMultiImportTip = false
+  const toggleSingleHighlight = () => {
+    showSingleImportTip = !showSingleImportTip
   }
-
-  const notebookChange = async function () {
-    // 显示当前选择的名称
-    const currentNotebook = notebooks.find((n) => n.id === toNotebookId)
-    toNotebookName = currentNotebook.name
-
-    importerConfig = await loadImporterConfig(pluginInstance)
-    importerConfig.notebook = toNotebookId
-
-    await saveImporterConfig(pluginInstance, importerConfig)
-    pluginInstance.logger.info(`${pluginInstance.i18n.notebookConfigUpdated}=>`, toNotebookId)
+  const toggleMultiHighlight = () => {
+    showMultiImportTip = !showMultiImportTip
+    console.log(showMultiImportTip)
   }
-
-  const reloadTempFiles = async () => {
-    const tempPath = `/temp/convert/pandoc`
-    // 临时文件
-    const tempFiles = await pluginInstance.kernelApi.readDir(tempPath)
-    if (tempFiles.code === 0 && tempFiles.data.length > 0) {
-      tempCount = tempFiles.data.length
-    }
-    if (tempFiles.code === 404) {
-      tempCount = 0
-    }
-  }
-
-  onMount(async () => {
-    await reloadTempFiles()
-
-    // 加载配置
-    importerConfig = await loadImporterConfig(pluginInstance)
-
-    const res = await pluginInstance.kernelApi.lsNotebooks()
-    const data = res.data as any
-    notebooks = data.notebooks ?? []
-    // 没有必要把所有笔记本都列出来
-    notebooks = notebooks.filter((notebook) => !notebook.closed && !hiddenNotebook.has(notebook.name))
-    // 选中，若是没保存，获取第一个
-    toNotebookId = importerConfig?.notebook ?? notebooks[0].id
-    const currentNotebook = notebooks.find((n) => n.id === toNotebookId)
-    toNotebookName = currentNotebook.name
-
-    pluginInstance.logger.info(`${pluginInstance.i18n.selected} [${toNotebookName}] toNotebookId=>`, toNotebookId)
-  })
 </script>
 
 <div class="b3-dialog__content importer-form-container">
@@ -325,7 +227,6 @@
         {#each notebooks as notebook}
           <option value={notebook.id}>{notebook.name}</option>
         {:else}
-          <!-- this block renders when photos.length === 0 -->
           <option value="0">{pluginInstance.i18n.loading}...</option>
         {/each}
       </select>
@@ -334,7 +235,12 @@
     <div class="fn__flex b3-label config__item">
       <div class="fn__flex-1 fn__flex-center">
         {pluginInstance.i18n.importFile}
-        <div class="b3-label__text">{pluginInstance.i18n.importTip}</div>
+        <div class="b3-label__text tips" on:click={toggleSingleHighlight} on:keydown={handleKeyDown}>
+          <div>{pluginInstance.i18n.importTip} <span class={showSingleImportTip ? "sign hidden" : "sign"}>({pluginInstance.i18n.importTipHelp})</span></div>
+          <div class={showSingleImportTip ? "highlight" : "highlight hidden"}>{pluginInstance.i18n.importSingleNotice1}</div>
+          <div class={showSingleImportTip ? "highlight" : "highlight hidden"}>{pluginInstance.i18n.importSingleNotice2}</div>
+          <div class={showSingleImportTip ? "highlight" : "highlight hidden"}>{pluginInstance.i18n.importSingleNotice3}</div>
+        </div>
       </div>
       <span class="fn__space" />
       <button class="b3-button b3-button--outline fn__flex-center fn__size200" style="position: relative">
@@ -354,8 +260,19 @@
     <div class="fn__flex b3-label config__item">
       <div class="fn__flex-1 fn__flex-center">
         {pluginInstance.i18n.importFolder}
-        <div class="b3-label__text">
-          {pluginInstance.i18n.importFolderTip}<span class="selected">{pluginInstance.i18n.importNotRecursive}</span>
+        <div class="b3-label__text tips" on:click={toggleMultiHighlight} on:keydown={handleKeyDown}>
+          <div>
+            {pluginInstance.i18n.importFolderTip} <span class={showMultiImportTip ? "sign hidden" : "sign"}>({pluginInstance.i18n.importTipHelp})</span>
+          </div>
+          <div class={showMultiImportTip ? "highlight" : "highlight hidden"}>
+            {pluginInstance.i18n.importNotRecursive1}
+          </div>
+          <div class={showMultiImportTip ? "highlight" : "highlight hidden"}>
+            {pluginInstance.i18n.importNotRecursive2}
+          </div>
+          <div class={showMultiImportTip ? "highlight" : "highlight hidden"}>
+            {pluginInstance.i18n.importNotRecursive3}
+          </div>
         </div>
       </div>
       <span class="fn__space" />
@@ -373,6 +290,8 @@
         <div class="b3-label__text">
           {pluginInstance.i18n.tempTotal} <span class="selected"> [ {tempCount} ] </span>
           {pluginInstance.i18n.tempCount}
+
+          <span class="link" on:click={openTempFolder} on:keydown={handleKeyDown}>显示临时文件夹路径</span>
         </div>
       </div>
       <span class="fn__space" />
@@ -387,7 +306,13 @@
       </button>
     </div>
 
-    <div class="fn__flex b3-label config__item">{pluginInstance.i18n.supportedTypes}</div>
+    <div class="fn__flex b3-label config__item">
+      {pluginInstance.i18n.reportBug1}
+      &nbsp;<a href="https://github.com/terwer/siyuan-plugin-importer/issues/new" target="_blank"
+        >{pluginInstance.i18n.reportBug2}</a
+      >&nbsp;
+      {pluginInstance.i18n.reportBug3}
+    </div>
   </div>
 </div>
 
@@ -399,5 +324,27 @@
   .selected {
     color: red;
     padding: 0 4px;
+  }
+
+  .highlight {
+    color: red;
+  }
+
+  .link {
+    color: var(--b3-theme-primary);
+    cursor: pointer;
+  }
+
+  .tips {
+    cursor: pointer;
+  }
+
+  .b3-label__text .sign {
+    cursor: pointer;
+    color: var(--b3-theme-primary);
+  }
+
+  .highlight.hidden,.sign.hidden {
+    display: none;
   }
 </style>
