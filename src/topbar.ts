@@ -24,7 +24,7 @@
  */
 
 import ImporterPlugin from "./index"
-import { Dialog, isMobile } from "siyuan"
+import { Dialog, getFrontend } from "siyuan"
 import ImportForm from "./lib/ImportForm.svelte"
 import { iconImporter } from "./utils/svg"
 
@@ -46,11 +46,13 @@ export async function initTopbar(pluginInstance: ImporterPlugin) {
     },
   })
   topBarElement.addEventListener("click", async () => {
+    const frontEnd = getFrontend()
+    const isMobile = frontEnd === "mobile" || frontEnd === "browser-mobile"
     const importFormId = "siyuan-import-form"
     const d = new Dialog({
       title: `${pluginInstance.i18n.selectFile} - ${pluginInstance.i18n.importer}`,
       content: `<div id="${importFormId}"></div>`,
-      width: isMobile() ? "92vw" : "720px",
+      width: isMobile ? "92vw" : "720px",
     })
     new ImportForm({
       target: document.getElementById(importFormId) as HTMLElement,
