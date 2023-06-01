@@ -20,6 +20,23 @@ Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats
   After the installation is complete, find the `Importer` icon on the top right toolbar, and click to follow the pop-up window.
 
 ## Changelog
+
+**v1.6.0 major update**
+
+### Features
+* [#47](https://github.com/terwer/siyuan-plugin-importer/issues/47) Import html support images ([870b5fb](https://github.com/terwer/siyuan-plugin-importer /commit/870b5fb24c9806a5844615dfd4c743bec1a75a86))
+* Optimize pandoc parameters ([6e0ca9f](https://github.com/terwer/siyuan-plugin-importer/commit/6e0ca9f6698f8671c90cf36e02175b3cd772dbc2))
+* Optimize icon, new icon, new weather ([d188b74](https://github.com/terwer/siyuan-plugin-importer/commit/d188b745e2e1a9caa60d409829fbc3d9f0ad1c6e))
+* Optimize help documentation ([b626917](https://github.com/terwer/siyuan-plugin-importer/commit/b62691718a46051974637e3d9f020dde639e1e69))
+* Optimize interface interaction ([ef435aa](https://github.com/terwer/siyuan-plugin-importer/commit/ef435aa6a51477874a740ed3a35a90be589334ca))
+* Optimize conversion parameters ([843446a](https://github.com/terwer/siyuan-plugin-importer/commit/843446abe3279282b482443d89430010857f7927))
+* Upgrade siyuan to 0.7.2, compatible with latest api, solve ismobile error problem ([531628f](https://github.com/terwer/siyuan-plugin-importer/commit/531628f41b197e2791efa35bf53263b7e0e5af12))
+* Import md support resource files ([33a20c7](https://github.com/terwer/siyuan-plugin-importer/commit/33a20c7cdd19991235b507194c23a4017e3c872a))
+* Support custom processing functions, support disabling built-in processing functions ([f5452e2](https://github.com/terwer/siyuan-plugin-importer/commit/f5452e22a3e75f728676d5ca51766e199bccb61e))
+* Add custom processing function configuration ([f4a28a7](https://github.com/terwer/siyuan-plugin-importer/commit/f4a28a7b87e47124ab5bbb562686d6e91425701e))
+* Display temporary folder path, support desktop and desktop browsers ([bc8c878](https://github.com/terwer/siyuan-plugin-importer/commit/bc8c878351a0642afd6a27a6045674649e57b242))
+* Adjust the compatibility, the minimum version is 289, only support desktop ([93761c9](https://github.com/terwer/siyuan-plugin-importer/commit/93761c908c947c22bde1a35e9fc19292ffcbf29c))
+
 **v1.5.3 major update**
 * Optimize the icon display on the mobile terminal, note: there is no pandoc on the mobile terminal, and the import function is temporarily unavailable
 
