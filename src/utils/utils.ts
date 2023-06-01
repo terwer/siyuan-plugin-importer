@@ -146,6 +146,11 @@ export const copyDir = async (src, dest) => {
   const fs = window.require("fs")
   const path = window.require("path")
 
+  if(!fs.existsSync(src)){
+    console.warn("Can not get path")
+    return
+  }
+
   // 创建文件夹
   if (!fs.existsSync(dest)) {
     await mkdirp(dest)

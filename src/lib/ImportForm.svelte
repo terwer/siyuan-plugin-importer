@@ -41,7 +41,7 @@
   // 用户指南不应该作为可以写入的笔记本
   const hiddenNotebook: Set<string> = new Set(["思源笔记用户指南", "SiYuan User Guide"])
   let tempCount = 0
-  const allowedExtensions = ["docx", "epub", "md", "html", "opml"]
+  const allowedMultiExtensions = ["docx", "epub", "opml"]
 
   // events
   const notebookChange = async function () {
@@ -151,7 +151,7 @@
     // 转换
     const uploadResult = await ImportService.uploadAndConvert(pluginInstance, file)
     // 导入
-    await ImportService.singleImport(pluginInstance, uploadResult.toFilePath, toNotebookId,uploadResult.isMd)
+    await ImportService.singleImport(pluginInstance, uploadResult.toFilePath, toNotebookId, uploadResult.isMd)
   }
   // =================
   // 单文件转换结束
@@ -179,7 +179,7 @@
       const fileName = entry.name
       const ext = fileName.split(".").pop().toLowerCase()
 
-      if (!allowedExtensions.includes(ext)) {
+      if (!allowedMultiExtensions.includes(ext)) {
         console.warn(`${pluginInstance.i18n.importTipNotAllowed} ${fileName}`)
         continue
       }
@@ -196,6 +196,16 @@
   // =================
   // 批量转换结束
   // =================
+
+  let showSingleImportTip = false
+  let showMultiImportTip = false
+  const toggleSingleHighlight = () => {
+    showSingleImportTip = !showSingleImportTip
+  }
+  const toggleMultiHighlight = () => {
+    showMultiImportTip = !showMultiImportTip
+    console.log(showMultiImportTip)
+  }
 </script>
 
 <div class="b3-dialog__content importer-form-container">
@@ -225,10 +235,11 @@
     <div class="fn__flex b3-label config__item">
       <div class="fn__flex-1 fn__flex-center">
         {pluginInstance.i18n.importFile}
-        <div class="b3-label__text tips">
-          <div>{pluginInstance.i18n.importTip} <span class="sign">({pluginInstance.i18n.importTipHelp})</span></div>
-          <div class="highlight">{pluginInstance.i18n.importSingleNotice1}</div>
-          <div class="highlight">{pluginInstance.i18n.importSingleNotice2}</div>
+        <div class="b3-label__text tips" on:click={toggleSingleHighlight} on:keydown={handleKeyDown}>
+          <div>{pluginInstance.i18n.importTip} <span class={showSingleImportTip ? "sign hidden" : "sign"}>({pluginInstance.i18n.importTipHelp})</span></div>
+          <div class={showSingleImportTip ? "highlight" : "highlight hidden"}>{pluginInstance.i18n.importSingleNotice1}</div>
+          <div class={showSingleImportTip ? "highlight" : "highlight hidden"}>{pluginInstance.i18n.importSingleNotice2}</div>
+          <div class={showSingleImportTip ? "highlight" : "highlight hidden"}>{pluginInstance.i18n.importSingleNotice3}</div>
         </div>
       </div>
       <span class="fn__space" />
@@ -249,11 +260,19 @@
     <div class="fn__flex b3-label config__item">
       <div class="fn__flex-1 fn__flex-center">
         {pluginInstance.i18n.importFolder}
-        <div class="b3-label__text">
-          <div>{pluginInstance.i18n.importFolderTip} <span class="sign">({pluginInstance.i18n.importTipHelp})</span></div>
-          <div class="highlight">{pluginInstance.i18n.importNotRecursive1}</div>
-          <div class="highlight">{pluginInstance.i18n.importNotRecursive2}</div>
-          <div class="highlight">{pluginInstance.i18n.importNotRecursive3}</div>
+        <div class="b3-label__text tips" on:click={toggleMultiHighlight} on:keydown={handleKeyDown}>
+          <div>
+            {pluginInstance.i18n.importFolderTip} <span class={showMultiImportTip ? "sign hidden" : "sign"}>({pluginInstance.i18n.importTipHelp})</span>
+          </div>
+          <div class={showMultiImportTip ? "highlight" : "highlight hidden"}>
+            {pluginInstance.i18n.importNotRecursive1}
+          </div>
+          <div class={showMultiImportTip ? "highlight" : "highlight hidden"}>
+            {pluginInstance.i18n.importNotRecursive2}
+          </div>
+          <div class={showMultiImportTip ? "highlight" : "highlight hidden"}>
+            {pluginInstance.i18n.importNotRecursive3}
+          </div>
         </div>
       </div>
       <span class="fn__space" />
@@ -289,7 +308,9 @@
 
     <div class="fn__flex b3-label config__item">
       {pluginInstance.i18n.reportBug1}
-      &nbsp;<a href="https://github.com/terwer/siyuan-plugin-importer/issues/new" target="_blank">{pluginInstance.i18n.reportBug2}</a>&nbsp;
+      &nbsp;<a href="https://github.com/terwer/siyuan-plugin-importer/issues/new" target="_blank"
+        >{pluginInstance.i18n.reportBug2}</a
+      >&nbsp;
       {pluginInstance.i18n.reportBug3}
     </div>
   </div>
@@ -307,7 +328,6 @@
 
   .highlight {
     color: red;
-    display: none; /* 初始状态下隐藏 */
   }
 
   .link {
@@ -315,16 +335,16 @@
     cursor: pointer;
   }
 
-  .tips{
+  .tips {
     cursor: pointer;
   }
 
-  .b3-label__text .sign{
+  .b3-label__text .sign {
     cursor: pointer;
     color: var(--b3-theme-primary);
   }
 
-  .b3-label__text:hover .highlight {
-    display: block;
+  .highlight.hidden,.sign.hidden {
+    display: none;
   }
 </style>
