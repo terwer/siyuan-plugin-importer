@@ -45,5 +45,8 @@
   "customFnHandlerPlaceholder": "Custom handler",
   "enableCustomFn": "Enable custom functions",
   "enableCustomFnTips": "Are you sure you want to enable custom functions? This action may cause imports to be unavailable. Please confirm that you have understood how custom functions work?",
-  "importConfigSaveSuccess": "Configuration saved successfully"
+  "importConfigSaveSuccess": "Configuration saved successfully",
+  "testOutputPlaceholder": "Here is the output of the test",
+  "testInput": "Test input",
+  "testOutput": "Test output"
 }

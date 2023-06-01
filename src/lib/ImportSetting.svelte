@@ -28,10 +28,12 @@
   import { onMount } from "svelte"
   import { confirm, showMessage } from "siyuan"
   import { loadImporterConfig, saveImporterConfig } from "../store/config"
+  import { getExports } from "../utils/utils"
 
   export let pluginInstance: ImporterPlugin
   export let dialog
 
+  let bundledFnSwitch = true
   let customFnSwitch = false
   let customFn
   let importerConfig = {}
@@ -39,6 +41,7 @@
   const onSaveSetting = async () => {
     dialog.destroy()
 
+    importerConfig.bundledFnSwitch = bundledFnSwitch
     importerConfig.customFnSwitch = customFnSwitch
     importerConfig.customFn = customFn
     await saveImporterConfig(pluginInstance, importerConfig)
@@ -68,25 +71,72 @@
     }
   }
 
+  const updateBundledFnSwitch = (event) => {
+    event.stopPropagation()
+
+    if (bundledFnSwitch) {
+      confirm(
+        `⚠️${pluginInstance.i18n.bundledFnSwitch}`,
+        `${pluginInstance.i18n.disableBundledFnSwitchTips}`,
+        () => {
+          const inputEl = document.querySelector("#bundledFnSwitch")
+          inputEl.checked = bundledFnSwitch
+        },
+        () => {
+          bundledFnSwitch = !bundledFnSwitch
+        }
+      )
+    }
+  }
+
+  let testInput = `我衷心期盼，子孙后代们读到这封信时，会带着一种自豪感和正当的优越感。
+
+## 评伯特兰·罗素的知识论^([\\[16\\]](#part0019.html#footnote_16))
+
+当编者要我就罗素写点东西时，出于对这位作者的钦佩和尊敬，我立刻答应了下来。`
+  let testOutput = ""
+  const testFn = () => {
+    const exportsFn = getExports(customFn)
+    const result = exportsFn(testInput)
+    testOutput = result
+    console.log("test exportsFn=>", result)
+  }
+
   onMount(async () => {
     // 加载配置
     importerConfig = await loadImporterConfig(pluginInstance)
 
+    bundledFnSwitch = importerConfig.bundledFnSwitch ?? true
     customFnSwitch = importerConfig.customFnSwitch ?? false
     customFn =
       importerConfig.customFn ??
-      `
-    // 您可以参考这个案例进行修改，注意：请勿修改方法名，只需修改实现即可
-    // 将字符串中形如"xxx^yyy"的部分替换成"xxx"
-    export function customFn(mdText) {
-      const regex = /\\^\\(\\[.*[0-9].*]\\(#.*#.*\\)\\)/g // 匹配格式为 ^[[数字]](#链接) 的脚注
-      return mdText.replace(regex, "") // 使用空字符串替换匹配到的脚注
-    }
-    `
+      `// 您可以参考这个案例进行修改，注意：请勿修改方法名和参数名，只需修改customFn内部实现即可
+// 将字符串中形如"xxx^yyy"的部分替换成"xxx"
+const customFn = (mdText) => {
+  const regex = /\\^\\(\\[.*[0-9].*]\\(#.*#.*\\)\\)/g // 匹配格式为 ^[[数字]](#链接) 的脚注
+  return mdText.replace(regex, "") // 使用空字符串替换匹配到的脚注
+}
+
+module.exports = customFn`
   })
 </script>
 
 <div class="config__tab-container">
+  <label class="fn__flex b3-label">
+    <div class="fn__flex-1">
+      {pluginInstance.i18n.bundledFnSwitch}
+      <div class="b3-label__text">{pluginInstance.i18n.bundledFnSwitchTips}</div>
+    </div>
+    <span class="fn__space" />
+    <input
+      id="bundledFnSwitch"
+      class="b3-switch fn__flex-center"
+      type="checkbox"
+      on:click={(event) => updateBundledFnSwitch(event)}
+      bind:checked={bundledFnSwitch}
+    />
+  </label>
+
   <label class="fn__flex b3-label">
     <div class="fn__flex-1">
       {pluginInstance.i18n.customFnSwitch}
@@ -113,9 +163,26 @@
       <textarea
         class="b3-text-field fn__block"
         placeholder={pluginInstance.i18n.customFnHandlerPlaceholder}
-        rows="10"
+        rows="8"
         spellcheck="false"
         bind:value={customFn}
+      />
+    </div>
+  </label>
+
+  <label class="fn__flex b3-label">
+    <div class="fn__flex-1">
+      <button class="b3-button b3-button--outline fn__flex-right fn__size200" on:click={testFn}> 测试 </button>
+      <div class="fn__hr" />
+      {pluginInstance.i18n.testInput}
+      <textarea class="b3-text-field fn__block test-data-item" rows="6" spellcheck="false" bind:value={testInput} />
+      {pluginInstance.i18n.testOutput}
+      <textarea
+        class="b3-text-field fn__block test-data-item"
+        placeholder={pluginInstance.i18n.testOutputPlaceholder}
+        rows="6"
+        spellcheck="false"
+        bind:value={testOutput}
       />
     </div>
   </label>
@@ -126,3 +193,8 @@
     <button class="b3-button b3-button--text" on:click={onSaveSetting}>{pluginInstance.i18n.save}</button>
   </div>
 </div>
+
+<style lang="stylus">
+.test-data-item
+  margin 4px 0
+</style>

@@ -26,8 +26,17 @@
 import { mediaDir, workspaceDir } from "../Constants"
 import { getBackend, getFrontend, showMessage } from "siyuan"
 import ImporterPlugin from "../index"
-import { copyDir, isPC, removeEmptyLines, removeFootnotes, removeLinks, replaceImagePath } from "../utils/utils"
+import {
+  copyDir,
+  getExports,
+  isPC,
+  removeEmptyLines,
+  removeFootnotes,
+  removeLinks,
+  replaceImagePath,
+} from "../utils/utils"
 import shortHash from "shorthash2"
+import { loadImporterConfig } from "../store/config"
 
 export class ImportService {
   /**
@@ -104,14 +113,32 @@ export class ImportService {
     }
 
     // 文本处理
-    // 删除目录中链接
-    mdText = removeLinks(mdText)
-    // 去除空行
-    mdText = removeEmptyLines(mdText)
-    // 资源路径
-    mdText = replaceImagePath(mdText)
-    // 去除脚注
-    mdText = removeFootnotes(mdText)
+    const importConfig = await loadImporterConfig(pluginInstance)
+    if (importConfig.bundledFnSwitch) {
+      pluginInstance.logger.info("Using bundled handler process text")
+      // 删除目录中链接
+      mdText = removeLinks(mdText)
+      // 去除空行
+      mdText = removeEmptyLines(mdText)
+      // 资源路径
+      mdText = replaceImagePath(mdText)
+      // 去除脚注
+      mdText = removeFootnotes(mdText)
+    }
+
+    // 自定义文本处理
+    if (importConfig.customFnSwitch) {
+      pluginInstance.logger.warn("Using custom handler process text")
+      try {
+        const customFn = importConfig.customFn
+        const exportsFn = getExports(customFn)
+        mdText = exportsFn(mdText)
+      } catch (e) {
+        showMessage(`${pluginInstance.i18n.customFnHandlerError} ${e.toString()}`, 5000, "error")
+      }
+    }
+
+    // 保存处理的最终文本
     await pluginInstance.kernelApi.saveTextData(`${toFilename}`, mdText)
 
     return {

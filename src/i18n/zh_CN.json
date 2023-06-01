@@ -42,6 +42,10 @@
   "setting": "设置",
   "cancel": "取消",
   "save": "保存",
+  "bundledFnHandler": "插件自带的处理函数",
+  "bundledFnSwitch": "插件自带的处理函数开关",
+  "bundledFnSwitchTips": "启用或者禁用插件自带的处理函数，目前自带的处理函数已包括删除目录中链接、去除空行、资源路径修复、去除脚注等功能",
+  "disableBundledFnSwitchTips": "确认禁用插件自带的处理函数吗，将不会对转换结果做任何处理，包括去除链接，脚注优化等，将按照转换结果原样导入？",
   "customFnHandler": "自定义处理函数",
   "customFnSwitch": "自定义处理函数开关",
   "customFnSwitchTips": "启用或者禁用自定义处理函数",
@@ -49,5 +53,9 @@
   "customFnHandlerPlaceholder": "自定义处理函数",
   "enableCustomFn": "启用自定义函数",
   "enableCustomFnTips": "确认要启用自定义函数吗，此操作可能导致导入不可用，请确认您已经了解自定义函数的工作原理？",
-  "importConfigSaveSuccess": "配置保存成功"
+  "importConfigSaveSuccess": "配置保存成功",
+  "testOutputPlaceholder": "这里是测试的输出结果",
+  "testInput": "测试输入",
+  "testOutput": "测试输出",
+  "customFnHandlerError": "自定义处理函数处理失败，请检查。您也可以暂时禁用自定义处理函数完成导入"
 }

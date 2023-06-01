@@ -146,7 +146,7 @@ export const copyDir = async (src, dest) => {
   const fs = window.require("fs")
   const path = window.require("path")
 
-  if(!fs.existsSync(src)){
+  if (!fs.existsSync(src)) {
     console.warn("Can not get path")
     return
   }
@@ -170,4 +170,8 @@ export const copyDir = async (src, dest) => {
       fs.copyFileSync(srcPath, destPath)
     }
   }
+}
+
+export const getExports = (jsText) => {
+  return eval(jsText)
 }
