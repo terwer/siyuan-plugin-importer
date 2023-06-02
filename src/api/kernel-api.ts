@@ -114,7 +114,7 @@ class KernelApi extends BaseApi {
     const params = {
       args: [
         "--to",
-        "markdown_github-raw_html+tex_math_dollars+pipe_tables",
+        "gfm-raw_html+tex_math_dollars+pipe_tables",
         from,
         "-o",
         to,
