@@ -24,7 +24,7 @@
     "@tsconfig/svelte": "^4.0.1",
     "@types/node": "^16.18.34",
     "fast-glob": "^3.2.12",
-    "glob": "^7.2.3",
+    "glob": "^10.2.7",
     "minimist": "^1.2.8",
     "rollup-plugin-livereload": "^2.0.5",
     "siyuan": "^0.7.2",
