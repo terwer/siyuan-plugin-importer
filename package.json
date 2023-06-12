@@ -37,6 +37,6 @@
   },
   "dependencies": {
     "shorthash2": "^1.0.3",
-    "zhi-lib-base": "^0.0.2"
+    "zhi-lib-base": "^0.2.6"
   }
 }
