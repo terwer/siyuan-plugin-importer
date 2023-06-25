@@ -22,13 +22,17 @@
 
   安装完成后，在顶部右侧工具栏找到 `导入工具` 图标，点击按照弹窗操作即可。
 
-  * Q2: 能否支持 mobi 文件？能否支持 Markdown 文件夹？
+* Q2: 能否支持 mobi 文件？能否支持 Markdown 文件夹？
 
-    A2：参考 https://github.com/terwer/siyuan-plugin-importer/issues/31 ，可先用 https://products.aspose.app/words/conversion/mobi-to-md 转换，然后用笔记本自带的导入文件夹实现。
+  A2：参考 https://github.com/terwer/siyuan-plugin-importer/issues/31 ，可先用 https://products.aspose.app/words/conversion/mobi-to-md 转换，然后用笔记本自带的导入文件夹实现。
   
-    笔记已经自带带入 Markdown 文件夹功能，这个功能请直接使用笔记本自带的导入即可。
+  笔记已经自带导入 Markdown 文件夹功能，这个功能请直接使用笔记本自带的导入即可。
     
-    插件只做增强，解决本体未解决的问题，对于这些重叠的功能，插件暂不做了。
+  插件只做增强，解决本体未解决的问题，对于这些重叠的功能，插件暂不做了。
+
+* Q3：能否支持 docker 或者 移动端？
+
+  A3：抱歉。受限于 pandoc ，docker 和移动端按时无法使用。请使用 PC 客户端。
 
 ## 更新历史
 
