@@ -76,20 +76,27 @@ function convertPathToUnixStyle(path) {
 /**
  * 修复图片路径
  *
+ * 修复要点
+ * 1、转 unix 路径
+ * 2、修复 pandoc 资源路径
+ *
  * @param mdText - markdown 文本
  */
 export function replaceImagePath(mdText) {
   const regex = /!\[(.*?)\]\(([^\s]*?)\)/g
   return mdText.replace(regex, (match, p1, p2) => {
-    const imagePath = p2
+    let title = p1
+    let imagePath = p2
 
-    if (!imagePath.startsWith(dataDir)) {
-      return match
-    }
+    // console.log("p1=>", title)
+    // console.log("p2=>", imagePath)
 
-    const relativePath = convertPathToUnixStyle(imagePath.substring(dataDir.length))
+    // 修复资源路径
+    imagePath = convertPathToUnixStyle(imagePath)
+    // 修复 pandoc 路径问题
+    imagePath = imagePath.replace(/\.\/\.\.\/assets/g, "./assets")
 
-    return `![${p1}](${relativePath})`
+    return `![${title}](${imagePath})`
   })
 }
 

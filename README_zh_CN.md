@@ -10,6 +10,7 @@
 
 - **选择笔记**：支持选择笔记本，下次打开可自动记忆上次选择的笔记本
 - **一键导入**：选择文件，一键导入即可，零配置
+- **参数配置**：支持禁用自带的文本处理，支持强大的自定义处理函数配置，转换之后的 MD 文本怎么处理，完全由你自己说了算。
 
 ## FAQ
 
@@ -19,9 +20,13 @@
 
   安装完成后，在顶部右侧工具栏找到 `导入工具` 图标，点击按照弹窗操作即可。
 
-* Q2: 能到支持 mobi 文件？能否支持 Markdown 文件夹？
+  * Q2: 能否支持 mobi 文件？能否支持 Markdown 文件夹？
 
-  A2：参考 https://github.com/terwer/siyuan-plugin-importer/issues/31 ，可先用 https://products.aspose.app/words/conversion/mobi-to-md 转换，然后用笔记本自带的导入文件夹实现。功能重叠，插件暂不做了。
+    A2：参考 https://github.com/terwer/siyuan-plugin-importer/issues/31 ，可先用 https://products.aspose.app/words/conversion/mobi-to-md 转换，然后用笔记本自带的导入文件夹实现。
+  
+    笔记已经自带带入 Markdown 文件夹功能，这个功能请直接使用笔记本自带的导入即可。
+    
+    插件只做增强，解决本体未解决的问题，对于这些重叠的功能，插件暂不做了。
 
 ## 更新历史
 
