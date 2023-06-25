@@ -3,7 +3,7 @@
   "author": "terwer",
   "url": "https://github.com/terwer/siyuan-plugin-importer",
   "version": "1.6.0",
-  "minAppVersion": "2.8.9",
+  "minAppVersion": "2.9.2",
   "backends": [
     "windows",
     "linux",

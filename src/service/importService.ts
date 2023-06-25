@@ -99,7 +99,10 @@ export class ImportService {
     }
 
     // 文件转换
-    const convertResult = await pluginInstance.kernelApi.convertPandoc(fromFilename, toFilename)
+    const fromAbsPath = `./../${fromFilename}`
+    const toAbsPath = `./../${toFilename}`
+    pluginInstance.logger.info(`convertPandoc from [${fromAbsPath}] to [${toAbsPath}]`)
+    const convertResult = await pluginInstance.kernelApi.convertPandoc(fromAbsPath, toAbsPath)
     if (convertResult.code !== 0) {
       showMessage(`${pluginInstance.i18n.msgFileConvertError}：${convertResult.msg}`, 7000, "error")
       return
@@ -114,7 +117,7 @@ export class ImportService {
 
     // 文本处理
     const importConfig = await loadImporterConfig(pluginInstance)
-    if (importConfig.bundledFnSwitch) {
+    if (importConfig.bundledFnSwitch !== false) {
       pluginInstance.logger.info("Using bundled handler process text")
       // 删除目录中链接
       mdText = removeLinks(mdText)
