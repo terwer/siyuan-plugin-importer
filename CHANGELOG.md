@@ -1,7 +1,21 @@
 # Changelog
 
-## [1.6.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.5.3...v1.6.0) (2023-06-01)
+## [1.7.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.6.0...v1.7.0) (2023-06-25)
 ### Features
+* 兼容 292 版本api改动 ([af04e1e](https://github.com/terwer/siyuan-plugin-importer/commit/af04e1ed99dfc1900e6e8015fc7464242eb7d5d1))
+* 转换参数改为 gfm ([c615ded](https://github.com/terwer/siyuan-plugin-importer/commit/c615dedea4dcbad4e1645c24e06b6442aceac0a9))
+### Bug Fixes
+* **deps:** bump zhi-lib-base from 0.0.2 to 0.4.1 ([a22de6b](https://github.com/terwer/siyuan-plugin-importer/commit/a22de6b3ef3141aa9e4b25f782487825416d0614))
+* 更新预览图 ([a0bc391](https://github.com/terwer/siyuan-plugin-importer/commit/a0bc391f519ee6b37d48a5f9a5b10586a4f8c915))
+### Miscellaneous
+* **deps-dev:** bump @sveltejs/vite-plugin-svelte from 2.4.1 to 2.4.2 ([160e449](https://github.com/terwer/siyuan-plugin-importer/commit/160e449d1f2bbc977a04a8d54a20af672b5787c7))
+* **deps-dev:** bump @terwer/eslint-config-custom from 1.2.0 to 1.3.6 ([b85e684](https://github.com/terwer/siyuan-plugin-importer/commit/b85e684c99937c58a829fa2c244a561157edb738))
+* **deps-dev:** bump siyuan from 0.7.2 to 0.7.4 ([24894f1](https://github.com/terwer/siyuan-plugin-importer/commit/24894f1b68a6f9ba0702ef0a4df92c7da560dd24))
+* **deps-dev:** bump svelte from 3.59.1 to 4.0.0 ([791690e](https://github.com/terwer/siyuan-plugin-importer/commit/791690eb1dc9336f744aed561715c760e3999bd6))
+* **deps-dev:** bump vite-plugin-static-copy from 0.15.0 to 0.16.0 ([1e8c40f](https://github.com/terwer/siyuan-plugin-importer/commit/1e8c40f0d48f5b0c5b2f8e604fe6357f342cbfe0))
+* **deps-dev:** bump vitest from 0.31.3 to 0.32.2 ([9043448](https://github.com/terwer/siyuan-plugin-importer/commit/9043448ce51da1a5cec50bc16eadbdfe031d8ca0))
+* 升级 svelte4，同时升级其他关联组件 ([113ec12](https://github.com/terwer/siyuan-plugin-importer/commit/113ec12654101181755fd442526c6eece2a1af16))
+## [1.6.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.5.3...v1.6.0) (2023-06-01)
 * [#47](https://github.com/terwer/siyuan-plugin-importer/issues/47) 导入html支持图片 ([870b5fb](https://github.com/terwer/siyuan-plugin-importer/commit/870b5fb24c9806a5844615dfd4c743bec1a75a86))
 * 优化 pandoc 参数 ([6e0ca9f](https://github.com/terwer/siyuan-plugin-importer/commit/6e0ca9f6698f8671c90cf36e02175b3cd772dbc2))
 * 优化图标 ([d188b74](https://github.com/terwer/siyuan-plugin-importer/commit/d188b745e2e1a9caa60d409829fbc3d9f0ad1c6e))
@@ -14,10 +28,8 @@
 * 新增自定义处理函数配置 ([f4a28a7](https://github.com/terwer/siyuan-plugin-importer/commit/f4a28a7b87e47124ab5bbb562686d6e91425701e))
 * 显示临时文件夹路径，支持桌面端、桌面端浏览器 ([bc8c878](https://github.com/terwer/siyuan-plugin-importer/commit/bc8c878351a0642afd6a27a6045674649e57b242))
 * 调整兼容性，最低版本为289，仅支持桌面端 ([93761c9](https://github.com/terwer/siyuan-plugin-importer/commit/93761c908c947c22bde1a35e9fc19292ffcbf29c))
-### Miscellaneous
 * update docs ([27d47e6](https://github.com/terwer/siyuan-plugin-importer/commit/27d47e6c1517303daeb52ca2a6f5de9b9206eb71))
 ## [1.5.3](https://github.com/terwer/siyuan-plugin-importer/compare/v1.5.2...v1.5.3) (2023-05-24)
-### Bug Fixes
 * 优化移动端图标展示 ([116fe33](https://github.com/terwer/siyuan-plugin-importer/commit/116fe33ffe18f6f1b534a8e005a79eb3b133026a))
 ## [1.5.2](https://github.com/terwer/siyuan-plugin-importer/compare/v1.5.1...v1.5.2) (2023-05-24)
 * hash路径小写 ([38a2972](https://github.com/terwer/siyuan-plugin-importer/commit/38a29729b76c477d217e01d2770ccc4da793944d))
