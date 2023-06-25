@@ -6,6 +6,8 @@
 
 Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats: .md, .epub, .docx, .html, .opml.
 
+> Important: Due to the 292 ontology change, this version only supports clients above 292, below this version, please use the old version of the plugin!
+
 ## Core Features
 
 - **Select Notes**: Support for selecting a notebook, the next time you open it, you can automatically remember the notebook you selected last time
@@ -20,6 +22,11 @@ Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats
   After the installation is complete, find the `Importer` icon on the top right toolbar, and click to follow the pop-up window.
 
 ## Changelog
+
+**1.7.0 (2023-06-25)**
+### Features
+* Compatible with API changes in version 292
+* Conversion parameter changed to GFM
 
 **v1.6.0 major update**
 
