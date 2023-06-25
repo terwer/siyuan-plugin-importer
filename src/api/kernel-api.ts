@@ -154,7 +154,7 @@ class KernelApi extends BaseApi {
         return await response.text()
       }
       if (type === "json") {
-        return (await response.json()).data
+        return await response.json()
       }
     }
     return null
