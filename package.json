@@ -33,7 +33,7 @@
     "ts-node": "^10.9.1",
     "vite": "^4.3.9",
     "vite-plugin-static-copy": "^0.16.0",
-    "vitest": "^0.32.2"
+    "vitest": "^0.32.4"
   },
   "dependencies": {
     "shorthash2": "^1.0.3",
