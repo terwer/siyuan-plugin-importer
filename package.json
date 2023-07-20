@@ -29,7 +29,7 @@
     "rollup-plugin-livereload": "^2.0.5",
     "siyuan": "^0.7.4",
     "stylus": "^0.59.0",
-    "svelte": "^4.0.0",
+    "svelte": "^4.1.0",
     "ts-node": "^10.9.1",
     "vite": "^4.3.9",
     "vite-plugin-static-copy": "^0.16.0",
