@@ -31,7 +31,7 @@
     "stylus": "^0.59.0",
     "svelte": "^4.0.0",
     "ts-node": "^10.9.1",
-    "vite": "^4.3.9",
+    "vite": "^4.4.7",
     "vite-plugin-static-copy": "^0.16.0",
     "vitest": "^0.32.2"
   },
