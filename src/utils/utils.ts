@@ -24,8 +24,8 @@
  */
 
 import KernelApi from "../api/kernel-api"
-import { dataDir } from "../Constants"
 import { getBackend, getFrontend } from "siyuan"
+import { StrUtil } from "zhi-common"
 
 /**
  * 文件是否存在
@@ -53,6 +53,9 @@ export const isFileExistsByHpath = async (kernelApi: KernelApi, hpath: string, t
 export const isFileExists = async (kernelApi: KernelApi, p: string, type: "text" | "json") => {
   try {
     const res = await kernelApi.getFile(p, type)
+    if (type === "text") {
+      return !StrUtil.isEmptyString(res)
+    }
     return res !== null
   } catch {
     return false
