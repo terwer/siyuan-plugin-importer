@@ -19,7 +19,7 @@
     "package": "python scripts/package.py"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^2.4.2",
+    "@sveltejs/vite-plugin-svelte": "^2.4.6",
     "@terwer/eslint-config-custom": "^1.3.6",
     "@tsconfig/svelte": "^4.0.1",
     "@types/node": "^16.18.36",
