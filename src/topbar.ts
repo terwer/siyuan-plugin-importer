@@ -23,11 +23,39 @@
  * questions.
  */
 
-import ImporterPlugin from "./index"
+import { createApp, Component } from 'vue'
+import ImportForm from './lib/ImportForm.vue'
+import ImportSetting from './lib/ImportSetting.vue'
+import ImporterPlugin from './index'
 import { Dialog, getFrontend, Menu } from "siyuan"
-import ImportForm from "./lib/ImportForm.svelte"
 import { iconImporter } from "./utils/svg"
-import ImportSetting from "./lib/ImportSetting.svelte"
+import pkg from '../package.json'
+
+/**
+ * 在思源笔记弹窗中创建并挂载 Vue 组件
+ * 
+ * @param vueComponent - Vue 组件定义
+ * @param pluginInstance - 思源笔记插件实例
+ * @param dialog - 思源笔记弹窗实例
+ * @param mountElementId - 挂载目标元素的 ID
+ */
+const createVueComponentInDialog = (
+  vueComponent: Component,
+  pluginInstance: ImporterPlugin,
+  dialog: Dialog,
+  mountElementId: string
+) => {
+  const targetElement = document.getElementById(mountElementId)
+  if (!targetElement) {
+    throw new Error(`Element #${mountElementId} not found`)
+  }
+
+  const app = createApp(vueComponent, {
+    pluginInstance: pluginInstance,
+    dialog: dialog
+  })
+  app.mount(targetElement)
+}
 
 /**
  * 顶栏按钮
@@ -52,17 +80,16 @@ export async function initTopbar(pluginInstance: ImporterPlugin) {
     const isMobile = frontEnd === "mobile" || frontEnd === "browser-mobile"
     const importFormId = "siyuan-import-form"
     const d = new Dialog({
-      title: `${pluginInstance.i18n.selectFile} - ${pluginInstance.i18n.importer}`,
+      title: `${pluginInstance.i18n.selectFile} - v${pkg.version}`,
       content: `<div id="${importFormId}"></div>`,
-      width: isMobile ? "92vw" : "720px",
+      width: isMobile ? "92vw" : "61.8vw",
     })
-    new ImportForm({
-      target: document.getElementById(importFormId) as HTMLElement,
-      props: {
-        pluginInstance: pluginInstance,
-        dialog: d,
-      },
-    })
+
+    try {
+      createVueComponentInDialog(ImportForm, pluginInstance, d, importFormId)
+    } catch (error) {
+      pluginInstance.logger.error('Error creating ImportForm component:', error)
+    }
   })
 
   // 添加右键菜单
@@ -85,17 +112,16 @@ export async function initTopbar(pluginInstance: ImporterPlugin) {
       click: () => {
         const settingId = "siyuan-importing-setting"
         const d = new Dialog({
-          title: `${pluginInstance.i18n.setting} - ${pluginInstance.i18n.importer}`,
+          title: `${pluginInstance.i18n.setting} - v${pkg.version}`,
           content: `<div id="${settingId}"></div>`,
-          width: pluginInstance.isMobile ? "92vw" : "720px",
+          width: pluginInstance.isMobile ? "92vw" : "61.8vw",
         })
-        new ImportSetting({
-          target: document.getElementById(settingId) as HTMLElement,
-          props: {
-            pluginInstance: pluginInstance,
-            dialog: d,
-          },
-        })
+
+        try {
+          createVueComponentInDialog(ImportSetting, pluginInstance, d, settingId)
+        } catch (error) {
+          pluginInstance.logger.error('Error creating ImportSetting component:', error)
+        }
       },
     })
 
