@@ -6,7 +6,9 @@
 
 Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats: .md, .epub, .docx, .html, .opml.
 
-> Important: Due to the 292 ontology change, this version only supports clients above 292, below this version, please use the old version of the plugin!
+> ✨ After two years, we are back with our first update. Due to work commitments, plugin maintenance was temporarily suspended, which caused inconvenience for some users. We sincerely apologize for this 🙏. The plugin is now back under active maintenance and fully functional 🚀.
+> 
+> 📌 Please upgrade to siyuan-note `3.1.12` or higher to use the plugin ⚡
 
 ## Core Features
 
@@ -35,6 +37,15 @@ Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats
   A3: Sorry. Limited by Pandoc, Docker and mobile are not available on time. Please use the PC client.
 
 ## Changelog
+
+**1.8.0 (2025-06-15)**
+### Bug Fixes
+* Fix import issues in new version
+### Features
+* Add tab navigation for import settings
+### Code Refactoring
+* Remove unused components and update styles
+* Migrate from Svelte to Vue 3
 
 **1.7.0 (2023-06-25)**
 ### Features

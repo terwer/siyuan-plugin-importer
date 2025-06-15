@@ -1,10 +1,16 @@
 # Changelog
 
-## [1.7.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.6.0...v1.7.0) (2023-06-25)
+## [1.8.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.7.0...v1.8.0) (2025-06-15)
 ### Features
+* **importsetting:** add tab navigation for settings and test ([57ef273](https://github.com/terwer/siyuan-plugin-importer/commit/57ef273f8faaa7b63daf4f59686dee56e2330c11))
+* **import:** support direct import of md files ([6842f00](https://github.com/terwer/siyuan-plugin-importer/commit/6842f0059fb87a80d2247844817b6c6a74624972))
+### Bug Fixes
+* 修复文件检测不生效问题 ([b608ac2](https://github.com/terwer/siyuan-plugin-importer/commit/b608ac2f0bac896dfe51501cf42e61d7b5a2989e))
+### Code Refactoring
+* remove unused components and update styles ([6b29a68](https://github.com/terwer/siyuan-plugin-importer/commit/6b29a68b3ed70cf4fe92b2ef7ece87cd412d35c2))
+## [1.7.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.6.0...v1.7.0) (2023-06-25)
 * 兼容 292 版本api改动 ([af04e1e](https://github.com/terwer/siyuan-plugin-importer/commit/af04e1ed99dfc1900e6e8015fc7464242eb7d5d1))
 * 转换参数改为 gfm ([c615ded](https://github.com/terwer/siyuan-plugin-importer/commit/c615dedea4dcbad4e1645c24e06b6442aceac0a9))
-### Bug Fixes
 * **deps:** bump zhi-lib-base from 0.0.2 to 0.4.1 ([a22de6b](https://github.com/terwer/siyuan-plugin-importer/commit/a22de6b3ef3141aa9e4b25f782487825416d0614))
 * 更新预览图 ([a0bc391](https://github.com/terwer/siyuan-plugin-importer/commit/a0bc391f519ee6b37d48a5f9a5b10586a4f8c915))
 ### Miscellaneous
@@ -60,7 +66,6 @@
 * 支持图片导入 ([6387db2](https://github.com/terwer/siyuan-plugin-importer/commit/6387db2273ad23ea6161b4a4ed681591494bacf1))
 ## [1.2.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.1.0...v1.2.0) (2023-05-17)
 * 自动打包暂时不好用，改为手动上传 package.zip ([e1a8ffb](https://github.com/terwer/siyuan-plugin-importer/commit/e1a8ffbb16a7a51de5271c3850ec39a4123ca84f))
-### Code Refactoring
 * 调整打包结构，适应集市规则 ([a70a921](https://github.com/terwer/siyuan-plugin-importer/commit/a70a921744ba8f6c8c01c175bef232f7e65876f5))
 ## [1.1.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.0.0...v1.1.0) (2023-05-17)
 * 初始化插件项目 ([e41c745](https://github.com/terwer/siyuan-plugin-importer/commit/e41c7458cf8f3882b072e214a78fb858d33a29f6))
