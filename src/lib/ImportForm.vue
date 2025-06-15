@@ -52,7 +52,7 @@ const showMultiImportTip = ref(false)
 
 // 常量
 const hiddenNotebook = new Set(["思源笔记用户指南", "SiYuan User Guide"])
-const allowedMultiExtensions = ["docx", "epub", "opml"]
+const allowedMultiExtensions = ["docx", "epub", "opml", "md"]
 
 // =============== 方法 ===============
 const notebookChange = async () => {
@@ -117,6 +117,12 @@ const selectFile = async (event: Event) => {
     props.pluginInstance.logger.debug(`${props.pluginInstance.i18n.startImport}...`)
     props.dialog.destroy()
 
+  // 单个导入之前先清空临时文件
+  if (tempCount.value > 0) {
+    showMessage(`${props.pluginInstance.i18n.tempCountExists}`, 1000, "error")
+    return
+  }
+
     const files = (event.target as HTMLInputElement).files ?? []
     if (files.length === 0) {
         showMessage(`${props.pluginInstance.i18n.msgFileNotEmpty}`, 7000, "error")
@@ -140,7 +146,7 @@ const selectFolder = async () => {
         return
     }
 
-    const result = await window.showDirectoryPicker()
+    const result = await (window as any).showDirectoryPicker()
     props.dialog.destroy()
 
     const entries = await result.values()
