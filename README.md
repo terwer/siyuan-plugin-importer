@@ -6,7 +6,7 @@
 
 Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats: .md, .epub, .docx, .html, .opml.
 
-> Important: Due to the 292 ontology change, this version only supports clients above 292, below this version, please use the old version of the plugin!
+> ✨ After two years, we are back with our first update. Due to work commitments, plugin maintenance was temporarily suspended, which caused inconvenience for some users. We sincerely apologize for this 🙏. The plugin is now back under active maintenance and fully functional 🚀.
 
 ## Core Features
 
@@ -35,8 +35,6 @@ Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats
   A3: Sorry. Limited by Pandoc, Docker and mobile are not available on time. Please use the PC client.
 
 ## Changelog
-
-✨ After two years, we are back with our first update. Due to work commitments, plugin maintenance was temporarily suspended, which caused inconvenience for some users. We sincerely apologize for this 🙏. The plugin is now back under active maintenance and fully functional 🚀.
 
 **1.8.0 (2025-06-15)**
 ### Bug Fixes
