@@ -40,6 +40,7 @@ import { getExports } from "../utils/utils"
 const props = defineProps<Props>()
 
 // =============== 响应式数据 ===============
+const activeTab = ref('settings')
 const bundledFnSwitch = ref(true)
 const customFnSwitch = ref(false)
 const customFn = ref('')
@@ -53,6 +54,10 @@ const testOutput = ref('')
 const showTest = ref(false)
 
 // =============== 方法 ===============
+const switchTab = (tab: string) => {
+    activeTab.value = tab
+}
+
 const onSaveSetting = async () => {
     props.dialog.destroy()
 
@@ -135,61 +140,82 @@ module.exports = customFn`
 <template>
     <div class="b3-dialog__content importer-setting-container">
         <div class="config__tab-container">
-            <label class="fn__flex b3-label config__item">
-                <div class="fn__flex-1">
-                    {{ pluginInstance.i18n.bundledFnSwitch }}
-                    <div class="b3-label__text">{{ pluginInstance.i18n.bundledFnSwitchTips }}</div>
+            <div class="config__tabs">
+                <div class="config__tab" :class="{ 'config__tab--active': activeTab === 'settings' }"
+                    @click="switchTab('settings')">
+                    基本设置
                 </div>
-                <span class="fn__space"></span>
-                <input id="bundledFnSwitch" class="b3-switch fn__flex-center" type="checkbox"
-                    @click="updateBundledFnSwitch" v-model="bundledFnSwitch" />
-            </label>
+                <div class="config__tab" :class="{ 'config__tab--active': activeTab === 'test' }"
+                    @click="switchTab('test')">
+                    配置测试
+                </div>
+            </div>
 
-            <label class="fn__flex b3-label config__item">
-                <div class="fn__flex-1">
-                    {{ pluginInstance.i18n.customFnSwitch }}
-                    <div class="b3-label__text">{{ pluginInstance.i18n.customFnSwitchTips }}</div>
-                </div>
-                <span class="fn__space"></span>
-                <input id="customFnSwitch" class="b3-switch fn__flex-center" type="checkbox" @click="updateSwitch"
-                    v-model="customFnSwitch" />
-            </label>
+            <div class="config__content">
+                <!-- 基本设置 -->
+                <div v-show="activeTab === 'settings'" class="config__panel">
+                    <label class="fn__flex b3-label config__item">
+                        <div class="fn__flex-1">
+                            {{ pluginInstance.i18n.bundledFnSwitch }}
+                            <div class="b3-label__text">{{ pluginInstance.i18n.bundledFnSwitchTips }}</div>
+                        </div>
+                        <span class="fn__space"></span>
+                        <input id="bundledFnSwitch" class="b3-switch fn__flex-center" type="checkbox"
+                            @click="updateBundledFnSwitch" v-model="bundledFnSwitch" />
+                    </label>
 
-            <label class="fn__flex b3-label config__item">
-                <div class="fn__flex-1">
-                    {{ pluginInstance.i18n.customFnHandler }}
-                    <div class="b3-label__text">
-                        {{ pluginInstance.i18n.customFnHandlerTips }}
-                        <a href="https://www.regextester.com" target="_blank">https://www.regextester.com</a>
-                    </div>
-                    <div class="fn__hr" />
-                    <textarea class="b3-text-field fn__block"
-                        :placeholder="pluginInstance.i18n.customFnHandlerPlaceholder" rows="8" spellcheck="false"
-                        v-model="customFn" />
-                </div>
-            </label>
+                    <label class="fn__flex b3-label config__item">
+                        <div class="fn__flex-1">
+                            {{ pluginInstance.i18n.customFnSwitch }}
+                            <div class="b3-label__text">{{ pluginInstance.i18n.customFnSwitchTips }}</div>
+                        </div>
+                        <span class="fn__space"></span>
+                        <input id="customFnSwitch" class="b3-switch fn__flex-center" type="checkbox"
+                            @click="updateSwitch" v-model="customFnSwitch" />
+                    </label>
 
-            <label class="fn__flex b3-label config__item">
-                <div class="fn__flex-1">
-                    <button class="b3-button b3-button--outline fn__flex-right fn__size200"
-                        @click="testFn">开始测试</button>
-                    <button
-                        :class="showTest ? 'b3-button b3-button--outline fn__flex-right fn__size200 pull-right' : 'b3-button b3-button--outline fn__flex-right fn__size200 pull-right hidden'"
-                        @click="hideTest">
-                        隐藏结果
-                    </button>
-                    <div class="fn__hr" />
-                    {{ pluginInstance.i18n.testInput }}
-                    <textarea class="b3-text-field fn__block test-data-item" rows="6" spellcheck="false"
-                        v-model="testInput" />
-                    <div :class="showTest ? '' : 'hidden'">
-                        {{ pluginInstance.i18n.testOutput }}
-                        <textarea class="b3-text-field fn__block test-data-item"
-                            :placeholder="pluginInstance.i18n.testOutputPlaceholder" rows="6" spellcheck="false"
-                            v-model="testOutput" />
-                    </div>
+                    <label class="fn__flex b3-label config__item">
+                        <div class="fn__flex-1">
+                            {{ pluginInstance.i18n.customFnHandler }}
+                            <div class="b3-label__text">
+                                {{ pluginInstance.i18n.customFnHandlerTips }}
+                                <a href="https://www.regextester.com" target="_blank">https://www.regextester.com</a>
+                            </div>
+                            <div class="fn__hr" />
+                            <textarea class="b3-text-field fn__block"
+                                :placeholder="pluginInstance.i18n.customFnHandlerPlaceholder" rows="8"
+                                spellcheck="false" v-model="customFn" />
+                        </div>
+                    </label>
                 </div>
-            </label>
+
+                <!-- 测试区域 -->
+                <div v-show="activeTab === 'test'" class="config__panel">
+                    <label class="fn__flex b3-label config__item">
+                        <div class="fn__flex-1">
+                            <div class="fn__flex config__buttons">
+                                <button class="b3-button b3-button--outline fn__size200" @click="testFn">开始测试</button>
+                                <div class="fn__space"></div>
+                                <button
+                                    :class="showTest ? 'b3-button b3-button--outline fn__size200' : 'b3-button b3-button--outline fn__size200 hidden'"
+                                    @click="hideTest">
+                                    隐藏结果
+                                </button>
+                            </div>
+                            <div class="fn__hr" />
+                            {{ pluginInstance.i18n.testInput }}
+                            <textarea class="b3-text-field fn__block test-data-item" rows="6" spellcheck="false"
+                                v-model="testInput" />
+                            <div :class="showTest ? '' : 'hidden'">
+                                {{ pluginInstance.i18n.testOutput }}
+                                <textarea class="b3-text-field fn__block test-data-item"
+                                    :placeholder="pluginInstance.i18n.testOutputPlaceholder" rows="6" spellcheck="false"
+                                    v-model="testOutput" />
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
 
             <div class="b3-dialog__action">
                 <button class="b3-button b3-button--cancel" @click="onCancel">{{ pluginInstance.i18n.cancel }}</button>
@@ -248,4 +274,37 @@ input:checked + .b3-switch__text
 
 .hidden
   display none
+
+.config__tabs
+  display flex
+  border-bottom 1px solid var(--b3-border-color)
+  margin-bottom 16px
+
+.config__tab
+  padding 8px 16px
+  cursor pointer
+  border-bottom 2px solid transparent
+  color var(--b3-theme-on-surface)
+  
+  &:hover
+    color var(--b3-theme-primary)
+  
+  &--active
+    color var(--b3-theme-primary)
+    border-bottom-color var(--b3-theme-primary)
+
+.config__content
+  min-height 300px
+
+.config__panel
+  padding 8px 0
+
+.config__item
+  margin-bottom 8px
+
+  &:last-child
+    margin-bottom 0
+
+.config__buttons
+  margin-bottom 8px
 </style>
