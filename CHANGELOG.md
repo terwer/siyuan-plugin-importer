@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.8.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.7.0...v1.8.0) (2025-06-15)
+
+
+### Features
+
+* **ImportSetting:** add tab navigation for settings and test ([57ef273](https://github.com/terwer/siyuan-plugin-importer/commit/57ef273f8faaa7b63daf4f59686dee56e2330c11))
+* **import:** support direct import of MD files ([5e9f9b6](https://github.com/terwer/siyuan-plugin-importer/commit/5e9f9b6a4d4c3b617016a35e0a759222f6b4589e))
+* **import:** support direct import of MD files ([6842f00](https://github.com/terwer/siyuan-plugin-importer/commit/6842f0059fb87a80d2247844817b6c6a74624972))
+
+
+### Bug Fixes
+
+* 修复文件检测不生效问题 ([b608ac2](https://github.com/terwer/siyuan-plugin-importer/commit/b608ac2f0bac896dfe51501cf42e61d7b5a2989e))
+
+
+### Code Refactoring
+
+* remove unused components and update styles ([6b29a68](https://github.com/terwer/siyuan-plugin-importer/commit/6b29a68b3ed70cf4fe92b2ef7ece87cd412d35c2))
+
 ## [1.7.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.6.0...v1.7.0) (2023-06-25)
 ### Features
 * 兼容 292 版本api改动 ([af04e1e](https://github.com/terwer/siyuan-plugin-importer/commit/af04e1ed99dfc1900e6e8015fc7464242eb7d5d1))
