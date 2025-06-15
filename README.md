@@ -12,6 +12,7 @@ Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats
 
 - **Select Notes**: Support for selecting a notebook, the next time you open it, you can automatically remember the notebook you selected last time
 - **One-click import**: Select a file, one-click import, zero configuration
+- **Parameter configuration**: Support disabling the built-in text processing, support powerful custom processing function configuration, how to handle the converted MD text, it is completely up to you.
 
 ## FAQ
 
@@ -20,6 +21,18 @@ Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats
   A1：Find **`Marketplace->Plugins->Importer`** download and enable.
 
   After the installation is complete, find the `Importer` icon on the top right toolbar, and click to follow the pop-up window.
+
+* Q2: Can MOBI files be supported? Can Markdown folders be supported?
+
+  A2: Refer to https://github.com/terwer/siyuan-plugin-importer/issues/31, you can first use https://products.aspose.app/words/conversion/mobi-to-md conversion, and then use the import folder that comes with the notebook to implement.
+  
+  Notes have been imported into the Markdown folder function, this function please use the notebook's own import directly.
+  
+  The plug-in only does enhancement to solve the problems that are not solved by the ontology, and for these overlapping functions, the plug-in does not do it for the time being.
+
+* Q3: Can I support docker or mobile?
+
+  A3: Sorry. Limited by Pandoc, Docker and mobile are not available on time. Please use the PC client.
 
 ## Changelog
 

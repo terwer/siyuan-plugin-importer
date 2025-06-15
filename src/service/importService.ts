@@ -59,10 +59,15 @@ export class ImportService {
 
     // md 直接返回
     if (ext === "md") {
-      const filePath = file.path
-      pluginInstance.logger.info(`import md from ${filePath}`)
+      const toFilePath = `/temp/convert/pandoc/${toFilename}`
+      pluginInstance.logger.info(`upload md file to ${toFilePath}`)
+      const uploadResult = await pluginInstance.kernelApi.putFile(toFilePath, file)
+      if (uploadResult.code !== 0) {
+        showMessage(`${pluginInstance.i18n.msgFileUploadError}：${uploadResult.msg}`, 7000, "error")
+        return
+      }
       return {
-        toFilePath: filePath,
+        toFilePath: toFilePath,
         isMd: true,
       }
     }
@@ -158,7 +163,8 @@ export class ImportService {
     isMd: boolean
   ) {
     // 导入 MD 文档
-    const localPath = isMd ? toFilePath : `${workspaceDir}${toFilePath}`
+    // const localPath = isMd ? toFilePath : `${workspaceDir}${toFilePath}`
+    const localPath = `${workspaceDir}${toFilePath}`
     const mdResult = await pluginInstance.kernelApi.importStdMd(localPath, toNotebookId, `/`)
     if (mdResult.code !== 0) {
       showMessage(`${pluginInstance.i18n.msgDocCreateFailed}=>${toFilePath}`, 7000, "error")

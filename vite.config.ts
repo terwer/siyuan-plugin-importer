@@ -5,24 +5,25 @@ import { defineConfig } from "vite"
 import minimist from "minimist"
 import { viteStaticCopy } from "vite-plugin-static-copy"
 import livereload from "rollup-plugin-livereload"
-import { svelte } from "@sveltejs/vite-plugin-svelte"
+import vue from "@vitejs/plugin-vue"
 import fg from "fast-glob"
 
 const args = minimist(process.argv.slice(2))
 const isWatch = args.watch || args.w || false
-const isWindows = process.platform === "win32"
-let devDistDir = "/Users/terwer/Documents/mydocs/SiYuanWorkspace/public/data/plugins/siyuan-importer"
-if (isWindows) {
-  devDistDir = "C:\\Users\\terwer\\Documents\\mydocs\\SiyuanWorkspace\\public\\data\\plugins\\siyuan-importer"
-}
-const distDir = isWatch ? devDistDir : "./dist"
+const distDir = "./dist"
 
 console.log("isWatch=>", isWatch)
 console.log("distDir=>", distDir)
 
 export default defineConfig({
   plugins: [
-    svelte(),
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag.startsWith('b3-')
+        }
+      }
+    }),
 
     viteStaticCopy({
       targets: [
@@ -83,18 +84,18 @@ export default defineConfig({
       plugins: [
         ...(isWatch
           ? [
-              livereload(devDistDir),
-              {
-                //监听静态资源文件
-                name: "watch-external",
-                async buildStart() {
-                  const files = await fg(["src/i18n/*.json", "./README*.md", "./plugin.json"])
-                  for (const file of files) {
-                    this.addWatchFile(file)
-                  }
-                },
+            livereload(distDir),
+            {
+              //监听静态资源文件
+              name: "watch-external",
+              async buildStart() {
+                const files = await fg(["src/i18n/*.json", "./README*.md", "./plugin.json"])
+                for (const file of files) {
+                  this.addWatchFile(file)
+                }
               },
-            ]
+            },
+          ]
           : []),
       ],
 
