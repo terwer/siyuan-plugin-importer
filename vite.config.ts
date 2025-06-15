@@ -10,12 +10,7 @@ import fg from "fast-glob"
 
 const args = minimist(process.argv.slice(2))
 const isWatch = args.watch || args.w || false
-const isWindows = process.platform === "win32"
-let devDistDir = "/Users/terwer/Documents/mydocs/SiYuanWorkspace/public/data/plugins/siyuan-importer"
-if (isWindows) {
-  devDistDir = "C:\\Users\\terwer\\Documents\\mydocs\\SiyuanWorkspace\\public\\data\\plugins\\siyuan-importer"
-}
-const distDir = isWatch ? devDistDir : "./dist"
+const distDir = "./dist"
 
 console.log("isWatch=>", isWatch)
 console.log("distDir=>", distDir)
@@ -83,7 +78,7 @@ export default defineConfig({
       plugins: [
         ...(isWatch
           ? [
-              livereload(devDistDir),
+              livereload(distDir),
               {
                 //监听静态资源文件
                 name: "watch-external",
