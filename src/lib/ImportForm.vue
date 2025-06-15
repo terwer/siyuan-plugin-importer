@@ -32,10 +32,9 @@ interface Props {
 
 // =============== 组件引入 ===============
 import { ref, onMounted } from 'vue'
-import ImporterPlugin from "../index"
 import { loadImporterConfig, saveImporterConfig } from "../store/config"
 import { showMessage, confirm } from "siyuan"
-import { ImportService } from "../service/importService"
+import { ImportService} from "../service/importService"
 import { workspaceDir } from "../Constants"
 
 // =============== Props 定义 ===============
