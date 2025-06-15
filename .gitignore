@@ -5,3 +5,5 @@ dist
 build
 __pycache__
 temp
+cookie.txt
+token.txt

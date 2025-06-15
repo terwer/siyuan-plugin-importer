@@ -132,7 +132,7 @@ module.exports = customFn`
       {pluginInstance.i18n.bundledFnSwitch}
       <div class="b3-label__text">{pluginInstance.i18n.bundledFnSwitchTips}</div>
     </div>
-    <span class="fn__space" />
+    <span class="fn__space"></span>
     <input
       id="bundledFnSwitch"
       class="b3-switch fn__flex-center"
@@ -147,7 +147,7 @@ module.exports = customFn`
       {pluginInstance.i18n.customFnSwitch}
       <div class="b3-label__text">{pluginInstance.i18n.customFnSwitchTips}</div>
     </div>
-    <span class="fn__space" />
+    <span class="fn__space" ></span>
     <input
       id="customFnSwitch"
       class="b3-switch fn__flex-center"
@@ -164,14 +164,14 @@ module.exports = customFn`
         {pluginInstance.i18n.customFnHandlerTips}
         <a href="https://www.regextester.com" target="_blank">https://www.regextester.com</a>
       </div>
-      <div class="fn__hr" />
+      <div class="fn__hr" ></div>
       <textarea
         class="b3-text-field fn__block"
         placeholder={pluginInstance.i18n.customFnHandlerPlaceholder}
         rows="8"
         spellcheck="false"
         bind:value={customFn}
-      />
+      ></textarea>
     </div>
   </label>
 
@@ -186,9 +186,9 @@ module.exports = customFn`
       >
         隐藏结果
       </button>
-      <div class="fn__hr" />
+      <div class="fn__hr" ></div>
       {pluginInstance.i18n.testInput}
-      <textarea class="b3-text-field fn__block test-data-item" rows="6" spellcheck="false" bind:value={testInput} />
+      <textarea class="b3-text-field fn__block test-data-item" rows="6" spellcheck="false" bind:value={testInput} ></textarea>
       <div class={showTest ? "" : "hidden"}>
         {pluginInstance.i18n.testOutput}
         <textarea
@@ -197,14 +197,14 @@ module.exports = customFn`
           rows="6"
           spellcheck="false"
           bind:value={testOutput}
-        />
+        ></textarea>
       </div>
     </div>
   </label>
 
   <div class="b3-dialog__action">
     <button class="b3-button b3-button--cancel" on:click={onCancel}>{pluginInstance.i18n.cancel}</button>
-    <div class="fn__space" />
+    <div class="fn__space"></div>
     <button class="b3-button b3-button--text" on:click={onSaveSetting}>{pluginInstance.i18n.save}</button>
   </div>
 </div>

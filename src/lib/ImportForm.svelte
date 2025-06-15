@@ -66,10 +66,12 @@
 
   // lifecycle
   onMount(async () => {
+    debugger
     await reloadTempFiles()
 
     // 加载配置
     importerConfig = await loadImporterConfig(pluginInstance)
+    debugger
 
     const res = await pluginInstance.kernelApi.lsNotebooks()
     const data = res.data as any
@@ -217,7 +219,7 @@
           {pluginInstance.i18n.selectNotebookTip}<span class="selected">[{toNotebookName}]</span>
         </div>
       </div>
-      <span class="fn__space" />
+      <span class="fn__space" ></span>
       <select
         id="blockEmbedMode"
         class="b3-select fn__flex-center fn__size200"
@@ -242,7 +244,7 @@
           <div class={showSingleImportTip ? "highlight" : "highlight hidden"}>{pluginInstance.i18n.importSingleNotice3}</div>
         </div>
       </div>
-      <span class="fn__space" />
+      <span class="fn__space" ></span>
       <button class="b3-button b3-button--outline fn__flex-center fn__size200" style="position: relative">
         <input
           id="importData"
@@ -275,7 +277,7 @@
           </div>
         </div>
       </div>
-      <span class="fn__space" />
+      <span class="fn__space" ></span>
       <button class="b3-button b3-button--outline fn__flex-center fn__size200" style="position: relative">
         <input id="batchImportData" class="b3-form__upload" on:click={selectFolder} />
         <svg>
@@ -294,7 +296,7 @@
           <span class="link" on:click={openTempFolder} on:keydown={handleKeyDown}>显示临时文件夹路径</span>
         </div>
       </div>
-      <span class="fn__space" />
+      <span class="fn__space" ></span>
       <button
         id="removeAll"
         class="b3-button b3-button--outline fn__flex-center fn__size200"

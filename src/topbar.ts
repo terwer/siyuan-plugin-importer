@@ -43,7 +43,7 @@ export async function initTopbar(pluginInstance: ImporterPlugin) {
     title: pluginInstance.i18n.importer,
     position: "right",
     callback: () => {
-      pluginInstance.logger.info(`this.i18n.importer added toolbar`)
+      pluginInstance.logger.info(`${pluginInstance.i18n.importer} added toolbar`)
     },
   })
 
