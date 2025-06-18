@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.8.0...v1.8.1) (2025-06-18)
+
+
+### Bug Fixes
+
+* **importer:** optimize styles and improve import settings ([7615111](https://github.com/terwer/siyuan-plugin-importer/commit/7615111b970012086661e1dbabf388fecd88da0e))
+
 ## [1.8.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.7.0...v1.8.0) (2025-06-15)
 ### Features
 * **importsetting:** add tab navigation for settings and test ([57ef273](https://github.com/terwer/siyuan-plugin-importer/commit/57ef273f8faaa7b63daf4f59686dee56e2330c11))
