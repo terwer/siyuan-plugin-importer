@@ -38,6 +38,16 @@ Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats
 
 ## Changelog
 
+**1.8.1 (2025-06-18)**
+### Bug Fixes
+* Optimize styles and improve import settings
+  - Add scoped attribute to styles in ImportForm and ImportSetting components
+  - Organize styles in a more structured and modular way
+  - Adjust styles for better visual consistency
+  - Update import setting styles for improved user experience
+  - Make minor adjustments to context menu and other related styles
+* Update Chinese translation for better localization
+
 **1.8.0 (2025-06-15)**
 ### Bug Fixes
 * Fix import issues in new version
