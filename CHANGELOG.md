@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/terwer/siyuan-plugin-importer/compare/v1.8.1...v1.8.2) (2025-06-18)
+
+
+### Miscellaneous
+
+* **release:** bump version to 1.8.1 ([ea66deb](https://github.com/terwer/siyuan-plugin-importer/commit/ea66deb292ccaad5cbca2eef35f591864acda8fa))
+
 ## [1.8.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.8.0...v1.8.1) (2025-06-18)
 ### Bug Fixes
 * **importer:** optimize styles and improve import settings ([7615111](https://github.com/terwer/siyuan-plugin-importer/commit/7615111b970012086661e1dbabf388fecd88da0e))
