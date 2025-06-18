@@ -308,27 +308,28 @@ onMounted(async () => {
     </div>
 </template>
 
-<style lang="stylus">
-.selected
-  color red
-  padding 0 4px
+<style lang="stylus" scoped>
+.importer-form-container
+  .selected
+    color red
+    padding 0 4px
 
-.highlight
-  color red
+  .highlight
+    color red
 
-.link
-  color var(--b3-theme-primary)
-  cursor pointer
-
-.tips
-  cursor pointer
-
-.b3-label__text
-  .sign
-    cursor pointer
+  .link
     color var(--b3-theme-primary)
+    cursor pointer
 
-.highlight.hidden,
-.sign.hidden
-  display none
+  .tips
+    cursor pointer
+
+  .b3-label__text
+    .sign
+      cursor pointer
+      color var(--b3-theme-primary)
+
+  .highlight.hidden,
+  .sign.hidden
+    display none
 </style>

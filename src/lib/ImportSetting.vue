@@ -226,85 +226,47 @@ module.exports = customFn`
     </div>
 </template>
 
-<style lang="stylus">
-.b3-switch
-  position relative
-  display inline-block
-  width 40px
-  height 20px
+<style lang="stylus" scoped>
+.importer-setting-container
+  .test-data-item
+    margin 4px 0
 
-  input
-    opacity 0
-    width 0
-    height 0
+  .pull-right
+    float right
 
-  &__text
-    position absolute
+  .hidden
+    display none
+
+  .config__tabs
+    display flex
+    border-bottom 1px solid var(--b3-border-color)
+    margin-bottom 16px
+
+  .config__tab
+    padding 8px 16px
     cursor pointer
-    top 0
-    left 0
-    right 0
-    bottom 0
-    background-color #ccc
-    transition .4s
-    border-radius 20px
+    border-bottom 2px solid transparent
+    color var(--b3-theme-on-surface)
 
-    &:before
-      position absolute
-      content ""
-      height 16px
-      width 16px
-      left 2px
-      bottom 2px
-      background-color white
-      transition .4s
-      border-radius 50%
+    &:hover
+      color var(--b3-theme-primary)
 
-input:checked + .b3-switch__text
-  background-color var(--b3-theme-primary)
+    &--active
+      color var(--b3-theme-primary)
+      border-bottom-color var(--b3-theme-primary)
 
-  &:before
-    transform translateX(20px)
+  .config__content
+    min-height 300px
 
-.test-data-item
-  margin 4px 0
+  .config__panel
+    padding 8px 0
 
-.pull-right
-  float right
+  .config__item
+    margin-bottom 8px
 
-.hidden
-  display none
+    &:last-child
+      margin-bottom 0
 
-.config__tabs
-  display flex
-  border-bottom 1px solid var(--b3-border-color)
-  margin-bottom 16px
-
-.config__tab
-  padding 8px 16px
-  cursor pointer
-  border-bottom 2px solid transparent
-  color var(--b3-theme-on-surface)
-  
-  &:hover
-    color var(--b3-theme-primary)
-  
-  &--active
-    color var(--b3-theme-primary)
-    border-bottom-color var(--b3-theme-primary)
-
-.config__content
-  min-height 300px
-
-.config__panel
-  padding 8px 0
-
-.config__item
-  margin-bottom 8px
-
-  &:last-child
-    margin-bottom 0
-
-.config__buttons
-  margin-bottom 8px
+  .config__buttons
+    margin-bottom 8px
 </style>
