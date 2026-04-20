@@ -1,19 +1,11 @@
 # Changelog
 
 ## [1.8.2](https://github.com/terwer/siyuan-plugin-importer/compare/v1.8.1...v1.8.2) (2026-04-20)
-
-
 ### Bug Fixes
-
 * [#221](https://github.com/terwer/siyuan-plugin-importer/issues/221) fix html import in some cases ([a6abc28](https://github.com/terwer/siyuan-plugin-importer/commit/a6abc28e698235b51ed3b57809e4d363ca4fac87))
-
-
 ### Miscellaneous
-
 * **release:** bump version to 1.8.1 ([ea66deb](https://github.com/terwer/siyuan-plugin-importer/commit/ea66deb292ccaad5cbca2eef35f591864acda8fa))
-
 ## [1.8.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.8.0...v1.8.1) (2025-06-18)
-### Bug Fixes
 * **importer:** optimize styles and improve import settings ([7615111](https://github.com/terwer/siyuan-plugin-importer/commit/7615111b970012086661e1dbabf388fecd88da0e))
 ## [1.8.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.7.0...v1.8.0) (2025-06-15)
 ### Features
@@ -27,7 +19,6 @@
 * 转换参数改为 gfm ([c615ded](https://github.com/terwer/siyuan-plugin-importer/commit/c615dedea4dcbad4e1645c24e06b6442aceac0a9))
 * **deps:** bump zhi-lib-base from 0.0.2 to 0.4.1 ([a22de6b](https://github.com/terwer/siyuan-plugin-importer/commit/a22de6b3ef3141aa9e4b25f782487825416d0614))
 * 更新预览图 ([a0bc391](https://github.com/terwer/siyuan-plugin-importer/commit/a0bc391f519ee6b37d48a5f9a5b10586a4f8c915))
-### Miscellaneous
 * **deps-dev:** bump @sveltejs/vite-plugin-svelte from 2.4.1 to 2.4.2 ([160e449](https://github.com/terwer/siyuan-plugin-importer/commit/160e449d1f2bbc977a04a8d54a20af672b5787c7))
 * **deps-dev:** bump @terwer/eslint-config-custom from 1.2.0 to 1.3.6 ([b85e684](https://github.com/terwer/siyuan-plugin-importer/commit/b85e684c99937c58a829fa2c244a561157edb738))
 * **deps-dev:** bump siyuan from 0.7.2 to 0.7.4 ([24894f1](https://github.com/terwer/siyuan-plugin-importer/commit/24894f1b68a6f9ba0702ef0a4df92c7da560dd24))
