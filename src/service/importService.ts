@@ -46,16 +46,12 @@ export class ImportService {
    * @param file
    */
   public static async uploadAndConvert(pluginInstance: ImporterPlugin, file: any) {
-    const fromFilename = file.name
+    const { fromFilename, originalFilename, ext } = ImportService.getFileMeta(file)
 
     // 修正文件名
-    const originalFilename = fromFilename.substring(0, fromFilename.lastIndexOf("."))
     // 去除标题多余的空格，包括开始中间以及结尾的空格
     // const filename = originalFilename.replace(/\s+/g, "")
     const toFilename = `${originalFilename}.md`
-
-    // 扩展名
-    const ext = fromFilename.split(".").pop().toLowerCase()
 
     // md 直接返回
     if (ext === "md") {
@@ -73,18 +69,7 @@ export class ImportService {
     }
 
     if (ext === "html") {
-      if (isPC()) {
-        pluginInstance.logger.info(`copying html assets...`)
-        // 仅在客户端复制资源文件
-        const filePath = file.path
-        const lastSlashIndex = filePath.lastIndexOf("/")
-        const dirPath = filePath.substring(0, lastSlashIndex)
-        const path = window.require("path")
-        const fullDirPath = path.join(dirPath, `${originalFilename}_files`)
-        pluginInstance.logger.info("fullDirPath=>", fullDirPath)
-
-        await copyDir(fullDirPath, `${workspaceDir}/temp/convert/pandoc/${originalFilename}_files`)
-      }
+      await ImportService.copyHtmlAssets(pluginInstance, file, fromFilename, originalFilename)
     }
 
     // =================================================
@@ -193,4 +178,37 @@ export class ImportService {
   //////////////////////////////////////////////////////////////////
   // private function
   //////////////////////////////////////////////////////////////////
+
+  private static getFileMeta(file: any) {
+    const fromFilename = typeof file?.name === "string" ? file.name : ""
+    const lastDotIndex = fromFilename.lastIndexOf(".")
+    const hasExtension = lastDotIndex > 0 && lastDotIndex < fromFilename.length - 1
+
+    return {
+      fromFilename,
+      originalFilename: hasExtension ? fromFilename.substring(0, lastDotIndex) : fromFilename,
+      ext: hasExtension ? fromFilename.substring(lastDotIndex + 1).toLowerCase() : "",
+    }
+  }
+
+  private static async copyHtmlAssets(pluginInstance: ImporterPlugin, file: any, fromFilename: string, originalFilename: string) {
+    if (!isPC()) {
+      return
+    }
+
+    pluginInstance.logger.info(`copying html assets...`)
+
+    const filePath = typeof file?.path === "string" ? file.path.trim() : ""
+    if (filePath === "") {
+      pluginInstance.logger.warn(`skip copying html assets because file.path is unavailable: ${fromFilename}`)
+      return
+    }
+
+    const path = window.require("path")
+    const dirPath = path.dirname(filePath)
+    const fullDirPath = path.join(dirPath, `${originalFilename}_files`)
+    pluginInstance.logger.info("fullDirPath=>", fullDirPath)
+
+    await copyDir(fullDirPath, `${workspaceDir}/temp/convert/pandoc/${originalFilename}_files`)
+  }
 }
