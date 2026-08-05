@@ -147,31 +147,46 @@ export class ImportService {
     toNotebookId: string,
     isMd: boolean
   ) {
-    // 导入 MD 文档
-    // const localPath = isMd ? toFilePath : `${workspaceDir}${toFilePath}`
-    const localPath = `${workspaceDir}${toFilePath}`
+    // 探测 importStdMd 是否可用，卡死则提示重启
+    const ok = await ImportService.probeImport(toNotebookId)
+    if (!ok) {
+      showMessage(
+        "当前会话已经导入过，请重启思源笔记即可再次导入。",
+        0,
+        "error"
+      )
+      return
+    }
+
+    await ImportService.copyToSafePath(pluginInstance)
+    const filename = toFilePath.split("/").pop() || toFilePath
+    const localPath = `${workspaceDir}/temp/export/convert/pandoc/${filename}`
     const mdResult = await pluginInstance.kernelApi.importStdMd(localPath, toNotebookId, `/`)
     if (mdResult.code !== 0) {
       showMessage(`${pluginInstance.i18n.msgDocCreateFailed}=>${toFilePath}`, 7000, "error")
     }
-
-    // 打开笔记本
     await pluginInstance.kernelApi.openNotebook(toNotebookId)
-
     showMessage(pluginInstance.i18n.msgImportSuccess, 5000, "info")
   }
 
   public static async multiImport(pluginInstance: ImporterPlugin, toNotebookId: string) {
-    // 导入 MD 文档
-    const localPath = `${workspaceDir}/temp/convert/pandoc`
+    // 探测 importStdMd 是否可用，卡死则提示重启
+    const ok = await ImportService.probeImport(toNotebookId)
+    if (!ok) {
+      showMessage(
+        "当前会话已经导入过，请重启思源笔记即可再次导入。",
+        0,
+        "error"
+      )
+      return
+    }
+    await ImportService.copyToSafePath(pluginInstance)
+    const localPath = `${workspaceDir}/temp/export/convert/pandoc`
     const mdResult = await pluginInstance.kernelApi.importStdMd(localPath, toNotebookId, `/`)
     if (mdResult.code !== 0) {
       showMessage(`${pluginInstance.i18n.msgDocCreateFailed}=>${localPath}`, 7000, "error")
     }
-
-    // 打开笔记本
     await pluginInstance.kernelApi.openNotebook(toNotebookId)
-
     showMessage(pluginInstance.i18n.msgImportSuccess, 5000, "info")
   }
 
@@ -210,5 +225,45 @@ export class ImportService {
     pluginInstance.logger.info("fullDirPath=>", fullDirPath)
 
     await copyDir(fullDirPath, `${workspaceDir}/temp/convert/pandoc/${originalFilename}_files`)
+  }
+
+  /**
+   * 探测 importStdMd 是否可用。思源内核在删除已导入文档后，后续 importStdMd 会永久挂起，
+   * 非重启无法恢复。此处用敏感路径做超时探测：正常情况秒返 error，挂死则超时。
+   * @returns true = 可用，false = 卡死
+   */
+  private static async probeImport(toNotebookId: string, timeoutMs = 3000): Promise<boolean> {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), timeoutMs)
+    try {
+      const resp = await fetch("/api/import/importStdMd", {
+        method: "POST",
+        body: JSON.stringify({
+          localPath: `${workspaceDir}/temp/convert/pandoc/_probe_.md`,
+          notebook: toNotebookId,
+          toPath: "/",
+        }),
+        signal: controller.signal,
+      })
+      await resp.json()
+      return true // 正常返回（无论 code 是什么）
+    } catch {
+      return false // 超时或网络错误 = 卡死
+    } finally {
+      clearTimeout(timer)
+    }
+  }
+
+  /**
+   * 复制到安全路径 + 创建 pandoc.md 占位文件（阻止内核创建空 /pandoc 节点）
+   * import.go:1203-1206 检测到 pandoc.md 存在则跳过空节点创建
+   */
+  private static async copyToSafePath(_pluginInstance: ImporterPlugin) {
+    const srcPath = `${workspaceDir}/temp/convert/pandoc`
+    const destPath = `${workspaceDir}/temp/export/convert/pandoc`
+    await copyDir(srcPath, destPath)
+    const fs = (window as any).require("fs")
+    const placeholder = `${workspaceDir}/temp/export/convert/pandoc.md`
+    try { fs.writeFileSync(placeholder, "") } catch (_e) { /* ignore */ }
   }
 }
