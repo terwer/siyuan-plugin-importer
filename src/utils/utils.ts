@@ -174,10 +174,10 @@ export const copyDir = async (src, dest) => {
     // 判断是否为文件夹
     if (fs.statSync(srcPath).isDirectory()) {
       // 递归拷贝文件夹
-      copyDir(srcPath, destPath)
+      await copyDir(srcPath, destPath)
     } else {
-      // 拷贝文件
-      fs.copyFileSync(srcPath, destPath)
+      // 异步拷贝文件，避免大文件阻塞 UI
+      await fs.promises.copyFile(srcPath, destPath)
     }
   }
 }
