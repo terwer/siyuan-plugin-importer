@@ -36,6 +36,7 @@ import { loadImporterConfig, saveImporterConfig } from "../store/config"
 import { showMessage, confirm } from "siyuan"
 import { ImportService} from "../service/importService"
 import { workspaceDir } from "../Constants"
+import { openSettingDialog } from "../service/settingService"
 
 // =============== Props 定义 ===============
 const props = defineProps<Props>()
@@ -84,6 +85,11 @@ const cleanTemp = async () => {
     await reloadTempFiles()
 
     showMessage(props.pluginInstance.i18n.msgTempFileCleaned, 5000, "info")
+}
+
+// 打开导入设置（与顶栏右键菜单共用唯一入口）
+const openSetting = () => {
+    openSettingDialog(props.pluginInstance)
 }
 
 // 导入前确认并清理上次残留的临时文件（唯一清理入口）
@@ -359,6 +365,13 @@ onMounted(async () => {
                         <use xlink:href="#iconTrashcan" />
                     </svg>
                     {{ pluginInstance.i18n.clean }}
+                </button>
+                <button id="importSetting" class="b3-button b3-button--outline fn__flex-center fn__size200"
+                    style="position: relative; margin-left: 8px;" @click="openSetting">
+                    <svg class="svg">
+                        <use xlink:href="#iconSetting" />
+                    </svg>
+                    {{ pluginInstance.i18n.setting }}
                 </button>
             </div>
 
