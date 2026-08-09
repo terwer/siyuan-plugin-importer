@@ -50,6 +50,7 @@ Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats
 * Temp cleanup covers both the convert and export temp directories; import confirms cleanup of stale temp files first
 * Temp folder paths are shown on demand and can be opened in the file manager directly
 ### Bug Fixes
+* Fix import failure on SiYuan 3.7.3+ where the kernel rejects paths under `temp/convert` (only `temp/export/*` is allowed); converted files are copied to the safe path before import
 * Fix potential kernel hang caused by path separator mismatch during directory import
 * Fix duplicate import caused by stale files left in the temp directory
 
