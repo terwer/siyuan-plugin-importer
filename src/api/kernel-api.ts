@@ -204,6 +204,22 @@ class KernelApi extends BaseApi {
     }
     return await this.siyuanRequest("/api/import/importStdMd", params)
   }
+
+  /**
+   * 重建数据索引。导入后调用可触发内核推送 reloadui 事件，
+   * 前端收到后保存布局并自动刷新，使文档树显示导入的文档。
+   */
+  public async rebuildDataIndex(): Promise<SiyuanData> {
+    return await this.siyuanRequest("/api/system/rebuildDataIndex", {})
+  }
+
+  /**
+   * 重载文档树（无感刷新）。内核延迟推送 reloadFiletree 事件，
+   * 前端收到后重新加载文档树，不刷新页面。
+   */
+  public async reloadFiletree(): Promise<SiyuanData> {
+    return await this.siyuanRequest("/api/ui/reloadFiletree", {})
+  }
 }
 
 export default KernelApi

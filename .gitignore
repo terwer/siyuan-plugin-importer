@@ -7,3 +7,9 @@ __pycache__
 temp
 cookie.txt
 token.txt
+
+# ReCode local database
+.recode
+
+# Planning workspace files (internal)
+.planning

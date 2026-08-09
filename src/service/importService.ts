@@ -23,178 +23,280 @@
  * questions.
  */
 
-import { mediaDir, workspaceDir } from "../Constants"
-import { getBackend, getFrontend, showMessage } from "siyuan"
+import { workspaceDir } from "../Constants"
+import { showMessage } from "siyuan"
 import ImporterPlugin from "../index"
 import {
   copyDir,
   getExports,
-  isPC,
   removeEmptyLines,
   removeFootnotes,
   removeLinks,
   replaceImagePath,
 } from "../utils/utils"
-import shortHash from "shorthash2"
 import { loadImporterConfig } from "../store/config"
+
+/**
+ * Safe temp directory that the kernel allows importing from (temp/export/*).
+ * Since 3.7.3 the kernel rejects paths under temp/convert, so files must be
+ * copied here before import.
+ */
+const SAFE_PANDOC_DIR = `${workspaceDir}/temp/export/convert/pandoc`
 
 export class ImportService {
   /**
-   * 上传并转换，md、html 不上传
+   * Upload and convert a source file to Markdown (including asset preparation:
+ * resources referenced by md files and the _files folder of html files).
    *
    * @param pluginInstance
-   * @param file
+   * @param file - the source file selected by the user
+   * @returns the md file path under /temp/convert/pandoc, or null on failure (error already shown)
    */
-  public static async uploadAndConvert(pluginInstance: ImporterPlugin, file: any) {
+  public static async uploadAndConvert(pluginInstance: ImporterPlugin, file: File): Promise<string | null> {
     const { fromFilename, originalFilename, ext } = ImportService.getFileMeta(file)
+    const srcDir = ImportService.getSourceDir(file)
 
-    // 修正文件名
-    // 去除标题多余的空格，包括开始中间以及结尾的空格
-    // const filename = originalFilename.replace(/\s+/g, "")
-    const toFilename = `${originalFilename}.md`
-
-    // md 直接返回
+    // md files are uploaded directly without conversion; upload referenced local assets first
     if (ext === "md") {
-      const toFilePath = `/temp/convert/pandoc/${toFilename}`
+      const toFilePath = `/temp/convert/pandoc/${originalFilename}.md`
+      if (srcDir) {
+        await ImportService.uploadMdReferencedAssets(pluginInstance, file, srcDir)
+      }
       pluginInstance.logger.info(`upload md file to ${toFilePath}`)
       const uploadResult = await pluginInstance.kernelApi.putFile(toFilePath, file)
       if (uploadResult.code !== 0) {
         showMessage(`${pluginInstance.i18n.msgFileUploadError}：${uploadResult.msg}`, 7000, "error")
-        return
+        return null
       }
-      return {
-        toFilePath: toFilePath,
-        isMd: true,
-      }
+      return toFilePath
     }
 
+    // html: upload the {name}_files asset folder (single import gets the source path via
+    // webUtils, batch import already uploads it from the UI), and rewrite relative asset
+    // references with a ../ prefix because the kernel runs pandoc in a random
+    // temp/convert/pandoc/{hash} subdirectory, so references must go up one level
+    // to reach the assets under the pandoc directory
     if (ext === "html") {
-      await ImportService.copyHtmlAssets(pluginInstance, file, fromFilename, originalFilename)
+      if (srcDir) {
+        const path = window.require("path")
+        await ImportService.uploadDirTreeFromPath(
+          pluginInstance,
+          path.join(srcDir, `${originalFilename}_files`),
+          `${originalFilename}_files`
+        )
+      }
+      const htmlText = await file.text()
+      const fixedHtml = htmlText.replace(/(src|href)\s*=\s*["']([^"']*)["']/gi, (match, attr, url) => {
+        const u = url.trim()
+        if (/^(https?:|data:|#|mailto:|javascript:)/i.test(u)) {
+          return match
+        }
+        if (u.startsWith("/") || u.startsWith("./") || u.startsWith("../")) {
+          return match
+        }
+        return `${attr}="../${u}"`
+      })
+      if (fixedHtml !== htmlText) {
+        file = new File([fixedHtml], file.name)
+      }
     }
 
-    // =================================================
-    // 下面是非 html、 md文件的处理、先上传源文件，然后转换
-    // =================================================
-
+    // Other formats: upload the source file, convert with pandoc, process the text, then save the md
     const fromFilePath = `/temp/convert/pandoc/${fromFilename}`
-    const toFilePath = `/temp/convert/pandoc/${toFilename}`
-
-    // 文件上传
-    const uploadFilePath = fromFilePath
-    pluginInstance.logger.info(`upload file from ${uploadFilePath} to /temp/convert/pandoc`)
-    const uploadResult = await pluginInstance.kernelApi.putFile(uploadFilePath, file)
+    pluginInstance.logger.info(`upload file from ${fromFilePath} to /temp/convert/pandoc`)
+    const uploadResult = await pluginInstance.kernelApi.putFile(fromFilePath, file)
     if (uploadResult.code !== 0) {
       showMessage(`${pluginInstance.i18n.msgFileUploadError}：${uploadResult.msg}`, 7000, "error")
-      return
+      return null
     }
 
-    // 文件转换
-    const fromAbsPath = `./../${fromFilename}`
-    const toAbsPath = `./../${toFilename}`
-    pluginInstance.logger.info(`convertPandoc from [${fromAbsPath}] to [${toAbsPath}]`)
-    const convertResult = await pluginInstance.kernelApi.convertPandoc(fromAbsPath, toAbsPath)
+    // Make the converted output name unique: when a md file with the same name already
+    // exists, append a sequence number (a.docx + a.md → a-docx-1.md) so the converted
+    // output never overwrites an existing user md file
+    let finalFilename = `${originalFilename}.md`
+    let n = 0
+    let targetExists = true
+    while (targetExists) {
+      if (n > 0) {
+        finalFilename = `${originalFilename}-${ext}-${n}.md`
+      }
+      const existing = await pluginInstance.kernelApi.getFile(`/temp/convert/pandoc/${finalFilename}`, "text")
+      targetExists = existing !== null
+      n++
+    }
+    const toFilePath = `/temp/convert/pandoc/${finalFilename}`
+
+    // Convert the file
+    pluginInstance.logger.info(`convertPandoc from [./../${fromFilename}] to [./../${finalFilename}]`)
+    const convertResult = await pluginInstance.kernelApi.convertPandoc(
+      `./../${fromFilename}`,
+      `./../${finalFilename}`
+    )
     if (convertResult.code !== 0) {
       showMessage(`${pluginInstance.i18n.msgFileConvertError}：${convertResult.msg}`, 7000, "error")
-      return
+      return null
     }
 
-    // 读取文件
+    // Read the converted md text
     let mdText = (await pluginInstance.kernelApi.getFile(toFilePath, "text")) ?? ""
     if (mdText === "") {
       showMessage(pluginInstance.i18n.msgFileConvertEmpty, 7000, "error")
-      return
+      return null
     }
 
-    // 文本处理
+    // Built-in text processing
     const importConfig = await loadImporterConfig(pluginInstance)
     if (importConfig.bundledFnSwitch !== false) {
       pluginInstance.logger.info("Using bundled handler process text")
-      // 删除目录中链接
       mdText = removeLinks(mdText)
-      // 去除空行
       mdText = removeEmptyLines(mdText)
-      // 资源路径
       mdText = replaceImagePath(mdText)
-      // 去除脚注
       mdText = removeFootnotes(mdText)
     }
 
-    // 自定义文本处理
+    // Custom text processing
     if (importConfig.customFnSwitch) {
       pluginInstance.logger.warn("Using custom handler process text")
       try {
-        const customFn = importConfig.customFn
-        const exportsFn = getExports(customFn)
-        mdText = exportsFn(mdText)
+        mdText = getExports(importConfig.customFn)(mdText)
       } catch (e) {
         showMessage(`${pluginInstance.i18n.customFnHandlerError} ${e.toString()}`, 5000, "error")
         throw e
       }
     }
 
-    // 保存处理的最终文本
-    await pluginInstance.kernelApi.saveTextData(`${toFilename}`, mdText)
-
-    return {
-      toFilePath: toFilePath,
-      isMd: false,
-    }
+    // Save the processed final text
+    await pluginInstance.kernelApi.saveTextData(finalFilename, mdText)
+    return toFilePath
   }
 
-  public static async singleImport(
-    pluginInstance: ImporterPlugin,
-    toFilePath: string,
-    toNotebookId: string,
-    isMd: boolean
-  ) {
-    // 探测 importStdMd 是否可用，卡死则提示重启
-    const ok = await ImportService.probeImport(toNotebookId)
-    if (!ok) {
-      showMessage(
-        "当前会话已经导入过，请重启思源笔记即可再次导入。",
-        0,
-        "error"
-      )
-      return
-    }
-
-    await ImportService.copyToSafePath(pluginInstance)
-    const filename = toFilePath.split("/").pop() || toFilePath
-    const localPath = `${workspaceDir}/temp/export/convert/pandoc/${filename}`
-    const mdResult = await pluginInstance.kernelApi.importStdMd(localPath, toNotebookId, `/`)
+  /**
+   * Import a single file.
+   *
+   * @param pluginInstance
+   * @param toFilePath - the md file path under /temp/convert/pandoc (returned by uploadAndConvert)
+   * @param toNotebookId
+   */
+  public static async singleImport(pluginInstance: ImporterPlugin, toFilePath: string, toNotebookId: string) {
+    await ImportService.copyToSafePath()
+    const mdResult = await ImportService.importMdFile(pluginInstance, toNotebookId, toFilePath)
     if (mdResult.code !== 0) {
       showMessage(`${pluginInstance.i18n.msgDocCreateFailed}=>${toFilePath}`, 7000, "error")
     }
     await pluginInstance.kernelApi.openNotebook(toNotebookId)
+    await ImportService.refreshUI(pluginInstance)
     showMessage(pluginInstance.i18n.msgImportSuccess, 5000, "info")
   }
 
+  /**
+   * Batch import: orchestrates only, calling the shared atomic single-file import in a loop.
+   *
+   * @param pluginInstance
+   * @param toNotebookId
+   */
   public static async multiImport(pluginInstance: ImporterPlugin, toNotebookId: string) {
-    // 探测 importStdMd 是否可用，卡死则提示重启
-    const ok = await ImportService.probeImport(toNotebookId)
-    if (!ok) {
-      showMessage(
-        "当前会话已经导入过，请重启思源笔记即可再次导入。",
-        0,
-        "error"
-      )
+    await ImportService.copyToSafePath()
+    const fs = window.require("fs")
+
+    let files: string[]
+    try {
+      files = fs.readdirSync(SAFE_PANDOC_DIR)
+    } catch (e) {
+      showMessage(`${pluginInstance.i18n.msgReadDirFailed}：${e.toString()}`, 7000, "error")
       return
     }
-    await ImportService.copyToSafePath(pluginInstance)
-    const localPath = `${workspaceDir}/temp/export/convert/pandoc`
-    const mdResult = await pluginInstance.kernelApi.importStdMd(localPath, toNotebookId, `/`)
-    if (mdResult.code !== 0) {
-      showMessage(`${pluginInstance.i18n.msgDocCreateFailed}=>${localPath}`, 7000, "error")
+
+    const mdFiles = files.filter((f) => /\.(md|markdown)$/i.test(f))
+    if (mdFiles.length === 0) {
+      showMessage(pluginInstance.i18n.msgFileNotEmpty, 7000, "error")
+      return
+    }
+
+    let failCount = 0
+    for (const filename of mdFiles) {
+      const mdResult = await ImportService.importMdFile(
+        pluginInstance,
+        toNotebookId,
+        `/temp/convert/pandoc/${filename}`
+      )
+      if (mdResult.code !== 0) {
+        failCount++
+        pluginInstance.logger.error(`import ${filename} failed: ${mdResult.msg}`)
+      }
+    }
+
+    if (failCount > 0) {
+      showMessage(`${pluginInstance.i18n.msgDocCreateFailed}：${failCount}/${mdFiles.length}`, 7000, "error")
     }
     await pluginInstance.kernelApi.openNotebook(toNotebookId)
+    await ImportService.refreshUI(pluginInstance)
     showMessage(pluginInstance.i18n.msgImportSuccess, 5000, "info")
+  }
+
+  /**
+   * Clean up the temp directories (convert dir and safe dir) - the only cleanup entry.
+   * Shared by the manual page cleanup and the pre-import cleanup; no duplicated
+   * implementations.
+   *
+   * @param pluginInstance
+   */
+  public static async cleanTemp(pluginInstance: ImporterPlugin) {
+    await pluginInstance.kernelApi.removeFile("/temp/convert/pandoc")
+    await pluginInstance.kernelApi.removeFile("/temp/export/convert/pandoc")
+  }
+
+  /**
+   * Batch import: recursively upload a directory tree (handle) to the temp directory,
+   * keeping relative paths. Convert sources are handled by the UI loop calling
+   * uploadAndConvert; all other files are uploaded as assets.
+   *
+   * @param pluginInstance
+   * @param dirHandle - showDirectoryPicker 返回的目录句柄
+   * @param tempDir - 目标临时目录（相对 /temp/convert/pandoc）
+   */
+  public static async uploadDirTreeFromHandle(
+    pluginInstance: ImporterPlugin,
+    dirHandle: any,
+    tempDir: string
+  ) {
+    const entries = await dirHandle.values()
+    for await (const entry of entries) {
+      if (entry.kind === "directory") {
+        await ImportService.uploadDirTreeFromHandle(pluginInstance, entry, `${tempDir}/${entry.name}`)
+      } else {
+        const file = await entry.getFile()
+        const relPath = `${tempDir}/${file.name}`
+        const uploadResult = await pluginInstance.kernelApi.putFile(`/temp/convert/pandoc/${relPath}`, file)
+        if (uploadResult.code !== 0) {
+          pluginInstance.logger.warn(`upload asset failed: ${relPath}: ${uploadResult.msg}`)
+        }
+      }
+    }
   }
 
   //////////////////////////////////////////////////////////////////
   // private function
   //////////////////////////////////////////////////////////////////
 
-  private static getFileMeta(file: any) {
+  /**
+   * 公共原子逻辑：将 SAFE_PANDOC_DIR 中的单个 md 导入指定笔记本。
+   * 单文件导入与批量导入循环共用，禁止各自实现。
+   *
+   * 注意：localPath 必须使用 Windows 原生路径（反斜杠），否则内核 filepath.WalkDir
+   * 拼接的子路径与 strings.TrimPrefix 分隔符不匹配，会导致目录导入死循环。
+   *
+   * @param pluginInstance
+   * @param toNotebookId
+   * @param toFilePath - the md file path under /temp/convert/pandoc
+   */
+  private static async importMdFile(pluginInstance: ImporterPlugin, toNotebookId: string, toFilePath: string) {
+    const filename = toFilePath.split("/").pop() || toFilePath
+    const path = window.require("path")
+    const localPath = path.join(SAFE_PANDOC_DIR, filename)
+    return await pluginInstance.kernelApi.importStdMd(localPath, toNotebookId, `/`)
+  }
+
+  private static getFileMeta(file: File) {
     const fromFilename = typeof file?.name === "string" ? file.name : ""
     const lastDotIndex = fromFilename.lastIndexOf(".")
     const hasExtension = lastDotIndex > 0 && lastDotIndex < fromFilename.length - 1
@@ -206,64 +308,119 @@ export class ImportService {
     }
   }
 
-  private static async copyHtmlAssets(pluginInstance: ImporterPlugin, file: any, fromFilename: string, originalFilename: string) {
-    if (!isPC()) {
-      return
-    }
-
-    pluginInstance.logger.info(`copying html assets...`)
-
-    const filePath = typeof file?.path === "string" ? file.path.trim() : ""
-    if (filePath === "") {
-      pluginInstance.logger.warn(`skip copying html assets because file.path is unavailable: ${fromFilename}`)
-      return
-    }
-
-    const path = window.require("path")
-    const dirPath = path.dirname(filePath)
-    const fullDirPath = path.join(dirPath, `${originalFilename}_files`)
-    pluginInstance.logger.info("fullDirPath=>", fullDirPath)
-
-    await copyDir(fullDirPath, `${workspaceDir}/temp/convert/pandoc/${originalFilename}_files`)
-  }
-
   /**
-   * 探测 importStdMd 是否可用。思源内核在删除已导入文档后，后续 importStdMd 会永久挂起，
-   * 非重启无法恢复。此处用敏感路径做超时探测：正常情况秒返 error，挂死则超时。
-   * @returns true = 可用，false = 卡死
+   * 将临时目录复制到安全路径（内核仅允许导入 temp/export/*）。
+   * 复制前清空目标，避免上次残留文件被重复导入。
    */
-  private static async probeImport(toNotebookId: string, timeoutMs = 3000): Promise<boolean> {
-    const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), timeoutMs)
-    try {
-      const resp = await fetch("/api/import/importStdMd", {
-        method: "POST",
-        body: JSON.stringify({
-          localPath: `${workspaceDir}/temp/convert/pandoc/_probe_.md`,
-          notebook: toNotebookId,
-          toPath: "/",
-        }),
-        signal: controller.signal,
-      })
-      await resp.json()
-      return true // 正常返回（无论 code 是什么）
-    } catch {
-      return false // 超时或网络错误 = 卡死
-    } finally {
-      clearTimeout(timer)
-    }
-  }
-
-  /**
-   * 复制到安全路径 + 创建 pandoc.md 占位文件（阻止内核创建空 /pandoc 节点）
-   * import.go:1203-1206 检测到 pandoc.md 存在则跳过空节点创建
-   */
-  private static async copyToSafePath(_pluginInstance: ImporterPlugin) {
-    const srcPath = `${workspaceDir}/temp/convert/pandoc`
-    const destPath = `${workspaceDir}/temp/export/convert/pandoc`
-    await copyDir(srcPath, destPath)
+  private static async copyToSafePath() {
     const fs = (window as any).require("fs")
-    const placeholder = `${workspaceDir}/temp/export/convert/pandoc.md`
-    try { fs.writeFileSync(placeholder, "") } catch (_e) { /* ignore */ }
+    if (fs.existsSync(SAFE_PANDOC_DIR)) {
+      await fs.promises.rm(SAFE_PANDOC_DIR, { recursive: true, force: true })
+    }
+    await copyDir(`${workspaceDir}/temp/convert/pandoc`, SAFE_PANDOC_DIR)
+  }
+
+  /**
+   * 导入完成后无感刷新文档树。reloadFiletree 触发内核推送 reloadFiletree 事件，
+   * 前端收到后重新加载文档树（不刷新页面）。
+   */
+  private static async refreshUI(pluginInstance: ImporterPlugin) {
+    try {
+      await pluginInstance.kernelApi.reloadFiletree()
+    } catch (e) {
+      pluginInstance.logger.warn(`reloadFiletree failed: ${e?.toString?.() ?? e}`)
+    }
+  }
+
+  /**
+   * 获取文件在磁盘上的源目录（仅单个导入的 input[type=file] 场景可用）。
+   * 新版 Electron 通过 webUtils.getPathForFile 获取，旧版兼容 file.path；
+   * 批量导入（showDirectoryPicker）拿不到，返回 null（资源由 UI 上传）。
+   */
+  private static getSourceDir(file: File): string | null {
+    const path = window.require("path")
+    try {
+      const electron = window.require("electron")
+      const p = electron?.webUtils?.getPathForFile?.(file)
+      if (p) {
+        return path.dirname(p)
+      }
+    } catch (_e) {
+      // ignore when the electron module is unavailable
+    }
+    const legacyPath = (file as any)?.path
+    if (typeof legacyPath === "string" && legacyPath !== "") {
+      return path.dirname(legacyPath)
+    }
+    return null
+  }
+
+  /**
+   * 解析 md 文本中的本地资源引用，并上传到临时目录（保持相对路径）。
+   * 这样导入时内核能从 md 所在目录找到引用的图片等资源。
+   */
+  private static async uploadMdReferencedAssets(pluginInstance: ImporterPlugin, file: File, srcDir: string) {
+    const path = window.require("path")
+    const mdText = await file.text()
+    const regex = /!\[[^\]]*\]\(([^)\s]+)\)/g
+    let match: RegExpExecArray | null
+    while ((match = regex.exec(mdText)) !== null) {
+      let ref = match[1].trim()
+      // skip remote, inline and anchor references
+      if (/^(https?:|data:|#|siyuan:|<)/.test(ref)) {
+        continue
+      }
+      ref = ref.split("#")[0]
+      ref = decodeURIComponent(ref)
+      ref = ref.replace(/^\.\//, "").replace(/^\/+/, "")
+      if (ref === "") {
+        continue
+      }
+      const absPath = path.join(srcDir, ref)
+      const fs = window.require("fs")
+      if (fs.existsSync(absPath)) {
+        await ImportService.uploadLocalFile(pluginInstance, absPath, ref)
+      }
+    }
+  }
+
+  /**
+   * Upload a single local file to the temp directory.
+   *
+   * @param pluginInstance
+   * @param absPath - 本地绝对路径
+   * @param tempRelPath - 相对 /temp/convert/pandoc 的路径
+   */
+  private static async uploadLocalFile(pluginInstance: ImporterPlugin, absPath: string, tempRelPath: string) {
+    const path = window.require("path")
+    const fs = window.require("fs")
+    const data = fs.readFileSync(absPath)
+    const file = new File([data], path.basename(absPath))
+    const uploadResult = await pluginInstance.kernelApi.putFile(`/temp/convert/pandoc/${tempRelPath}`, file)
+    if (uploadResult.code !== 0) {
+      pluginInstance.logger.warn(`upload asset failed: ${tempRelPath}: ${uploadResult.msg}`)
+    }
+  }
+
+  /**
+   * Recursively upload a local directory to the temp directory (keeping relative paths),
+ * used for the {name}_files asset folder of html files.
+   */
+  private static async uploadDirTreeFromPath(pluginInstance: ImporterPlugin, absDir: string, tempDir: string) {
+    const path = window.require("path")
+    const fs = window.require("fs")
+    if (!fs.existsSync(absDir)) {
+      return
+    }
+    const entries = fs.readdirSync(absDir)
+    for (const name of entries) {
+      const absPath = path.join(absDir, name)
+      if (fs.statSync(absPath).isDirectory()) {
+        await ImportService.uploadDirTreeFromPath(pluginInstance, absPath, `${tempDir}/${name}`)
+      } else {
+        await ImportService.uploadLocalFile(pluginInstance, absPath, `${tempDir}/${name}`)
+      }
+    }
   }
 }
+
