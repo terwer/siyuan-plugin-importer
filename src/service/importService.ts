@@ -102,7 +102,9 @@ export class ImportService {
     }
 
     // Other formats: upload the source file, convert with pandoc, process the text, then save the md
-    const fromFilePath = `/temp/convert/pandoc/${fromFilename}`
+    // Use the sanitized name for the source file path too, since the kernel rejects
+    // invalid file names on putFile
+    const fromFilePath = `/temp/convert/pandoc/${originalFilename}.${ext}`
     pluginInstance.logger.info(`upload file from ${fromFilePath} to /temp/convert/pandoc`)
     const uploadResult = await pluginInstance.kernelApi.putFile(fromFilePath, file)
     if (uploadResult.code !== 0) {
@@ -127,9 +129,9 @@ export class ImportService {
     const toFilePath = `/temp/convert/pandoc/${finalFilename}`
 
     // Convert the file
-    pluginInstance.logger.info(`convertPandoc from [./../${fromFilename}] to [./../${finalFilename}]`)
+    pluginInstance.logger.info(`convertPandoc from [./../${originalFilename}.${ext}] to [./../${finalFilename}]`)
     const convertResult = await pluginInstance.kernelApi.convertPandoc(
-      `./../${fromFilename}`,
+      `./../${originalFilename}.${ext}`,
       `./../${finalFilename}`
     )
     if (convertResult.code !== 0) {
@@ -300,12 +302,34 @@ export class ImportService {
     const fromFilename = typeof file?.name === "string" ? file.name : ""
     const lastDotIndex = fromFilename.lastIndexOf(".")
     const hasExtension = lastDotIndex > 0 && lastDotIndex < fromFilename.length - 1
+    const originalFilename = hasExtension ? fromFilename.substring(0, lastDotIndex) : fromFilename
 
     return {
       fromFilename,
-      originalFilename: hasExtension ? fromFilename.substring(0, lastDotIndex) : fromFilename,
+      originalFilename: ImportService.filterFilename(originalFilename),
       ext: hasExtension ? fromFilename.substring(lastDotIndex + 1).toLowerCase() : "",
     }
+  }
+
+  /**
+   * Sanitize a file name to match the kernel rules (FilterFileName + FilterUploadFileName),
+   * so upload/convert/import do not fail with "invalid file path" for names containing
+   * characters like %, #, &, [, ], (, ), etc.
+   *
+   * @param name - the original file name without extension
+   * @returns the sanitized file name
+   */
+  private static filterFilename(name: string): string {
+    // FilterFileName: replace path separators and invalid chars with "_"
+    let ret = name
+      .replace(/[\\/:*?"'<>|]/g, "_")
+      .replace(/[\u0000-\u001f]/g, "")
+      .trim()
+    // FilterUploadFileName: remove upload-invalid chars
+    ret = ret.replace(/[~[\]()!`&{}=#%$;]/g, "")
+    // FilterFileName: trim trailing dots
+    ret = ret.replace(/\.+$/, "")
+    return ret === "" ? "untitled" : ret
   }
 
   /**

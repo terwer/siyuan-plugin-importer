@@ -6,6 +6,8 @@
 
 将 md, epub, docx, html 等格式的文件导入到思源笔记。目前支持的格式：.md, .epub, .docx, .html, .opml。
 
+> 📢 测试用例征集：为让插件在更多格式与边界场景（特殊文件名、批量导入等）下稳定可靠，现征集社区测试用例。可通过百度网盘分享，或脱敏后发送至作者邮箱 youweics@163.com。详见：https://github.com/terwer/siyuan-plugin-importer/issues/227
+
 ## 核心特色
 
 - **选择笔记**：支持选择笔记本，下次打开可自动记忆上次选择的笔记本
