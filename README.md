@@ -6,10 +6,6 @@
 
 Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats: .md, .epub, .docx, .html, .opml.
 
-> ✨ After two years, we are back with our first update. Due to work commitments, plugin maintenance was temporarily suspended, which caused inconvenience for some users. We sincerely apologize for this 🙏. The plugin is now back under active maintenance and fully functional 🚀.
-> 
-> 📌 Please upgrade to siyuan-note `3.1.12` or higher to use the plugin ⚡
-
 ## Core Features
 
 - **Select Notes**: Support for selecting a notebook, the next time you open it, you can automatically remember the notebook you selected last time
