@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.9.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.8.2...v1.9.0) (2026-08-09)
+
+
+### Features
+
+* **importer:** add import setting button on main form ([67068f1](https://github.com/terwer/siyuan-plugin-importer/commit/67068f1a677c85267f7b82cb0f8ad03cb9612c94))
+* **importer:** overhaul import pipeline with per-file import and asset support ([35242b7](https://github.com/terwer/siyuan-plugin-importer/commit/35242b71d7164b79a4d018737df203bd0c3cc133))
+
+
+### Bug Fixes
+
+* bypass sensitive path check by copying to temp/export before import ([52225a3](https://github.com/terwer/siyuan-plugin-importer/commit/52225a354bced7225fdc9cd47e4147f254722ba1))
+* **importer:** sanitize file names to match kernel upload rules ([41ba900](https://github.com/terwer/siyuan-plugin-importer/commit/41ba9001e08378dd0c24dbb6fc623174843912aa))
+
 ## [1.8.2](https://github.com/terwer/siyuan-plugin-importer/compare/v1.8.1...v1.8.2) (2026-04-20)
 ### Bug Fixes
 * [#221](https://github.com/terwer/siyuan-plugin-importer/issues/221) fix html import in some cases ([a6abc28](https://github.com/terwer/siyuan-plugin-importer/commit/a6abc28e698235b51ed3b57809e4d363ca4fac87))
