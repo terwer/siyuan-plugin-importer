@@ -31,11 +31,12 @@ interface Props {
 }
 
 // =============== 组件引入 ===============
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { loadImporterConfig, saveImporterConfig } from "../store/config"
 import { showMessage, confirm } from "siyuan"
 import { ImportService} from "../service/importService"
 import { workspaceDir } from "../Constants"
+import { openSettingDialog } from "../service/settingService"
 
 // =============== Props 定义 ===============
 const props = defineProps<Props>()
@@ -51,7 +52,7 @@ const showMultiImportTip = ref(false)
 
 // 常量
 const hiddenNotebook = new Set(["思源笔记用户指南", "SiYuan User Guide"])
-const allowedMultiExtensions = ["docx", "epub", "opml", "md"]
+const allowedMultiExtensions = ["docx", "epub", "opml", "md", "html"]
 
 // =============== 方法 ===============
 const notebookChange = async () => {
@@ -79,11 +80,36 @@ const reloadTempFiles = async () => {
 }
 
 const cleanTemp = async () => {
-    const tempPath = `/temp/convert/pandoc`
-    await props.pluginInstance.kernelApi.removeFile(`${tempPath}`)
+    // 页面手动清理：统一走 ImportService.cleanTemp（转换目录 + 安全目录）
+    await ImportService.cleanTemp(props.pluginInstance)
     await reloadTempFiles()
 
     showMessage(props.pluginInstance.i18n.msgTempFileCleaned, 5000, "info")
+}
+
+// 打开导入设置（与顶栏右键菜单共用唯一入口）
+const openSetting = () => {
+    openSettingDialog(props.pluginInstance)
+}
+
+// 导入前确认并清理上次残留的临时文件（唯一清理入口）
+const confirmCleanTemp = async (): Promise<boolean> => {
+    if (tempCount.value <= 0) {
+        return true
+    }
+    return await new Promise<boolean>((resolve) => {
+        confirm(
+            props.pluginInstance.i18n.cleanTemp ?? "清理临时文件",
+            props.pluginInstance.i18n.cleanTempConfirm ?? "检测到上次的临时文件，导入前将清理，是否继续？",
+            () => {
+                ImportService.cleanTemp(props.pluginInstance).then(() => {
+                    reloadTempFiles()
+                    resolve(true)
+                })
+            },
+            () => resolve(false)
+        )
+    })
 }
 
 const readFile = async (entry: any) => {
@@ -101,8 +127,33 @@ const readFile = async (entry: any) => {
     })
 }
 
-const openTempFolder = () => {
-    confirm("⚠️临时文件路径", `${workspaceDir}/temp/convert/pandoc`, () => { })
+const showTempPaths = ref(false)
+// 临时目录（转换目录 + 安全目录），点击某个路径直接打开
+const convertTempDir = computed(() => window.require("path").join(workspaceDir, "temp", "convert", "pandoc"))
+const safeTempDir = computed(() => window.require("path").join(workspaceDir, "temp", "export", "convert", "pandoc"))
+
+// 点击切换显示/隐藏临时目录路径
+const toggleTempPaths = () => {
+    showTempPaths.value = !showTempPaths.value
+}
+
+// 点击某个目录路径，用资源管理器直接打开
+const openTempDir = (dir: string) => {
+    const fs = window.require("fs")
+    if (!fs.existsSync(dir)) {
+        return
+    }
+    // 插件环境无 @electron/remote，用 Node child_process 调系统文件管理器
+    const cp = window.require("child_process")
+    try {
+        if (process.platform === "win32") {
+            cp.exec(`explorer "${dir}"`)
+        } else {
+            cp.exec(`open "${dir}"`)
+        }
+    } catch (e) {
+        console.warn(`open dir failed: ${dir}`, e)
+    }
 }
 
 const handleKeyDown = (event: KeyboardEvent) => {
@@ -116,12 +167,6 @@ const selectFile = async (event: Event) => {
     props.pluginInstance.logger.debug(`${props.pluginInstance.i18n.startImport}...`)
     props.dialog.destroy()
 
-  // 单个导入之前先清空临时文件
-  if (tempCount.value > 0) {
-    showMessage(`${props.pluginInstance.i18n.tempCountExists}`, 1000, "error")
-    return
-  }
-
     const files = (event.target as HTMLInputElement).files ?? []
     if (files.length === 0) {
         showMessage(`${props.pluginInstance.i18n.msgFileNotEmpty}`, 7000, "error")
@@ -129,19 +174,28 @@ const selectFile = async (event: Event) => {
     }
     const file = files[0]
 
+    // 导入前确认并清理上次残留的临时文件
+    const cleaned = await confirmCleanTemp()
+    if (!cleaned) {
+        return
+    }
+
     // 给个提示，免得用户以为界面是卡主了
     showMessage(`${props.pluginInstance.i18n.msgConverting} ${file.name}...`, 1000, "info")
 
     // 转换
     const uploadResult = await ImportService.uploadAndConvert(props.pluginInstance, file)
+    if (!uploadResult) {
+        return
+    }
     // 导入
-    await ImportService.singleImport(props.pluginInstance, uploadResult.toFilePath, toNotebookId.value, uploadResult.isMd)
+    await ImportService.singleImport(props.pluginInstance, uploadResult, toNotebookId.value)
 }
 
 const selectFolder = async () => {
-    // 批量导入之前先清空临时文件
-    if (tempCount.value > 0) {
-        showMessage(`${props.pluginInstance.i18n.tempCountExists}`, 1000, "error")
+    // 导入前确认并清理上次残留的临时文件
+    const cleaned = await confirmCleanTemp()
+    if (!cleaned) {
         return
     }
 
@@ -149,25 +203,41 @@ const selectFolder = async () => {
     props.dialog.destroy()
 
     const entries = await result.values()
+    // 第一遍：先上传所有资源（子目录树 + 顶层非转换源文件），
+    // 确保 html/docx 转换时引用的资源已就绪
+    const convertTargets: { entry: any; fileName: string; ext: string }[] = []
     for await (const entry of entries) {
         if (entry.kind === "directory") {
+            // 子目录递归上传（md 引用的图片等资源、html 的 {name}_files 资源保持相对路径）
+            await ImportService.uploadDirTreeFromHandle(props.pluginInstance, entry, entry.name)
             continue
         }
 
         const fileName = entry.name
         const ext = fileName.split(".").pop().toLowerCase()
 
-        if (!allowedMultiExtensions.includes(ext)) {
-            console.warn(`${props.pluginInstance.i18n.importTipNotAllowed} ${fileName}`)
-            continue
+        if (allowedMultiExtensions.includes(ext)) {
+            convertTargets.push({ entry, fileName, ext })
+        } else {
+            // 顶层资源文件（图片等）直接上传，作为 md 引用的资源
+            try {
+                const file = await readFile(entry)
+                await props.pluginInstance.kernelApi.putFile(`/temp/convert/pandoc/${fileName}`, file)
+            } catch (e) {
+                console.warn(`upload asset failed: ${fileName}`, e)
+            }
         }
-
-        // 循环上传并转换
-        showMessage(`${fileName} ${props.pluginInstance.i18n.msgConverting}...`, 5000, "info")
-        const file = await readFile(entry)
-        await ImportService.uploadAndConvert(props.pluginInstance, file)
     }
 
+    // 第二遍：先处理 md（直接上传，占用原名），再转换其他格式，
+    // 保证转换产物检测到同名 md 后自动改名，不覆盖用户文件
+    const mdTargets = convertTargets.filter((t) => t.ext === "md")
+    const convertSourceTargets = convertTargets.filter((t) => t.ext !== "md")
+    for (const target of [...mdTargets, ...convertSourceTargets]) {
+        showMessage(`${target.fileName} ${props.pluginInstance.i18n.msgConverting}...`, 5000, "info")
+        const file = await readFile(target.entry)
+        await ImportService.uploadAndConvert(props.pluginInstance, file)
+    }
     // 批量导入
     await ImportService.multiImport(props.pluginInstance, toNotebookId.value)
 }
@@ -284,7 +354,7 @@ onMounted(async () => {
                         {{ pluginInstance.i18n.tempTotal }} <span class="selected"> [ {{ tempCount }} ] </span>
                         {{ pluginInstance.i18n.tempCount }}
 
-                        <span class="link" @click="openTempFolder" @keydown="handleKeyDown">显示临时文件夹路径</span>
+                        <span class="link" @click="toggleTempPaths" @keydown="handleKeyDown">显示临时文件夹路径</span>
                     </div>
                 </div>
                 <span class="fn__space" />
@@ -296,6 +366,18 @@ onMounted(async () => {
                     </svg>
                     {{ pluginInstance.i18n.clean }}
                 </button>
+                <button id="importSetting" class="b3-button b3-button--outline fn__flex-center fn__size200"
+                    style="position: relative; margin-left: 8px;" @click="openSetting">
+                    <svg class="svg">
+                        <use xlink:href="#iconSetting" />
+                    </svg>
+                    {{ pluginInstance.i18n.setting }}
+                </button>
+            </div>
+
+            <div v-if="showTempPaths" class="temp-paths">
+                <div class="temp-path" @click="openTempDir(convertTempDir)" @keydown="handleKeyDown" role="button" tabindex="0">{{ convertTempDir }}</div>
+                <div class="temp-path" @click="openTempDir(safeTempDir)" @keydown="handleKeyDown" role="button" tabindex="0">{{ safeTempDir }}</div>
             </div>
 
             <div class="fn__flex b3-label config__item">
@@ -320,6 +402,19 @@ onMounted(async () => {
   .link
     color var(--b3-theme-primary)
     cursor pointer
+
+  .temp-paths
+    margin 8px 0 0 24px
+    font-size 12px
+
+    .temp-path
+      color var(--b3-theme-primary)
+      cursor pointer
+      word-break break-all
+      padding 2px 0
+
+      &:hover
+        text-decoration underline
 
   .tips
     cursor pointer

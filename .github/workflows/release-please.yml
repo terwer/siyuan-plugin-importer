@@ -31,20 +31,20 @@ jobs:
       # Checkout
       - name: Checkout
         if: ${{ steps.release.outputs.release_created }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Install Node.js
       - name: Install Node.js
         if: ${{ steps.release.outputs.release_created }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
 
       # Install pnpm
       - name: Install pnpm
         if: ${{ steps.release.outputs.release_created }}
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         id: pnpm-install
         with:
           version: 10.12.1
@@ -61,7 +61,7 @@ jobs:
       # Setup pnpm cache
       - name: Setup pnpm cache
         if: ${{ steps.release.outputs.release_created }}
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}

@@ -6,14 +6,18 @@
 
 Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats: .md, .epub, .docx, .html, .opml.
 
-> ✨ After two years, we are back with our first update. Due to work commitments, plugin maintenance was temporarily suspended, which caused inconvenience for some users. We sincerely apologize for this 🙏. The plugin is now back under active maintenance and fully functional 🚀.
-> 
-> 📌 Please upgrade to siyuan-note `3.1.12` or higher to use the plugin ⚡
+> 📢 Testing help wanted: We are collecting community test cases (formats, special file names, batch import, etc.) to make this plugin more reliable. Share your test files via Baidu Netdisk, or email them (privacy-removed) to youweics@163.com. Details: https://github.com/terwer/siyuan-plugin-importer/issues/227
 
 ## Core Features
 
 - **Select Notes**: Support for selecting a notebook, the next time you open it, you can automatically remember the notebook you selected last time
 - **One-click import**: Select a file, one-click import, zero configuration
+- **Batch import**: Select a folder, recursively upload resources (md referenced images, html `_files` asset folders), then convert and import each file one by one
+- **Resource support**: Local images referenced by md files and html `_files` asset folders are automatically uploaded and imported (both single and batch import)
+- **Seamless refresh**: The document tree refreshes automatically after import, no page reload
+- **Name conflict handling**: When a converted source (e.g. `a.docx`) collides with an existing md file (e.g. `a.md`), the converted output is renamed automatically (e.g. `a-docx-1.md`), so nothing is overwritten
+- **Temp cleanup**: One-click cleanup covers both the convert and export temp directories; import confirms cleanup of stale temp files first
+- **Temp folder paths**: Show both temp folder paths on demand, click a path to open it in the file manager
 - **Parameter configuration**: Support disabling the built-in text processing, support powerful custom processing function configuration, how to handle the converted MD text, it is completely up to you.
 
 ## FAQ
@@ -37,6 +41,20 @@ Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats
   A3: Sorry. Limited by Pandoc, Docker and mobile are not available on time. Please use the PC client.
 
 ## Changelog
+
+**1.9.0 (2026-08-09)**
+### Features
+* Import each converted md file individually instead of importing a directory, avoiding a kernel deadlock that previously hung the whole app on repeated imports
+* Document tree refreshes automatically after import (seamless, no page reload)
+* HTML import supports `_files` asset folders in both single and batch import
+* Markdown import supports referenced local images (uploaded automatically before import)
+* Converted output is renamed automatically when it collides with an existing md file (e.g. `a.docx` + `a.md` → `a-docx-1.md`), so nothing is overwritten
+* Temp cleanup covers both the convert and export temp directories; import confirms cleanup of stale temp files first
+* Temp folder paths are shown on demand and can be opened in the file manager directly
+### Bug Fixes
+* Fix import failure on SiYuan 3.7.3+ where the kernel rejects paths under `temp/convert` (only `temp/export/*` is allowed); converted files are copied to the safe path before import
+* Fix potential kernel hang caused by path separator mismatch during directory import
+* Fix duplicate import caused by stale files left in the temp directory
 
 **1.8.1 (2025-06-18)**
 ### Bug Fixes

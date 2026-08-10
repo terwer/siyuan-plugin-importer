@@ -25,7 +25,7 @@
 
 import { createApp, Component } from 'vue'
 import ImportForm from './lib/ImportForm.vue'
-import ImportSetting from './lib/ImportSetting.vue'
+import { openSettingDialog } from './service/settingService'
 import ImporterPlugin from './index'
 import { Dialog, getFrontend, Menu } from "siyuan"
 import { iconImporter } from "./utils/svg"
@@ -110,18 +110,7 @@ export async function initTopbar(pluginInstance: ImporterPlugin) {
       iconHTML: iconImporter.iconSetting,
       label: pluginInstance.i18n.setting,
       click: () => {
-        const settingId = "siyuan-importing-setting"
-        const d = new Dialog({
-          title: `${pluginInstance.i18n.setting} - v${pkg.version}`,
-          content: `<div id="${settingId}"></div>`,
-          width: pluginInstance.isMobile ? "92vw" : "61.8vw",
-        })
-
-        try {
-          createVueComponentInDialog(ImportSetting, pluginInstance, d, settingId)
-        } catch (error) {
-          pluginInstance.logger.error('Error creating ImportSetting component:', error)
-        }
+        openSettingDialog(pluginInstance)
       },
     })
 
