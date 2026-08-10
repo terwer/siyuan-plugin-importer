@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.9.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.9.0...v1.9.1) (2026-08-10)
+
+
+### Bug Fixes
+
+* **plugin:** remove unsupported i18n field from plugin.json ([5b48a05](https://github.com/terwer/siyuan-plugin-importer/commit/5b48a05b564d11a02f1618d8acf1fe23f4b3d70c))
+* **plugin:** update funding link from afdian.net to afdian.com ([9abcf14](https://github.com/terwer/siyuan-plugin-importer/commit/9abcf14d4a341a067e5b3cc4539b2d428264ccf3))
+
+
+### Miscellaneous
+
+* ignore .omo planning workspace files ([b3bc8c7](https://github.com/terwer/siyuan-plugin-importer/commit/b3bc8c7a398bd2b004100ecf8f83ea3a20f49ce3))
+
 ## [1.9.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.8.2...v1.9.0) (2026-08-09)
 ### Features
 * **importer:** add import setting button on main form ([67068f1](https://github.com/terwer/siyuan-plugin-importer/commit/67068f1a677c85267f7b82cb0f8ad03cb9612c94))
