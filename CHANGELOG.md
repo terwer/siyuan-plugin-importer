@@ -1,14 +1,19 @@
 # Changelog
 
-## [1.8.2](https://github.com/terwer/siyuan-plugin-importer/compare/v1.8.1...v1.8.2) (2026-04-20)
+## [1.9.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.8.2...v1.9.0) (2026-08-09)
+### Features
+* **importer:** add import setting button on main form ([67068f1](https://github.com/terwer/siyuan-plugin-importer/commit/67068f1a677c85267f7b82cb0f8ad03cb9612c94))
+* **importer:** overhaul import pipeline with per-file import and asset support ([35242b7](https://github.com/terwer/siyuan-plugin-importer/commit/35242b71d7164b79a4d018737df203bd0c3cc133))
 ### Bug Fixes
+* bypass sensitive path check by copying to temp/export before import ([52225a3](https://github.com/terwer/siyuan-plugin-importer/commit/52225a354bced7225fdc9cd47e4147f254722ba1))
+* **importer:** sanitize file names to match kernel upload rules ([41ba900](https://github.com/terwer/siyuan-plugin-importer/commit/41ba9001e08378dd0c24dbb6fc623174843912aa))
+## [1.8.2](https://github.com/terwer/siyuan-plugin-importer/compare/v1.8.1...v1.8.2) (2026-04-20)
 * [#221](https://github.com/terwer/siyuan-plugin-importer/issues/221) fix html import in some cases ([a6abc28](https://github.com/terwer/siyuan-plugin-importer/commit/a6abc28e698235b51ed3b57809e4d363ca4fac87))
 ### Miscellaneous
 * **release:** bump version to 1.8.1 ([ea66deb](https://github.com/terwer/siyuan-plugin-importer/commit/ea66deb292ccaad5cbca2eef35f591864acda8fa))
 ## [1.8.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.8.0...v1.8.1) (2025-06-18)
 * **importer:** optimize styles and improve import settings ([7615111](https://github.com/terwer/siyuan-plugin-importer/commit/7615111b970012086661e1dbabf388fecd88da0e))
 ## [1.8.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.7.0...v1.8.0) (2025-06-15)
-### Features
 * **importsetting:** add tab navigation for settings and test ([57ef273](https://github.com/terwer/siyuan-plugin-importer/commit/57ef273f8faaa7b63daf4f59686dee56e2330c11))
 * **import:** support direct import of md files ([6842f00](https://github.com/terwer/siyuan-plugin-importer/commit/6842f0059fb87a80d2247844817b6c6a74624972))
 * 修复文件检测不生效问题 ([b608ac2](https://github.com/terwer/siyuan-plugin-importer/commit/b608ac2f0bac896dfe51501cf42e61d7b5a2989e))
