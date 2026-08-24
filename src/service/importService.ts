@@ -27,6 +27,7 @@ import { workspaceDir } from "../Constants"
 import { showMessage } from "siyuan"
 import ImporterPlugin from "../index"
 import {
+  addTableBorder,
   copyDir,
   getExports,
   removeEmptyLines,
@@ -154,6 +155,8 @@ export class ImportService {
       mdText = removeEmptyLines(mdText)
       mdText = replaceImagePath(mdText)
       mdText = removeFootnotes(mdText)
+      // 给 pandoc 输出的 HTML 表格注入边框（复杂表格无法用管道表格表示，被渲染为 HTML 块，默认无边框）
+      mdText = addTableBorder(mdText)
     }
 
     // Custom text processing

@@ -11,6 +11,7 @@ const loadImporterConfigMock = vi.fn(async () => ({
 }))
 
 vi.mock("../utils/utils", () => ({
+  addTableBorder: vi.fn((text: string) => text),
   copyDir: copyDirMock,
   getExports: vi.fn(),
   isPC: isPCMock,
