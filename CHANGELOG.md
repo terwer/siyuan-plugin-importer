@@ -1,21 +1,12 @@
 # Changelog
 
 ## [1.11.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.10.0...v1.11.0) (2026-08-24)
-
-
 ### Features
-
 * **importer:** prompt to convert network images to local after import ([eb6d9ad](https://github.com/terwer/siyuan-plugin-importer/commit/eb6d9ad8b4fd5535e17f3f6451a76c839eb69cb7))
-
-
 ### Bug Fixes
-
 * **importer:** run custom handler when importing md directly ([66fd1d9](https://github.com/terwer/siyuan-plugin-importer/commit/66fd1d97d5947fe7e13aebdc62973fc3fa711c50))
-
 ## [1.10.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.9.1...v1.10.0) (2026-08-24)
-### Features
 * **importer:** add borders to html tables imported from docx ([2e13069](https://github.com/terwer/siyuan-plugin-importer/commit/2e130696b32be157b776edf6528501d059534a7d))
-### Bug Fixes
 * **api:** switch pandoc output to markdown to fix table/formula import ([93f010c](https://github.com/terwer/siyuan-plugin-importer/commit/93f010cceb8f265b2585026367fc0ff1917c9ae6))
 ## [1.9.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.9.0...v1.9.1) (2026-08-10)
 * **plugin:** remove unsupported i18n field from plugin.json ([5b48a05](https://github.com/terwer/siyuan-plugin-importer/commit/5b48a05b564d11a02f1618d8acf1fe23f4b3d70c))
