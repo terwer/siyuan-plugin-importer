@@ -121,6 +121,55 @@ export function removeLinks(text) {
   })
 }
 
+/**
+ * 表格边框常亮样式。
+ *
+ * 复杂表格（含合并单元格 colspan/rowspan）无法用 GFM 管道表格表达，pandoc 会输出 HTML <table>，
+ * 思源 Lute 将其作为 HTML 块渲染。原生 HTML 表格默认无边框，这里给这些 HTML 表格注入内联边框样式，
+ * 使其在思源内也能看到漂亮的边框。
+ *
+ * 使用思源 CSS 变量 --b3-border-color（跟随主题），并带 #d0d0d0 兜底，避免 HTML 块作用域内拿不到变量。
+ */
+const TABLE_BORDER_STYLE = "border-collapse: collapse"
+const CELL_BORDER_STYLE = "border: 1px solid var(--b3-border-color, #d0d0d0); padding: 6px 12px"
+
+/**
+ * 将样式追加到已有 style 属性，保留原有属性值（如 pandoc 输出的 text-align、colspan 等），不覆盖。
+ */
+function attrsWithBorder(attrs: string, styleToAdd: string): string {
+  const doubleQuoteStyle = /style\s*=\s*"([^"]*)"/i
+  const doubleQuoteMatch = attrs.match(doubleQuoteStyle)
+  if (doubleQuoteMatch) {
+    const existing = doubleQuoteMatch[1].replace(/;*\s*$/, "").trim()
+    const merged = existing ? `${existing}; ${styleToAdd}` : styleToAdd
+    return attrs.replace(doubleQuoteStyle, `style="${merged}"`)
+  }
+  const singleQuoteStyle = /style\s*=\s*'([^']*)'/i
+  const singleQuoteMatch = attrs.match(singleQuoteStyle)
+  if (singleQuoteMatch) {
+    const existing = singleQuoteMatch[1].replace(/;*\s*$/, "").trim()
+    const merged = existing ? `${existing}; ${styleToAdd}` : styleToAdd
+    return attrs.replace(singleQuoteMatch[0], `style='${merged}'`)
+  }
+  return `${attrs} style="${styleToAdd}"`
+}
+
+/**
+ * 给 pandoc 输出的 HTML <table> 及相关单元格注入边框样式。
+ *
+ * 非破坏性：
+ * - 只匹配真实的 HTML <table>/<th>/<td> 标签，不影响普通文本；
+ * - 合并而非覆盖已有 style（如 text-align: center、colspan）；
+ * - 不影响 GFM 管道表格（| a | b |）与思源原生表格块。
+ *
+ * @param text - markdown 文本
+ */
+export function addTableBorder(text: string): string {
+  return text
+    .replace(/<table\b([^>]*)>/gi, (_match, attrs) => `<table${attrsWithBorder(attrs, TABLE_BORDER_STYLE)}>`)
+    .replace(/<(th|td)\b([^>]*)>/gi, (_match, tag, attrs) => `<${tag}${attrsWithBorder(attrs, CELL_BORDER_STYLE)}>`)
+}
+
 export const isPC = () => {
   const backEnd = getBackend()
   const frontEnd = getFrontend()
