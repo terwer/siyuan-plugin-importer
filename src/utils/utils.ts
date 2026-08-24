@@ -170,6 +170,16 @@ export function addTableBorder(text: string): string {
     .replace(/<(th|td)\b([^>]*)>/gi, (_match, tag, attrs) => `<${tag}${attrsWithBorder(attrs, CELL_BORDER_STYLE)}>`)
 }
 
+/**
+ * 判断 markdown 文本中是否包含网络（远程）图片引用（如 ![alt](https://...)）。
+ * 用于判断导入后是否需要提示用户将网络资源转换为本地（思源内置「网络资源文件转换本地」）。
+ *
+ * @param text - markdown 文本
+ */
+export function containsNetAssets(text: string): boolean {
+  return /!\[[^\]]*\]\(\s*https?:\/\/[^)\s]+/i.test(text)
+}
+
 export const isPC = () => {
   const backEnd = getBackend()
   const frontEnd = getFrontend()

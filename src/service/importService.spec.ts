@@ -5,15 +5,23 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const copyDirMock = vi.fn()
 const isPCMock = vi.fn(() => true)
+const getExportsMock = vi.fn()
+const containsNetAssetsMock = vi.fn()
+const showMessageMock = vi.fn()
 const loadImporterConfigMock = vi.fn(async () => ({
   bundledFnSwitch: false,
   customFnSwitch: false,
 }))
 
+vi.mock("siyuan", () => ({
+  showMessage: showMessageMock,
+}))
+
 vi.mock("../utils/utils", () => ({
   addTableBorder: vi.fn((text: string) => text),
+  containsNetAssets: containsNetAssetsMock,
   copyDir: copyDirMock,
-  getExports: vi.fn(),
+  getExports: getExportsMock,
   isPC: isPCMock,
   removeEmptyLines: vi.fn((text: string) => text),
   removeFootnotes: vi.fn((text: string) => text),
@@ -96,6 +104,100 @@ describe("ImportService.uploadAndConvert", () => {
     const result = await ImportService.uploadAndConvert(pluginInstance as any, file)
 
     expect(result).toBeNull()
+  })
+
+  // 复现 bug A：导入 .md 文件时不会执行自定义处理函数（customFnSwitch 失效）。
+  // 期望行为：md 也应走文本处理，调用自定义函数。当前实现 md 分支 early-return，
+  // 既不读取配置也不调用 getExports，故本用例失败 —— 证实「开启自定义处理函数后导入 md 无反馈」。
+  it("复现 bug：导入 .md 时执行自定义处理函数（当前失效）", async () => {
+    const { ImportService } = await import("./importService")
+    const pluginInstance = createPluginInstance()
+    const customFnSpy = vi.fn((text: string) => text.replace("OLD", "NEW"))
+    getExportsMock.mockReturnValue(customFnSpy)
+    loadImporterConfigMock.mockResolvedValueOnce({
+      bundledFnSwitch: false,
+      customFnSwitch: true,
+      customFn: "module.exports = customFn",
+    })
+    const file = { name: "demo.md", text: async () => "content OLD" }
+
+    await ImportService.uploadAndConvert(pluginInstance as any, file)
+
+    // 期望：读取配置并执行自定义函数 —— 当前 md 分支提前 return，二者均未发生
+    expect(loadImporterConfigMock).toHaveBeenCalled()
+    expect(getExportsMock).toHaveBeenCalledTimes(1)
+    expect(customFnSpy).toHaveBeenCalled()
+    expect(customFnSpy).toHaveBeenCalledWith("content OLD")
+    // 自定义函数已作用于 md 文本并写回上传
+    expect(pluginInstance.kernelApi.putFile).toHaveBeenCalledWith(
+      "/temp/convert/pandoc/demo.md",
+      expect.objectContaining({ name: "demo.md" })
+    )
+  })
+
+  // 复现 bug B：md 里的远程 http(s) 图片不会下载并上传到 assets，导入后仍是外链。
+  // 采用用户友好方案：检测到网络图片后，导入完成由 singleImport/multiImport 弹窗提示
+  // 用户点文档右上角「···」→「网络资源文件转换本地」用思源内置功能下载（见下方 singleImport 的用例）。
+  it.skip("复现 bug：md 中的远程 https 图片不在导入时下载到 assets（当前失效）", async () => {
+    // 旧方案（导入时自行下载远程图片）已废弃，改为思源内置「网络资源文件转换本地」+ 提示；
+    // 请在真实思源环境验证提示引导是否到位。
+  })
+})
+
+describe("ImportService.singleImport 网络图片提示", () => {
+  beforeEach(() => {
+    vi.resetModules()
+    vi.clearAllMocks()
+
+    ;(globalThis as any).window = {
+      siyuan: {
+        config: {
+          system: {
+            workspaceDir: "/workspace",
+            dataDir: "/data",
+          },
+        },
+      },
+      require: (id: string) => {
+        if (id === "path") {
+          return path
+        }
+        if (id === "fs") {
+          return {
+            existsSync: () => true,
+            promises: { rm: async () => {} },
+            readFileSync: () => "# hello\n![img](https://cdn.example.com/x.png)",
+          }
+        }
+        throw new Error(`Unexpected module request: ${id}`)
+      },
+    }
+  })
+
+  it("导入含网络图片的文档后，弹窗提示用户用思源内置功能转换本地", async () => {
+    const { ImportService } = await import("./importService")
+    const pluginInstance = createPluginInstance()
+    pluginInstance.i18n.netAssetsToLocalTip = "网络图片提示"
+    pluginInstance.i18n.msgImportSuccess = "导入成功"
+    pluginInstance.kernelApi.importStdMd.mockResolvedValue({ code: 0 })
+    containsNetAssetsMock.mockReturnValue(true)
+
+    await ImportService.singleImport(pluginInstance as any, "/temp/convert/pandoc/a.md", "notebook-id")
+
+    expect(showMessageMock).toHaveBeenCalledWith("网络图片提示", 8000, "info")
+  })
+
+  it("不含网络图片的文档不弹网络提示", async () => {
+    const { ImportService } = await import("./importService")
+    const pluginInstance = createPluginInstance()
+    pluginInstance.i18n.netAssetsToLocalTip = "网络图片提示"
+    pluginInstance.i18n.msgImportSuccess = "导入成功"
+    pluginInstance.kernelApi.importStdMd.mockResolvedValue({ code: 0 })
+    containsNetAssetsMock.mockReturnValue(false)
+
+    await ImportService.singleImport(pluginInstance as any, "/temp/convert/pandoc/a.md", "notebook-id")
+
+    expect(showMessageMock).not.toHaveBeenCalledWith("网络图片提示", 8000, "info")
   })
 })
 

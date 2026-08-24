@@ -26,7 +26,23 @@
  */
 
 import { describe, expect, it } from "vitest"
-import { addTableBorder } from "./utils"
+import { addTableBorder, containsNetAssets } from "./utils"
+
+describe("containsNetAssets", () => {
+  it("识别 markdown 中的网络图片引用", () => {
+    expect(containsNetAssets("![alt](https://cdn.example.com/x.png)")).toBe(true)
+    expect(containsNetAssets("![alt](http://example.com/a.png)")).toBe(true)
+    expect(containsNetAssets("![alt](  https://a.com/x.png)")).toBe(true)
+  })
+
+  it("本地图片、普通链接、无图片时不误判", () => {
+    expect(containsNetAssets("![alt](./local.png)")).toBe(false)
+    expect(containsNetAssets("![alt](C:/Users/me/img.png)")).toBe(false)
+    expect(containsNetAssets("[a link](https://example.com)")).toBe(false)
+    expect(containsNetAssets("纯文本，没有图片")).toBe(false)
+    expect(containsNetAssets("")).toBe(false)
+  })
+})
 
 describe("addTableBorder", () => {
   it("给 HTML <table> 与 <td>/<th> 注入边框样式", () => {
