@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.11.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.10.0...v1.11.0) (2026-08-24)
+
+
+### Features
+
+* **importer:** prompt to convert network images to local after import ([eb6d9ad](https://github.com/terwer/siyuan-plugin-importer/commit/eb6d9ad8b4fd5535e17f3f6451a76c839eb69cb7))
+
+
+### Bug Fixes
+
+* **importer:** run custom handler when importing md directly ([66fd1d9](https://github.com/terwer/siyuan-plugin-importer/commit/66fd1d97d5947fe7e13aebdc62973fc3fa711c50))
+
 ## [1.10.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.9.1...v1.10.0) (2026-08-24)
 ### Features
 * **importer:** add borders to html tables imported from docx ([2e13069](https://github.com/terwer/siyuan-plugin-importer/commit/2e130696b32be157b776edf6528501d059534a7d))
