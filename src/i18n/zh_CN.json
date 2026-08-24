@@ -59,5 +59,6 @@
   "testOutputPlaceholder": "这里是测试的输出结果",
   "testInput": "测试输入",
   "testOutput": "测试输出",
-  "customFnHandlerError": "自定义处理函数处理失败，请检查。您也可以暂时禁用自定义处理函数完成导入"
+  "customFnHandlerError": "自定义处理函数处理失败，请检查。您也可以暂时禁用自定义处理函数完成导入",
+  "netAssetsToLocalTip": "检测到网络图片。导入完成后可点击文档右上角「···」→「网络资源文件转换本地」将其下载到本地。"
 }

@@ -28,6 +28,7 @@ import { showMessage } from "siyuan"
 import ImporterPlugin from "../index"
 import {
   addTableBorder,
+  containsNetAssets,
   copyDir,
   getExports,
   removeEmptyLines,
@@ -203,6 +204,9 @@ export class ImportService {
     const mdResult = await ImportService.importMdFile(pluginInstance, toNotebookId, toFilePath)
     if (mdResult.code !== 0) {
       showMessage(`${pluginInstance.i18n.msgDocCreateFailed}=>${toFilePath}`, 7000, "error")
+    } else if (mdResult.hasNetAssets) {
+      // 网络图片无法自动定位文档 id 转换，提示用户用思源内置功能（文档右上角 ··· → 网络资源文件转换本地）
+      showMessage(pluginInstance.i18n.netAssetsToLocalTip, 8000, "info")
     }
     await pluginInstance.kernelApi.openNotebook(toNotebookId)
     await ImportService.refreshUI(pluginInstance)
@@ -234,6 +238,7 @@ export class ImportService {
     }
 
     let failCount = 0
+    let hasNetAssets = false
     for (const filename of mdFiles) {
       const mdResult = await ImportService.importMdFile(
         pluginInstance,
@@ -243,11 +248,15 @@ export class ImportService {
       if (mdResult.code !== 0) {
         failCount++
         pluginInstance.logger.error(`import ${filename} failed: ${mdResult.msg}`)
+      } else if (mdResult.hasNetAssets) {
+        hasNetAssets = true
       }
     }
 
     if (failCount > 0) {
       showMessage(`${pluginInstance.i18n.msgDocCreateFailed}：${failCount}/${mdFiles.length}`, 7000, "error")
+    } else if (hasNetAssets) {
+      showMessage(pluginInstance.i18n.netAssetsToLocalTip, 8000, "info")
     }
     await pluginInstance.kernelApi.openNotebook(toNotebookId)
     await ImportService.refreshUI(pluginInstance)
@@ -314,7 +323,18 @@ export class ImportService {
     const filename = toFilePath.split("/").pop() || toFilePath
     const path = window.require("path")
     const localPath = path.join(SAFE_PANDOC_DIR, filename)
-    return await pluginInstance.kernelApi.importStdMd(localPath, toNotebookId, `/`)
+
+    // 判断导入内容是否包含网络图片，用于导入完成后提示用户用思源内置功能转换本地（时序：文档存在后才能转换）
+    let hasNetAssets = false
+    try {
+      const fs = window.require("fs")
+      hasNetAssets = containsNetAssets(fs.readFileSync(localPath, "utf-8"))
+    } catch (e) {
+      // 读取失败时忽略，不影响导入
+    }
+
+    const mdResult = await pluginInstance.kernelApi.importStdMd(localPath, toNotebookId, `/`)
+    return { ...mdResult, hasNetAssets }
   }
 
   private static getFileMeta(file: File) {

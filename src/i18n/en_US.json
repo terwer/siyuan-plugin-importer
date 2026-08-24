@@ -52,5 +52,6 @@
   "importConfigSaveSuccess": "Configuration saved successfully",
   "testOutputPlaceholder": "Here is the output of the test",
   "testInput": "Test input",
-  "testOutput": "Test output"
+  "testOutput": "Test output",
+  "netAssetsToLocalTip": "Network images detected. After import, open the document's \"···\" menu and choose \"Convert network assets to local\" to download them locally."
 }
