@@ -63,6 +63,22 @@ export class ImportService {
       if (srcDir) {
         await ImportService.uploadMdReferencedAssets(pluginInstance, file, srcDir)
       }
+
+      // md 直接上传不转换。历史上这里提前 return，导致内置处理与自定义处理函数都不执行，
+      // 用户开启自定义处理函数后导入 md 没有任何反馈。此处仅执行自定义处理，
+      // 不跑内置处理，避免改动原始 md 内容。
+      const importConfig = await loadImporterConfig(pluginInstance)
+      if (importConfig.customFnSwitch) {
+        pluginInstance.logger.warn("Using custom handler process text (md)")
+        try {
+          const mdText = (await file.text()) ?? ""
+          file = new File([getExports(importConfig.customFn)(mdText)], file.name)
+        } catch (e) {
+          showMessage(`${pluginInstance.i18n.customFnHandlerError} ${e.toString()}`, 5000, "error")
+          throw e
+        }
+      }
+
       pluginInstance.logger.info(`upload md file to ${toFilePath}`)
       const uploadResult = await pluginInstance.kernelApi.putFile(toFilePath, file)
       if (uploadResult.code !== 0) {
