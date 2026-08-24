@@ -114,7 +114,15 @@ class KernelApi extends BaseApi {
     const params = {
       args: [
         "--to",
-        "gfm-raw_html+tex_math_dollars+pipe_tables",
+        // 表格与公式兼容的 pandoc 输出格式（替换历史上曾用的 gfm-raw_html）。
+        // 1. gfm-raw_html 会把含合并单元格(colspan)的复杂表格内容丢弃为字面 "[TABLE]"，
+        //    导入思源后显示为 [table]，表格丢失（bug_260824）。
+        // 2. 纯 markdown 格式会把普通表格输出为 pandoc grid/multiline table，思源 Lute 不识别
+        //    （渲染成 <hr>/标题）；而 gfm 公式语法(tex_math_gfm)会被 Lute 当作 ```math 代码块，
+        //    公式变代码块（bug_250814）。
+        // 3. 本组合：普通表格 → GFM pipe table（Lute 识别为表格），复杂表格 → HTML <table>
+        //    （Lute 渲染），公式 → $...$/$$...$$（Lute 识别为公式块）。
+        "markdown+pipe_tables-grid_tables-multiline_tables-simple_tables+tex_math_dollars",
         from,
         "-o",
         to,
