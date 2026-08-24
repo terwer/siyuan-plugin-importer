@@ -42,6 +42,12 @@ Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats
 
 ## Changelog
 
+**1.10.0 (2026-08-24)**
+### Features
+* Add borders to HTML tables imported from docx: complex tables with merged cells (colspan/rowspan) are rendered as HTML blocks and have no border by default, so inject a border style on import
+### Bug Fixes
+* Switch the pandoc output format to markdown to fix Word import issues: complex tables with merged cells were rendered as a literal `[table]` placeholder (content lost), and formulas were rendered as `math` fenced code blocks
+
 **1.9.0 (2026-08-09)**
 ### Features
 * Import each converted md file individually instead of importing a directory, avoiding a kernel deadlock that previously hung the whole app on repeated imports
