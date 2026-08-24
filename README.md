@@ -42,6 +42,12 @@ Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats
 
 ## Changelog
 
+**1.11.0 (2026-08-24)**
+### Features
+* After importing a md that references network images, the plugin detects them and prompts you to use SiYuan's built-in "Convert network assets to local" (document top-right "···" menu), instead of downloading images on our own
+### Bug Fixes
+* Markdown import now runs the custom handler: previously a `.md` file was uploaded directly and skipped the custom processing function, so enabling it had no effect; now the custom function runs on the md text before upload (bundled processing is still skipped to keep the original md unchanged)
+
 **1.10.0 (2026-08-24)**
 ### Features
 * Add borders to HTML tables imported from docx: complex tables with merged cells (colspan/rowspan) are rendered as HTML blocks and have no border by default, so inject a border style on import
