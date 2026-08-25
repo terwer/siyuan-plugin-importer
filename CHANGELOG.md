@@ -1,6 +1,13 @@
 # Changelog
 
 ## [1.12.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.11.0...v1.12.0) (2026-08-25)
+
+
+### Features
+
+* **importer:** migrate imported local images to workspace assets with hash-based dedup ([56da981](https://github.com/terwer/siyuan-plugin-importer/commit/56da981cbee363c235737b841eba96786249f88b))
+
+## [1.12.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.11.0...v1.12.0) (2026-08-25)
 ### Features
 * **importer:** migrate imported md local images to workspace assets with hash-based dedup ([#231](https://github.com/terwer/siyuan-plugin-importer/issues/231))
 * **importer:** add imgPathMigrateSwitch setting (off by default) for md image migration
