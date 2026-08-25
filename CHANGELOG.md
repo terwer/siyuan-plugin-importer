@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.12.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.11.0...v1.12.0) (2026-08-25)
+### Features
+* **importer:** migrate imported md local images to workspace assets with hash-based dedup ([#231](https://github.com/terwer/siyuan-plugin-importer/issues/231))
+* **importer:** add imgPathMigrateSwitch setting (off by default) for md image migration
+
 ## [1.11.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.10.0...v1.11.0) (2026-08-24)
 ### Features
 * **importer:** prompt to convert network images to local after import ([eb6d9ad](https://github.com/terwer/siyuan-plugin-importer/commit/eb6d9ad8b4fd5535e17f3f6451a76c839eb69cb7))
