@@ -53,5 +53,7 @@
   "testOutputPlaceholder": "Here is the output of the test",
   "testInput": "Test input",
   "testOutput": "Test output",
-  "netAssetsToLocalTip": "Network images detected. After import, open the document's \"···\" menu and choose \"Convert network assets to local\" to download them locally."
+  "netAssetsToLocalTip": "Network images detected. After import, open the document's \"···\" menu and choose \"Convert network assets to local\" to download them locally.",
+  "imgPathMigrateSwitch": "Migrate imported images to workspace assets",
+  "imgPathMigrateSwitchTips": "During import, local images referenced in the md (including absolute paths like C:/xx/img.png) are handed over to SiYuan and end up in data/assets (filename = <name>_<parent dir hash> + kernel random suffix). Same-name images are auto-deduped and images display correctly. Applies to all import formats. Off by default."
 }

@@ -1,6 +1,9 @@
 // @vitest-environment node
 
 import path from "node:path"
+import * as nodeFs from "node:fs"
+import { mkdtempSync, writeFileSync } from "node:fs"
+import { tmpdir } from "node:os"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const copyDirMock = vi.fn()
@@ -277,3 +280,92 @@ function createPluginInstance() {
     i18n: {},
   }
 }
+
+describe("ImportService.migrateMdImagesToAssets", () => {
+  beforeEach(() => {
+    vi.resetModules()
+    vi.clearAllMocks()
+  })
+
+  // 借助真实 fs 建临时源目录与 dataDir，验证通用迁移（上传到 md 同目录 + 相对引用改写）
+  function setupWindow(srcRoot: string, dataDir: string) {
+    void srcRoot
+    void dataDir
+    ;(globalThis as any).window = {
+      siyuan: { config: { system: { workspaceDir: "/data", dataDir } } },
+      require: (id: string) => {
+        if (id === "path") return path
+        if (id === "fs") return nodeFs
+        if (id === "crypto") return require("node:crypto")
+        throw new Error(`Unexpected module request: ${id}`)
+      },
+    }
+  }
+
+  it("把相对路径同名图片上传到 md 同目录并改写为相对引用（父目录 hash 去重）", async () => {
+    const srcRoot = mkdtempSync(path.join(tmpdir(), "mig-src-"))
+    nodeFs.mkdirSync(path.join(srcRoot, "a"), { recursive: true })
+    nodeFs.mkdirSync(path.join(srcRoot, "b"), { recursive: true })
+    writeFileSync(path.join(srcRoot, "a", "photo.png"), "AAA")
+    writeFileSync(path.join(srcRoot, "b", "photo.png"), "BBB")
+
+    setupWindow(srcRoot, mkdtempSync(path.join(tmpdir(), "mig-data-")))
+    const { ImportService } = await import("./importService")
+    const pluginInstance = createPluginInstance()
+    const md = "![A](a/photo.png)\n![B](b/photo.png)\n![net](https://x.com/a.png)\n"
+
+    const result = await (ImportService as any).migrateMdImagesToAssets(pluginInstance, md, [srcRoot])
+
+    const putFileMock = pluginInstance.kernelApi.putFile
+    // 两个同名图上传到 md 同目录（temp/convert/pandoc），且文件名不同（父目录 hash 区分）
+    expect(putFileMock).toHaveBeenCalledTimes(2)
+    const paths = putFileMock.mock.calls.map((c: any[]) => c[0])
+    expect(paths.every((p) => /^\/temp\/convert\/pandoc\/photo_[0-9a-f]{12}\.png$/.test(p))).toBe(true)
+    expect(new Set(paths).size).toBe(2)
+    // 改写为相对路径（非 assets/），网络图原样
+    expect(result.rewritten).toMatch(/!\[A\]\(photo_[0-9a-f]{12}\.png\)/)
+    expect(result.rewritten).toMatch(/!\[B\]\(photo_[0-9a-f]{12}\.png\)/)
+    expect(result.rewritten).not.toContain("assets/photo_")
+    expect(result.rewritten).toContain("![net](https://x.com/a.png)")
+    expect(result.count).toBe(2)
+  })
+
+  it("绝对路径被上传到 md 同目录；已 assets 与找不到的保持不动", async () => {
+    const srcRoot = mkdtempSync(path.join(tmpdir(), "mig-src2-"))
+    const absImg = path.join(srcRoot, "abs.png")
+    writeFileSync(absImg, "ABS")
+
+    setupWindow(srcRoot, mkdtempSync(path.join(tmpdir(), "mig-data2-")))
+    const { ImportService } = await import("./importService")
+    const pluginInstance = createPluginInstance()
+    const md = `![abs](${absImg})\n![alread](assets/keep.png)\n![missing](nope.png)\n`
+
+    const result = await (ImportService as any).migrateMdImagesToAssets(pluginInstance, md, [srcRoot])
+
+    const putFileMock = pluginInstance.kernelApi.putFile
+    expect(putFileMock).toHaveBeenCalledTimes(1)
+    expect(putFileMock.mock.calls[0][0]).toMatch(/^\/temp\/convert\/pandoc\/abs_[0-9a-f]{12}\.png$/)
+    expect(result.rewritten).toContain("![alread](assets/keep.png)") // 已 assets 不动
+    expect(result.rewritten).toContain("![missing](nope.png)") // 找不到不动
+    expect(result.rewritten).toMatch(/!\[abs\]\(abs_[0-9a-f]{12}\.png\)/)
+    expect(result.rewritten).not.toContain("assets/abs_")
+    expect(result.count).toBe(1)
+  })
+
+  it("同一图片多处引用只上传一次", async () => {
+    const srcRoot = mkdtempSync(path.join(tmpdir(), "mig-src3-"))
+    writeFileSync(path.join(srcRoot, "im.png"), "IM")
+
+    setupWindow(srcRoot, mkdtempSync(path.join(tmpdir(), "mig-data3-")))
+    const { ImportService } = await import("./importService")
+    const pluginInstance = createPluginInstance()
+    const md = "![x](im.png)\n![y](im.png)\n"
+
+    const result = await (ImportService as any).migrateMdImagesToAssets(pluginInstance, md, [srcRoot])
+
+    expect(pluginInstance.kernelApi.putFile).toHaveBeenCalledTimes(1) // 同一图只上传一次
+    expect(result.rewritten).toMatch(/!\[x\]\(im_[0-9a-f]{12}\.png\)/)
+    expect(result.rewritten).toMatch(/!\[y\]\(im_[0-9a-f]{12}\.png\)/)
+    expect(result.count).toBe(2) // 两处引用都改写
+  })
+})

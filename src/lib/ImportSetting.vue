@@ -43,6 +43,7 @@ const props = defineProps<Props>()
 const activeTab = ref('settings')
 const bundledFnSwitch = ref(true)
 const customFnSwitch = ref(false)
+const imgPathMigrateSwitch = ref(false)
 const customFn = ref('')
 const importerConfig = ref({})
 const testInput = ref(`我衷心期盼，子孙后代们读到这封信时，会带着一种自豪感和正当的优越感。
@@ -63,6 +64,7 @@ const onSaveSetting = async () => {
 
     importerConfig.value.bundledFnSwitch = bundledFnSwitch.value
     importerConfig.value.customFnSwitch = customFnSwitch.value
+    importerConfig.value.imgPathMigrateSwitch = imgPathMigrateSwitch.value
     importerConfig.value.customFn = customFn.value
     await saveImporterConfig(props.pluginInstance, importerConfig.value)
     props.pluginInstance.logger.info("saved important config =>", importerConfig.value)
@@ -126,6 +128,7 @@ onMounted(async () => {
 
     bundledFnSwitch.value = importerConfig.value.bundledFnSwitch ?? true
     customFnSwitch.value = importerConfig.value.customFnSwitch ?? false
+    imgPathMigrateSwitch.value = importerConfig.value.imgPathMigrateSwitch ?? false
     customFn.value = importerConfig.value.customFn ?? `// 您可以参考这个案例进行修改，注意：请勿修改方法名和参数名，只需修改customFn内部实现即可
 // 将字符串中形如"xxx^yyy"的部分替换成"xxx"
 const customFn = (mdText) => {
@@ -172,6 +175,16 @@ module.exports = customFn`
                         <span class="fn__space"></span>
                         <input id="customFnSwitch" class="b3-switch fn__flex-center" type="checkbox"
                             @click="updateSwitch" v-model="customFnSwitch" />
+                    </label>
+
+                    <label class="fn__flex b3-label config__item">
+                        <div class="fn__flex-1">
+                            {{ pluginInstance.i18n.imgPathMigrateSwitch }}
+                            <div class="b3-label__text">{{ pluginInstance.i18n.imgPathMigrateSwitchTips }}</div>
+                        </div>
+                        <span class="fn__space"></span>
+                        <input id="imgPathMigrateSwitch" class="b3-switch fn__flex-center" type="checkbox"
+                            v-model="imgPathMigrateSwitch" />
                     </label>
 
                     <label class="fn__flex b3-label config__item">

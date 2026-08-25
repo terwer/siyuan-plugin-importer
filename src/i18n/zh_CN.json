@@ -60,5 +60,7 @@
   "testInput": "测试输入",
   "testOutput": "测试输出",
   "customFnHandlerError": "自定义处理函数处理失败，请检查。您也可以暂时禁用自定义处理函数完成导入",
-  "netAssetsToLocalTip": "检测到网络图片。导入完成后可点击文档右上角「···」→「网络资源文件转换本地」将其下载到本地。"
+  "netAssetsToLocalTip": "检测到网络图片。导入完成后可点击文档右上角「···」→「网络资源文件转换本地」将其下载到本地。",
+  "imgPathMigrateSwitch": "导入图片迁移到资料库（assets）",
+  "imgPathMigrateSwitchTips": "导入时把 md 中引用的本地图片（含绝对路径，如 C:/xx/img.png）改为让思源接管，最终进入 data/assets（文件名=<原名>_<父目录hash>+内核随机后缀），同名图片自动去重、图片可正常显示。对所有导入格式生效。默认关闭。"
 }

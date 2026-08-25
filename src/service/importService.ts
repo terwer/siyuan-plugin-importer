@@ -61,14 +61,17 @@ export class ImportService {
     // md files are uploaded directly without conversion; upload referenced local assets first
     if (ext === "md") {
       const toFilePath = `/temp/convert/pandoc/${originalFilename}.md`
-      if (srcDir) {
+      const importConfig = await loadImporterConfig(pluginInstance)
+
+      // 未启用图片迁移时，保留原来的「同目录相对引用图片上传到 temp」行为。
+      // 启用导入图片迁移后，由 migrateMdLocalImagesToAssets 统一处理（相对+绝对路径，复制进 assets）。
+      if (!importConfig.imgPathMigrateSwitch && srcDir) {
         await ImportService.uploadMdReferencedAssets(pluginInstance, file, srcDir)
       }
 
       // md 直接上传不转换。历史上这里提前 return，导致内置处理与自定义处理函数都不执行，
       // 用户开启自定义处理函数后导入 md 没有任何反馈。此处仅执行自定义处理，
       // 不跑内置处理，避免改动原始 md 内容。
-      const importConfig = await loadImporterConfig(pluginInstance)
       if (importConfig.customFnSwitch) {
         pluginInstance.logger.warn("Using custom handler process text (md)")
         try {
@@ -77,6 +80,22 @@ export class ImportService {
         } catch (e) {
           showMessage(`${pluginInstance.i18n.customFnHandlerError} ${e.toString()}`, 5000, "error")
           throw e
+        }
+      }
+
+      // 导入图片迁移：把 md 引用的本地图片（相对+绝对路径）复制到 md 同目录（temp/convert/pandoc）、
+      // 引用改写为相对路径 <文件名>_<父目录hash>.<ext>，交由 importStdMd lift 进 assets 并注册，保证可显示。
+      // 同名图片自动去重。默认关闭。
+      if (importConfig.imgPathMigrateSwitch) {
+        const mdText = (await file.text()) ?? ""
+        const result = await ImportService.migrateMdImagesToAssets(
+          pluginInstance,
+          mdText,
+          srcDir ? [srcDir] : []
+        )
+        if (result.count > 0) {
+          pluginInstance.logger.info(`migrate ${result.count} md image(s) to assets`)
+          file = new File([result.rewritten], file.name)
         }
       }
 
@@ -335,6 +354,114 @@ export class ImportService {
 
     const mdResult = await pluginInstance.kernelApi.importStdMd(localPath, toNotebookId, `/`)
     return { ...mdResult, hasNetAssets }
+  }
+
+  /**
+   * 通用图片迁移：把 md 文本里引用的本地图片（相对 / 绝对路径）复制到 md 同目录
+   * （/temp/convert/pandoc，经 copyToSafePath 复制到 SAFE_PANDOC_DIR），并把引用改写成
+   * **相对路径** `<文件名>_<父目录路径hash>.<ext>`。
+   *
+   * 这是「能显示」的关键：内核 importStdMd 只会对「md 同目录内的相对路径」图片做
+   * lift（拷贝进 data/assets 并注册、改写为 assets/<名称>）。绝对路径或不在 md 目录内的
+   * 图片会被 importStdMd 直接跳过，不会注册、也就无法显示。因此不能提前拷进 data/assets
+   * 再用 assets/ 引用，而必须放到 md 同目录用相对引用，让内核自己 lift。
+   *
+   * 该方法与来源格式无关（md / docx / pdf / html 等经转换后得到的 md 文本均可使用）。
+   * 用「文件名 + 父目录路径 hash」命名，保留可读文件名、同名图片天然去重、同一图多处引用只复制一次。
+   * 网络图、锚点、siyuan:// 与已是 assets/ 的引用不动。
+   *
+   * @param pluginInstance
+   * @param mdText - 待处理的 md 文本
+   * @param bases - 解析相对路径的基准目录数组（按顺序尝试）；绝对路径直接使用
+   * @returns 改写后的 md 文本与迁移的图片数
+   */
+  private static async migrateMdImagesToAssets(
+    pluginInstance: ImporterPlugin,
+    mdText: string,
+    bases: string[]
+  ): Promise<{ rewritten: string; count: number }> {
+    const path = window.require("path")
+    const fs = window.require("fs")
+    const crypto = window.require("crypto")
+
+    const IMG_RE = /!\[([^\]]*)\]\(\s*<?([^)>]+?)>?\s*\)/g
+    const srcToTarget = new Map<string, string>() // srcAbs -> temp 相对路径（posix）
+
+    const isIgnored = (p: string) =>
+      /^(https?:|ftp:|data:|mailto:|#|siyuan:\/\/|\/\/)/i.test(p) ||
+      p.startsWith("assets/") ||
+      p.startsWith("data/assets/")
+    const normalizeRef = (p: string) =>
+      p.replace(/^<(.+)>$/, "$1").replace(/^["']|["']$/g, "").split("#")[0].trim()
+
+    // 解析本地图片绝对路径：绝对路径直接用；相对路径按 bases 顺序尝试（找到真实存在的文件）
+    const resolveLocal = (ref: string): string | null => {
+      let fixed = ref
+      try {
+        fixed = decodeURIComponent(fixed)
+      } catch (_e) {
+        // keep as-is
+      }
+      const cleaned = normalizeRef(fixed)
+      if (!cleaned) return null
+      if (path.isAbsolute(cleaned)) {
+        const a = path.normalize(cleaned)
+        return fs.existsSync(a) ? a : null
+      }
+      for (const base of bases) {
+        const a = path.resolve(base, cleaned)
+        if (fs.existsSync(a)) return a
+      }
+      return null
+    }
+
+    const hashParent = (srcAbs: string): string => {
+      const parent = path.dirname(srcAbs).split(path.sep).join("/")
+      try {
+        return crypto.createHash("sha256").update(parent).digest("hex").slice(0, 12)
+      } catch (_e) {
+        let h = 5381
+        for (let i = 0; i < parent.length; i++) h = ((h << 5) + h + parent.charCodeAt(i)) | 0
+        return (h >>> 0).toString(16)
+      }
+    }
+    // 放到 md 同目录（/temp/convert/pandoc）的相对文件名（扁平、无目录穿越），供 importStdMd lift
+    const relFor = (srcAbs: string): string => {
+      const base = path.basename(srcAbs)
+      const ext = path.extname(base)
+      const stem = ext ? base.slice(0, -ext.length) : base
+      return `${stem}_${hashParent(srcAbs)}${ext}`
+    }
+
+    let m: RegExpExecArray | null
+    while ((m = IMG_RE.exec(mdText)) !== null) {
+      const ref0 = m[2].trim()
+      if (isIgnored(ref0)) continue
+      const srcAbs = resolveLocal(ref0)
+      if (!srcAbs) {
+        pluginInstance.logger.warn(`md image migrate: not found, skip: ${ref0}`)
+        continue
+      }
+      if (srcToTarget.has(srcAbs)) continue
+      const rel = relFor(srcAbs)
+      // 拷贝到 md 同目录（相对引用），由 importStdMd 负责 lift 进 assets 并注册
+      await ImportService.uploadLocalFile(pluginInstance, srcAbs, rel)
+      srcToTarget.set(srcAbs, rel)
+    }
+
+    let count = 0
+    const rewritten = mdText.replace(IMG_RE, (full, alt, pathCap) => {
+      const ref0 = pathCap.trim()
+      if (isIgnored(ref0)) return full
+      const srcAbs = resolveLocal(ref0)
+      if (!srcAbs) return full
+      const rel = srcToTarget.get(srcAbs)
+      if (!rel) return full
+      count++
+      return `![${alt}](${rel})`
+    })
+
+    return { rewritten, count }
   }
 
   private static getFileMeta(file: File) {

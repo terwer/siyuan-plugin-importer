@@ -42,6 +42,10 @@ Import md, epub, docx, html, etc. into Siyuan notes. Currently supported formats
 
 ## Changelog
 
+**1.12.0 (2026-08-25)**
+### Features
+* Added an opt-in "Migrate imported images to workspace assets" setting for md import ([#231](https://github.com/terwer/siyuan-plugin-importer/issues/231)). When enabled, local images referenced in the md (including absolute paths) are handed to SiYuan and end up in `data/assets` as `<name>_<parent-dir-hash>.<ext>` (plus a kernel random suffix), so same-name images are deduped and images display correctly. Off by default.
+
 **1.11.0 (2026-08-24)**
 ### Features
 * After importing a md that references network images, the plugin detects them and prompts you to use SiYuan's built-in "Convert network assets to local" (document top-right "···" menu), instead of downloading images on our own
