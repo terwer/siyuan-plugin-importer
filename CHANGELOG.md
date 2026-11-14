@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.2](https://github.com/terwer/siyuan-plugin-importer/compare/v1.12.1...v1.12.2) (2026-11-14)
+
+
+### Bug Fixes
+
+* **agent:** exclude the CDP endpoint from the HTTP proxy ([80d03db](https://github.com/terwer/siyuan-plugin-importer/commit/80d03db2920f4538e957cdf0f18c2bad46fec340))
+
 ## [1.12.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.12.0...v1.12.1) (2026-11-14)
 ### Bug Fixes
 * **importer:** strip pandoc markdown syntax that shows as source code ([#240](https://github.com/terwer/siyuan-plugin-importer/issues/240)) ([#241](https://github.com/terwer/siyuan-plugin-importer/issues/241)) ([c4b2149](https://github.com/terwer/siyuan-plugin-importer/commit/c4b214942e648eb471a89521d2106e71b46f11c2))
