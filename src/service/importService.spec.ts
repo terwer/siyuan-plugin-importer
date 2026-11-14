@@ -29,6 +29,7 @@ vi.mock("../utils/utils", () => ({
   removeEmptyLines: vi.fn((text: string) => text),
   removeFootnotes: vi.fn((text: string) => text),
   removeLinks: vi.fn((text: string) => text),
+  removePandocMarkup: vi.fn((text: string) => text),
   replaceImagePath: vi.fn((text: string) => text),
 }))
 
@@ -85,6 +86,41 @@ describe("ImportService.uploadAndConvert", () => {
     expect(pluginInstance.kernelApi.convertPandoc).toHaveBeenCalledWith("./../demo.docx", "./../demo.md")
     expect(pluginInstance.kernelApi.saveTextData).toHaveBeenCalledWith("demo.md", "converted markdown")
     expect(result).toBe("/temp/convert/pandoc/demo.md")
+  })
+
+  // Issue #240：1.10.0 起 pandoc 输出 markdown，会保留 `[文本]{#id style="..."}`、
+  // `::: part` 等 pandoc 专属语法，思源会当正文原样显示（用户看到的「源文件代码」）。
+  it("内置处理函数（默认开启）先清理 pandoc 语法残留，再处理链接与脚注", async () => {
+    const { ImportService } = await import("./importService")
+    const utils = await import("../utils/utils")
+    vi.mocked(utils.removePandocMarkup).mockImplementationOnce((t: string) => `${t}|markup`)
+    vi.mocked(utils.removeLinks).mockImplementationOnce((t: string) => `${t}|links`)
+    vi.mocked(utils.removeFootnotes).mockImplementationOnce((t: string) => `${t}|footnotes`)
+    loadImporterConfigMock.mockResolvedValueOnce({ bundledFnSwitch: true, customFnSwitch: false })
+    const pluginInstance = createPluginInstance()
+
+    await ImportService.uploadAndConvert(pluginInstance as any, { name: "demo.epub" })
+
+    // 必须在 removeLinks 之前清理属性，否则内部链接被去掉后会留下孤立的 `{#id}`
+    expect(utils.removePandocMarkup).toHaveBeenCalledWith("converted markdown")
+    expect(utils.removeLinks).toHaveBeenCalledWith("converted markdown|markup")
+    expect(utils.removeFootnotes).toHaveBeenCalledWith("converted markdown|markup|links")
+    expect(pluginInstance.kernelApi.saveTextData).toHaveBeenCalledWith(
+      "demo.md",
+      "converted markdown|markup|links|footnotes"
+    )
+  })
+
+  // 内置处理函数被禁用时，用户要求「按转换结果原样导入」，此时不做清理。
+  it("禁用内置处理函数时不清理 pandoc 语法残留", async () => {
+    const { ImportService } = await import("./importService")
+    const utils = await import("../utils/utils")
+    loadImporterConfigMock.mockResolvedValueOnce({ bundledFnSwitch: false, customFnSwitch: false })
+    const pluginInstance = createPluginInstance()
+
+    await ImportService.uploadAndConvert(pluginInstance as any, { name: "demo.epub" })
+
+    expect(utils.removePandocMarkup).not.toHaveBeenCalled()
   })
 
   it("转换失败返回 null", async () => {

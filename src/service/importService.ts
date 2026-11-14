@@ -34,6 +34,7 @@ import {
   removeEmptyLines,
   removeFootnotes,
   removeLinks,
+  removePandocMarkup,
   replaceImagePath,
 } from "../utils/utils"
 import { loadImporterConfig } from "../store/config"
@@ -187,6 +188,9 @@ export class ImportService {
     const importConfig = await loadImporterConfig(pluginInstance)
     if (importConfig.bundledFnSwitch !== false) {
       pluginInstance.logger.info("Using bundled handler process text")
+      // pandoc markdown 输出会带上 pandoc 专属属性（span/标题/链接属性、围栏 div），
+      // 思源会当正文原样显示，必须先清掉，否则 removeLinks 会留下孤立的 `{#id}`
+      mdText = removePandocMarkup(mdText)
       mdText = removeLinks(mdText)
       mdText = removeEmptyLines(mdText)
       mdText = replaceImagePath(mdText)
