@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.12.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.12.0...v1.12.1) (2026-11-14)
+### Bug Fixes
+* **importer:** strip pandoc markdown syntax that shows as source code ([#240](https://github.com/terwer/siyuan-plugin-importer/issues/240)) ([#241](https://github.com/terwer/siyuan-plugin-importer/issues/241)) ([c4b2149](https://github.com/terwer/siyuan-plugin-importer/commit/c4b214942e648eb471a89521d2106e71b46f11c2))
+### Miscellaneous
+* **agent:** project-level electron cdp config for dev tooling ([a6ba409](https://github.com/terwer/siyuan-plugin-importer/commit/a6ba40913c84d187c1aa3632a0454c4fc74ad8a9))
 ## [1.12.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.11.0...v1.12.0) (2026-08-25)
 ### Features
 * **importer:** migrate imported local images to workspace assets with hash-based dedup ([56da981](https://github.com/terwer/siyuan-plugin-importer/commit/56da981cbee363c235737b841eba96786249f88b))
@@ -7,7 +12,6 @@
 * **importer:** add imgpathmigrateswitch setting (off by default) for md image migration
 ## [1.11.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.10.0...v1.11.0) (2026-08-24)
 * **importer:** prompt to convert network images to local after import ([eb6d9ad](https://github.com/terwer/siyuan-plugin-importer/commit/eb6d9ad8b4fd5535e17f3f6451a76c839eb69cb7))
-### Bug Fixes
 * **importer:** run custom handler when importing md directly ([66fd1d9](https://github.com/terwer/siyuan-plugin-importer/commit/66fd1d97d5947fe7e13aebdc62973fc3fa711c50))
 ## [1.10.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.9.1...v1.10.0) (2026-08-24)
 * **importer:** add borders to html tables imported from docx ([2e13069](https://github.com/terwer/siyuan-plugin-importer/commit/2e130696b32be157b776edf6528501d059534a7d))
@@ -15,7 +19,6 @@
 ## [1.9.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.9.0...v1.9.1) (2026-08-10)
 * **plugin:** remove unsupported i18n field from plugin.json ([5b48a05](https://github.com/terwer/siyuan-plugin-importer/commit/5b48a05b564d11a02f1618d8acf1fe23f4b3d70c))
 * **plugin:** update funding link from afdian.net to afdian.com ([9abcf14](https://github.com/terwer/siyuan-plugin-importer/commit/9abcf14d4a341a067e5b3cc4539b2d428264ccf3))
-### Miscellaneous
 * ignore .omo planning workspace files ([b3bc8c7](https://github.com/terwer/siyuan-plugin-importer/commit/b3bc8c7a398bd2b004100ecf8f83ea3a20f49ce3))
 ## [1.9.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.8.2...v1.9.0) (2026-08-09)
 * **importer:** add import setting button on main form ([67068f1](https://github.com/terwer/siyuan-plugin-importer/commit/67068f1a677c85267f7b82cb0f8ad03cb9612c94))
