@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.12.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.12.0...v1.12.1) (2026-11-14)
+
+
+### Bug Fixes
+
+* **importer:** strip pandoc markdown syntax that shows as source code ([#240](https://github.com/terwer/siyuan-plugin-importer/issues/240)) ([#241](https://github.com/terwer/siyuan-plugin-importer/issues/241)) ([c4b2149](https://github.com/terwer/siyuan-plugin-importer/commit/c4b214942e648eb471a89521d2106e71b46f11c2))
+
+
+### Miscellaneous
+
+* **agent:** project-level Electron CDP config for dev tooling ([a6ba409](https://github.com/terwer/siyuan-plugin-importer/commit/a6ba40913c84d187c1aa3632a0454c4fc74ad8a9))
+
 ## [1.12.0](https://github.com/terwer/siyuan-plugin-importer/compare/v1.11.0...v1.12.0) (2026-08-25)
 ### Features
 * **importer:** migrate imported local images to workspace assets with hash-based dedup ([56da981](https://github.com/terwer/siyuan-plugin-importer/commit/56da981cbee363c235737b841eba96786249f88b))
