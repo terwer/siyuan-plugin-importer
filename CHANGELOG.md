@@ -1,7 +1,10 @@
 # Changelog
 
-## [1.12.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.12.0...v1.12.1) (2026-11-14)
+## [1.12.2](https://github.com/terwer/siyuan-plugin-importer/compare/v1.12.1...v1.12.2) (2026-11-15)
 ### Bug Fixes
+* **agent:** exclude the cdp endpoint from the http proxy ([80d03db](https://github.com/terwer/siyuan-plugin-importer/commit/80d03db2920f4538e957cdf0f18c2bad46fec340))
+* **package:** exclude dot-prefixed entries from package.zip ([#245](https://github.com/terwer/siyuan-plugin-importer/issues/245)) ([beb09db](https://github.com/terwer/siyuan-plugin-importer/commit/beb09db4b26b8d33c795e73c574e4d7450010f93))
+## [1.12.1](https://github.com/terwer/siyuan-plugin-importer/compare/v1.12.0...v1.12.1) (2026-11-14)
 * **importer:** strip pandoc markdown syntax that shows as source code ([#240](https://github.com/terwer/siyuan-plugin-importer/issues/240)) ([#241](https://github.com/terwer/siyuan-plugin-importer/issues/241)) ([c4b2149](https://github.com/terwer/siyuan-plugin-importer/commit/c4b214942e648eb471a89521d2106e71b46f11c2))
 ### Miscellaneous
 * **agent:** project-level electron cdp config for dev tooling ([a6ba409](https://github.com/terwer/siyuan-plugin-importer/commit/a6ba40913c84d187c1aa3632a0454c4fc74ad8a9))
