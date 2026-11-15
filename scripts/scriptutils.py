@@ -200,6 +200,10 @@ def create_zip(root_path, file_name, ignored=[], storage_path=None):
                         selection is applied in root directory only.
         storage_path: If provided, ZIP file will be placed in this location. If None, the
                         ZIP will be created in root_path
+
+    Dot-prefixed files and directories (for example .gitkeep left over from local
+    development) are always skipped, because SiYuan's data sync ignores them and the
+    marketplace check rejects a package whose entries start with a dot.
     """
     if storage_path is not None:
         zip_root = os.path.join(storage_path, file_name)
@@ -212,6 +216,9 @@ def create_zip(root_path, file_name, ignored=[], storage_path=None):
         # iter the directory
         path = pathlib.Path(path)
         for p in path.iterdir():
+            if p.name.startswith('.'):
+                # 跳过点文件，例如 .gitkeep，思源上架校验不允许出现以 . 开头的条目
+                continue
             if layer == 0 and p.name in ignored:
                 continue
             zipf.write(p, str(p).replace(root_path, '').lstrip('/'))
