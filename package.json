@@ -39,7 +39,7 @@
     "vite-plugin-static-copy": "^3.0.2",
     "vitest": "^3.2.3",
     "vue": "^3.4.21",
-    "vue-tsc": "^2.0.6"
+    "vue-tsc": "^3.3.14"
   },
   "dependencies": {
     "shorthash2": "^1.0.5",
