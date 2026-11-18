@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.3](https://github.com/terwer/siyuan-plugin-importer/compare/v1.12.2...v1.12.3) (2026-11-18)
+
+
+### Bug Fixes
+
+* **importer:** keep text colors when importing HTML ([#238](https://github.com/terwer/siyuan-plugin-importer/issues/238)) ([#259](https://github.com/terwer/siyuan-plugin-importer/issues/259)) ([880dcf3](https://github.com/terwer/siyuan-plugin-importer/commit/880dcf3e6ef92697279aedcfb9926c3885834e65))
+
 ## [1.12.2](https://github.com/terwer/siyuan-plugin-importer/compare/v1.12.1...v1.12.2) (2026-11-15)
 ### Bug Fixes
 * **agent:** exclude the cdp endpoint from the http proxy ([80d03db](https://github.com/terwer/siyuan-plugin-importer/commit/80d03db2920f4538e957cdf0f18c2bad46fec340))
