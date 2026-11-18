@@ -26,6 +26,7 @@
 import KernelApi from "../api/kernel-api"
 import { getBackend, getFrontend } from "siyuan"
 import { StrUtil } from "zhi-common"
+import { extractColorDeclarations, getIalStyle, wrapWithColor } from "./html-color"
 
 /**
  * 文件是否存在
@@ -104,6 +105,106 @@ export function replaceImagePath(mdText) {
 }
 
 /**
+ * 判断 `index` 位置的字符是否被反斜杠转义（如 `\[`）。
+ */
+function isEscaped(text: string, index: number): boolean {
+  let backslashes = 0
+  for (let i = index - 1; i >= 0 && text[i] === "\\"; i--) {
+    backslashes++
+  }
+  return backslashes % 2 === 1
+}
+
+/** 找到与 `openIndex` 处 `[` 匹配的 `]`（支持嵌套，跳过转义字符）。 */
+function findMatchingBracket(text: string, openIndex: number): number {
+  let depth = 0
+  for (let i = openIndex; i < text.length; i++) {
+    if (text[i] === "\n") {
+      return -1
+    }
+    if (isEscaped(text, i)) {
+      continue
+    }
+    if (text[i] === "[") {
+      depth++
+    } else if (text[i] === "]") {
+      depth--
+      if (depth === 0) {
+        return i
+      }
+    }
+  }
+  return -1
+}
+
+/** 找到行内属性 `{` 对应的 `}`。 */
+function findClosingBrace(text: string, openIndex: number): number {
+  for (let i = openIndex + 1; i < text.length; i++) {
+    if (text[i] === "\n") {
+      return -1
+    }
+    if (!isEscaped(text, i) && text[i] === "}") {
+      return i
+    }
+  }
+  return -1
+}
+
+/**
+ * 把 pandoc 的方括号行内 span（`[文本]{...}`）转换成可读文本或内联颜色 span。
+ * 通过括号匹配而不是正则处理嵌套，`[外层 [内层]{...} 外层]{...}` 与
+ * `[[链接](url)]{style="..."}` 都能正确转换。
+ */
+function convertBracketedSpans(text: string): string {
+  let result = ""
+  let index = 0
+  while (index < text.length) {
+    const char = text[index]
+    if (char === "[" && !isEscaped(text, index)) {
+      const close = findMatchingBracket(text, index)
+      if (close !== -1 && text[close + 1] === "{") {
+        const attributesEnd = findClosingBrace(text, close + 1)
+        if (attributesEnd !== -1) {
+          const content = convertBracketedSpans(text.slice(index + 1, close))
+          const attributes = text.slice(close + 2, attributesEnd)
+          result += wrapWithColor(content, extractColorDeclarations(getIalStyle(attributes)))
+          index = attributesEnd + 1
+          continue
+        }
+      }
+    }
+    result += char
+    index++
+  }
+  return result
+}
+
+/**
+ * 把“整段强调/链接文字正好是一个颜色 span”的情况翻转成“颜色 span 包住强调/链接”。
+ *
+ * pandoc 会输出 `**[文本]{style="color:..."}**`、`[[文本]{style="color:..."}](url)`，
+ * 而思源只在内联 span 包住强调/链接时才会把颜色标记应用到对应文本上；反过来写
+ * （强调里套 span、链接文字里套 span）颜色会丢失。
+ */
+function hoistColorSpanOutOfEmphasis(text: string): string {
+  const contentWithoutNestedSpan = String.raw`((?:(?!<\/?span\b).)*)`
+  const linkPattern = new RegExp(
+    String.raw`\[<span style="([^"]*)">${contentWithoutNestedSpan}<\/span>\]\(([^)\n]*)\)`,
+    "g"
+  )
+  const emphasisPattern = new RegExp(
+    String.raw`(\*{1,3}|_{1,3}|~~)<span style="([^"]*)">${contentWithoutNestedSpan}<\/span>\1`,
+    "g"
+  )
+  return text
+    .replace(linkPattern, (match, style, content, url) => `<span style="${style}">[${content}](${url})</span>`)
+    .replace(
+      emphasisPattern,
+      (match, marker, style, content) => `<span style="${style}">${marker}${content}${marker}</span>`
+    )
+}
+
+/**
  * 清理 pandoc markdown 输出里的原生语法残留。
  *
  * 1.10.0 起转换格式由 `gfm-raw_html` 改为 `markdown`（为了复杂表格输出 HTML、公式输出
@@ -115,8 +216,10 @@ export function replaceImagePath(mdText) {
  * - 围栏 div：`::: part` / `:::: {#id .class}` / `:::`
  * - 空锚点：`[]{#ch001.xhtml}`
  *
- * 内置处理函数负责去掉这些属性与围栏，只保留可阅读的内容（属性里的字体、颜色、宽度等
- * 思源本身也无法通过导入的 markdown 保留，留着只会变成可见源码）。
+ * 内置处理函数负责去掉这些属性与围栏，只保留可阅读的内容。其中字体、宽度等属性
+ * 思源本身无法通过导入的 markdown 保留，留下只会变成可见源码；文字颜色则不同：
+ * 思源 Lute 支持内联 `<span style="color: ...">` 并把它解析成文本颜色标记，
+ * 因此颜色属性会被转成内联 span 保留下来，而不是简单丢弃。
  *
  * @param text - pandoc 输出的 markdown 文本
  */
@@ -131,14 +234,28 @@ export function removePandocMarkup(text: string): string {
   // 3. 空 span 锚点 `[]{#id}`（pandoc 用它在正文里保留 epub 锚点，无可见内容）
   result = result.replace(/\[\]\{[^}\n]*\}/g, "")
 
-  // 4. 链接 / 图片上的属性：`[文本](url){#id}`、`![图](a.png){width="50%"}` → 去掉 `{...}`
-  result = result.replace(/(!?\[(?:[^\[\]\\\n]|\\.)*\]\([^)\n]*\))\{[^}\n]*\}/g, "$1")
+  // 4. 链接 / 图片上的属性：`[文本](url){#id}`、`![图](a.png){width="50%"}` → 去掉 `{...}`。
+  //    链接上的颜色改写成包住链接的内联 span（思源会在 span 内继续解析 markdown 链接），
+  //    图片颜色没有意义，保持原有丢弃行为。
+  result = result.replace(/(!?\[(?:[^\[\]\\\n]|\\.)*\]\([^)\n]*\))\{([^}\n]*)\}/g, (match, body, attributes) => {
+    if (body.startsWith("!")) {
+      return body
+    }
+    return wrapWithColor(body, extractColorDeclarations(getIalStyle(attributes)))
+  })
 
-  // 5. 行内 span：`[文本]{#id style="..."}` → `文本`
-  result = result.replace(/\[((?:[^\[\]\\\n]|\\.)*)\]\{[^}\n]*\}/g, "$1")
+  // 5. 行内 span：`[文本]{#id style="..."}` → `文本`；带颜色的转成 `<span style="...">文本</span>`。
+  //    用完整的括号匹配处理嵌套（span 里套链接、span 里套 span），避免外层属性留成可见源码。
+  result = convertBracketedSpans(result)
+  // 5.1 强调/链接文字整体带颜色时，把颜色 span 移到强调/链接外面，思源才会渲染颜色
+  result = hoistColorSpanOutOfEmphasis(result)
 
-  // 6. 标题上的属性：`## 标题 {#id .class}` → `## 标题`
-  result = result.replace(/^(#{1,6}[ \t]+.*?)[ \t]*\{[^}\n]*\}[ \t]*$/gm, "$1")
+  // 6. 标题上的属性：`## 标题 {#id .class}` → `## 标题`；带颜色的转成标题内的 span
+  result = result.replace(
+    /^(#{1,6}[ \t]+)(.*?)[ \t]*\{([^}\n]*)\}[ \t]*$/gm,
+    (match, prefix, content, attributes) =>
+      `${prefix}${wrapWithColor(content, extractColorDeclarations(getIalStyle(attributes)))}`
+  )
 
   // 第 1 步去掉围栏后可能残留行尾空格
   return result.replace(/[ \t]+$/gm, "")

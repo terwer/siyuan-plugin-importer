@@ -130,10 +130,12 @@ describe("removePandocMarkup", () => {
 
     const output = removePandocMarkup(input)
 
-    // 不再出现 pandoc 属性源码
+    // 不再出现 pandoc 属性源码（颜色已转成内联 span，不再以 IAL 源码出现）
     expect(output).not.toContain("{#")
     expect(output).not.toContain("{.")
-    expect(output).not.toContain("style=")
+    expect(output).not.toContain("font-weight")
+    expect(output).not.toContain("font-family")
+    expect(output).not.toContain("display:block")
     // 不再出现围栏 div 标记
     expect(output).not.toMatch(/^[ \t]*:{3,}/m)
     // 内容保留（属性只去掉，不吞正文；行内 span 去掉外层方括号与属性）
@@ -144,13 +146,17 @@ describe("removePandocMarkup", () => {
     expect(output).toContain("参见[第一章](#ch001.xhtml_ch1)。")
     expect(output).toContain("![封面](media/file0.png)")
     expect(output).toContain("这是一个脚注内容。")
+    // 截图里灰色版权行的文字颜色不再被丢弃
+    expect(output).toContain('<span style="color: rgb(120, 120, 120)">\\[COPYRIGHT\\]</span>')
 
     // 内置处理链：清理属性后再去脚注，上标脚注标记不会残留
     expect(removeFootnotes(output)).not.toContain("^[\\[16\\]](#")
   })
 
-  it("链接与图片只去掉属性，保留地址", () => {
-    expect(removePandocMarkup("[a](#anchor){#id style=\"color:red\"}")).toBe("[a](#anchor)")
+  it("链接上的颜色转成包住链接的内联 span，图片属性仍只去掉", () => {
+    expect(removePandocMarkup('[a](#anchor){#id style="color:red"}')).toBe(
+      '<span style="color: red">[a](#anchor)</span>'
+    )
     expect(removePandocMarkup('![图](a.png){width="50%"}')).toBe("![图](a.png)")
     expect(removePandocMarkup('![图](a.png)')).toBe("![图](a.png)")
   })
@@ -158,6 +164,48 @@ describe("removePandocMarkup", () => {
   it("去掉空锚点与标题属性", () => {
     expect(removePandocMarkup("[]{#ch001.xhtml}\n\n正文")).toBe("\n\n正文")
     expect(removePandocMarkup("## 标题 {#id .class}")).toBe("## 标题")
+  })
+
+  it("保留文字颜色：span 上的 color / background-color 转成思源可识别的内联 span", () => {
+    expect(removePandocMarkup('[红]{#id style="color:#e03e2d"}')).toBe('<span style="color: #e03e2d">红</span>')
+    expect(removePandocMarkup('[黄底]{style="background-color:yellow;color:black"}')).toBe(
+      '<span style="background-color: yellow; color: black">黄底</span>'
+    )
+  })
+
+  it("只保留颜色，丢弃字体、字号等思源 markdown 无法保留的属性", () => {
+    const input = "[文本]{#id style=\"font-family:'PingFang SC';color:rgb(224, 62, 45);font-size:12px\"}"
+    expect(removePandocMarkup(input)).toBe('<span style="color: rgb(224, 62, 45)">文本</span>')
+  })
+
+  it("嵌套 span 的颜色全部保留（内层先处理，外层不留源码）", () => {
+    const input = '[外层 [内层]{style="color:#00b050"} 回到外层]{style="color:#e03e2d"}'
+    expect(removePandocMarkup(input)).toBe(
+      '<span style="color: #e03e2d">外层 <span style="color: #00b050">内层</span> 回到外层</span>'
+    )
+  })
+
+  it("无颜色的 span 仍只保留文本（Issue #240 回归）", () => {
+    expect(removePandocMarkup('[COPYRIGHT]{#id style="font-weight:bold"}')).toBe("COPYRIGHT")
+  })
+
+  it("标题上的颜色转成标题内的 span", () => {
+    expect(removePandocMarkup('## 标题 {style="color:#00b050"}')).toBe('## <span style="color: #00b050">标题</span>')
+  })
+
+  it("强调文字整体带颜色时，颜色 span 包住强调标记（避免思源丢色）", () => {
+    expect(removePandocMarkup('**[加粗红]{style="color:red"}**')).toBe('<span style="color: red">**加粗红**</span>')
+    expect(removePandocMarkup('*[斜体蓝]{style="color:blue"}*')).toBe('<span style="color: blue">*斜体蓝*</span>')
+    expect(removePandocMarkup('~~[删除线]{style="color:gray"}~~')).toBe('<span style="color: gray">~~删除线~~</span>')
+  })
+
+  it("链接文字整体带颜色时，颜色 span 包住链接（避免思源丢色）", () => {
+    expect(removePandocMarkup('[<span style="color: #c00000">链接</span>](https://example.com)')).toBe(
+      '<span style="color: #c00000">[链接](https://example.com)</span>'
+    )
+    expect(removePandocMarkup('[[链接](https://example.com)]{style="color:#c00000"}')).toBe(
+      '<span style="color: #c00000">[链接](https://example.com)</span>'
+    )
   })
 
   it("不误伤普通 markdown（管道表格、公式、普通链接、普通大括号文本）", () => {

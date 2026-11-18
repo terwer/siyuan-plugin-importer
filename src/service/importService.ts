@@ -37,6 +37,7 @@ import {
   removePandocMarkup,
   replaceImagePath,
 } from "../utils/utils"
+import { normalizeHtmlColors } from "../utils/html-color"
 import { loadImporterConfig } from "../store/config"
 
 /**
@@ -124,7 +125,10 @@ export class ImportService {
         )
       }
       const htmlText = await file.text()
-      const fixedHtml = htmlText.replace(/(src|href)\s*=\s*["']([^"']*)["']/gi, (match, attr, url) => {
+      // 先把 HTML 中 span / font / 块级元素上的内联文字颜色提升成 pandoc 可保留的 span，
+      // 否则 pandoc 会丢掉这些颜色，导入后全部变黑。
+      const colorNormalizedHtml = normalizeHtmlColors(htmlText)
+      const fixedHtml = colorNormalizedHtml.replace(/(src|href)\s*=\s*["']([^"']*)["']/gi, (match, attr, url) => {
         const u = url.trim()
         if (/^(https?:|data:|#|mailto:|javascript:)/i.test(u)) {
           return match

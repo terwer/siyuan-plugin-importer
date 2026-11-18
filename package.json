@@ -29,6 +29,7 @@
     "@vitejs/plugin-vue": "^5.0.4",
     "fast-glob": "^3.3.3",
     "glob": "^11.0.3",
+    "jsdom": "^31.0.1",
     "minimist": "^1.2.8",
     "rollup-plugin-livereload": "^2.0.5",
     "siyuan": "^1.1.1",

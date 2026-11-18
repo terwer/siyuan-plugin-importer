@@ -11,6 +11,7 @@ const isPCMock = vi.fn(() => true)
 const getExportsMock = vi.fn()
 const containsNetAssetsMock = vi.fn()
 const showMessageMock = vi.fn()
+const normalizeHtmlColorsMock = vi.fn((html: string) => html)
 const loadImporterConfigMock = vi.fn(async () => ({
   bundledFnSwitch: false,
   customFnSwitch: false,
@@ -35,6 +36,10 @@ vi.mock("../utils/utils", () => ({
 
 vi.mock("../store/config", () => ({
   loadImporterConfig: loadImporterConfigMock,
+}))
+
+vi.mock("../utils/html-color", () => ({
+  normalizeHtmlColors: normalizeHtmlColorsMock,
 }))
 
 let getFileCalls = 0
@@ -73,6 +78,23 @@ describe("ImportService.uploadAndConvert", () => {
     expect(pluginInstance.kernelApi.putFile).toHaveBeenCalledWith("/temp/convert/pandoc/demo.md", file)
     expect(pluginInstance.kernelApi.convertPandoc).not.toHaveBeenCalled()
     expect(result).toBe("/temp/convert/pandoc/demo.md")
+  })
+
+  it("html 上传前规范化文字颜色，并改写相对资源路径", async () => {
+    const { ImportService } = await import("./importService")
+    const pluginInstance = createPluginInstance()
+    const originalHtml = '<p><font color="#c00000">红色</font><img src="pic.png"></p>'
+    normalizeHtmlColorsMock.mockReturnValueOnce('<p><span style="color: #c00000">红色</span><img src="pic.png"></p>')
+    const file = { name: "demo.html", text: async () => originalHtml }
+
+    await ImportService.uploadAndConvert(pluginInstance as any, file)
+
+    expect(normalizeHtmlColorsMock).toHaveBeenCalledWith(originalHtml)
+    const uploaded = pluginInstance.kernelApi.putFile.mock.calls[0][1]
+    expect(uploaded.name).toBe("demo.html")
+    const uploadedText = await uploaded.text()
+    expect(uploadedText).toContain('style="color: #c00000"')
+    expect(uploadedText).toContain('src="../pic.png"')
   })
 
   it("docx 上传并转换，返回 md 路径", async () => {
